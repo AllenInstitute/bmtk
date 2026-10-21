@@ -298,6 +298,66 @@ def test_fallback_selects_widest_valid_tile(monkeypatch):
     })
     assert acceleration.select_combined_target_tile(999, 32, adaptive=True) == 1024
     assert acceleration.select_combined_target_tile(999, 1, adaptive=False) == 256
+    # A routing-budget floor is never undercut, even by the device fallback.
+    assert acceleration.select_combined_target_tile(999, 1, adaptive=False, minimum_tile=1024) == 1024
+    assert acceleration.select_combined_target_tile(999, 1, adaptive=False, minimum_tile=2048) is None
+
+
+def _routing_mib(tile, n_post, rows, index_bytes=4):
+    return ((n_post + tile - 1) // tile + 1) * rows * index_bytes / 1024**2
+
+
+def _develop_projection_tile(batch, n_post, rows):
+    """Upstream develop 15d18e11 select_performance_projection tile (eligible case)."""
+    tile = 256 if batch == 1 else 2048
+    if _routing_mib(tile, n_post, rows) > 512:
+        tile = 2048
+    return tile
+
+
+@pytest.mark.parametrize("rows,expected", [
+    # 256-target routing fits 512 MiB at the full-V1 context: the batch-1 256 tile.
+    (415416, 256),
+    # Just inside and just outside the budget for the 256 table at n_post=120000.
+    (285569, 256), (285570, 2048),
+    # Review probe: 256 needs 2151 MiB, 2048 needs 275 MiB.
+    (1200000, 2048),
+])
+@pytest.mark.parametrize("options", [
+    {}, {"use_adaptive_routing": False}, {"use_csr_master_weights": False},
+    {"use_uint8_synapse_types": False},
+])
+def test_batch1_tile_respects_the_routing_budget(hardware, rows, expected, options):
+    n_post = 120000 if rows != 415416 else 66658
+    metadata = context(n_post=n_post, source_rows_upper_bound=rows)
+    assert (_routing_mib(256, n_post, rows) <= 512) is (expected == 256)
+    resolved, report = resolve(options, metadata=metadata, batch_size=1)
+    assert resolved["use_combined_current_sweep"] is True
+    assert resolved["use_adaptive_routing"] is False
+    tile = resolved["combined_current_target_tile_size"]
+    assert tile == expected == _develop_projection_tile(1, n_post, rows)
+    assert _routing_mib(tile, n_post, rows) <= 512
+    assert report["launch_geometry"]["tile"] == tile and report["launch_geometry"]["valid"]
+
+
+@pytest.mark.parametrize("architecture", FAT_BINARY_ARCHITECTURES)
+@pytest.mark.parametrize("batch", [1, 2, 7, 8, 32])
+@pytest.mark.parametrize("rows", [415416, 1200000])
+def test_explicit_previous_path_reproduces_the_develop_tile(hardware, architecture, batch, rows):
+    hardware(architecture=architecture)
+    metadata = context(n_post=120000, source_rows_upper_bound=rows)
+    for options in ({"use_csr_master_weights": False}, {"use_adaptive_routing": False}):
+        resolved, _ = resolve(options, metadata=metadata, batch_size=batch)
+        assert resolved["use_adaptive_routing"] is False
+        assert resolved["combined_current_target_tile_size"] == _develop_projection_tile(
+            batch, 120000, rows,
+        )
+    resolved, _ = resolve({}, metadata=metadata, batch_size=batch)
+    adaptive = batch >= acceleration.ADAPTIVE_ROUTING_MIN_BATCH
+    assert resolved["use_adaptive_routing"] is adaptive
+    assert resolved["combined_current_target_tile_size"] == (
+        2048 if adaptive else _develop_projection_tile(batch, 120000, rows)
+    )
 
 
 @pytest.mark.parametrize("architecture,tile,valid", [

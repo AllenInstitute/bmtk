@@ -143,15 +143,23 @@ def combined_sweep_launch_geometry(architecture, target_tile_size, *, index_byte
     }
 
 
-def select_combined_target_tile(architecture, batch_size, *, adaptive, index_bytes=4):
+def select_combined_target_tile(
+    architecture, batch_size, *, adaptive, index_bytes=4, minimum_tile=None,
+):
     """Automatic wide tile: 2048 targets, or 256 for batch 1 without adaptive routing.
 
     Adaptive routing derives its per-launch narrow tile (a quarter, at least 256) from
     the wide tile, so it keeps 2048 at batch 1 where the narrow 512 shape is selected
     on the device. Falls back to the widest valid narrower tile on smaller devices.
+    ``minimum_tile`` is the narrowest tile whose routing table fits the 512 MiB
+    budget of ``select_performance_projection``; narrower tiles are never chosen
+    (None when no tile at least that wide is launchable).
     """
-    preferred = 2048 if adaptive or batch_size != 1 else 256
-    for tile in sorted((t for t in COMBINED_TARGET_TILES if t <= preferred), reverse=True):
+    floor = COMBINED_TARGET_TILES[0] if minimum_tile is None else int(minimum_tile)
+    preferred = max(2048 if adaptive or batch_size != 1 else 256, floor)
+    for tile in sorted(
+        (t for t in COMBINED_TARGET_TILES if floor <= t <= preferred), reverse=True,
+    ):
         if combined_sweep_launch_geometry(architecture, tile, index_bytes=index_bytes)["valid"]:
             return tile
     return None
@@ -417,15 +425,18 @@ def resolve_acceleration_options(
             adaptive = options.get("use_adaptive_routing") is True
             auto_tile = tile
             if combined:
+                # The projection's tile is the narrowest one whose routing table fits
+                # the budget; without adaptive routing it is the previous route's tile.
                 auto_tile = select_combined_target_tile(
                     architecture, batch_size, adaptive=adaptive,
-                    index_bytes=_index_bytes(performance_context),
+                    index_bytes=_index_bytes(performance_context), minimum_tile=tile,
                 ) or tile
             options[tile_name] = auto_tile
             report["reasons"][tile_name] = (
                 "batch-aware bounded target routing; 2048 wide tiles (adaptive routing picks "
-                "a narrow quarter tile per launch) or 256 at batch1 without adaptive routing; "
-                "narrower when the device's shared-memory limit requires it"
+                "a narrow quarter tile per launch) or 256 at batch1 without adaptive routing "
+                "when its routing table fits 512 MiB (else 2048); narrower when the device's "
+                "shared-memory limit requires it, never below the routing budget"
             )
         report["selected"][tile_name] = options[tile_name]
         report["launch_geometry"] = (
