@@ -943,6 +943,10 @@ class RNN:
                     for surface in training_engine.learning_rule.weight_surfaces
                 ]
             optimizer.build(optimizer_variables)
+            bind_slots = getattr(self._cell, "bind_optimizer_checkpoint_slots", None)
+            if bind_slots is not None:
+                # CSR-ordered masters: optimizer slots join the canonical checkpoint format.
+                bind_slots(optimizer)
 
         training_engine.train()
 

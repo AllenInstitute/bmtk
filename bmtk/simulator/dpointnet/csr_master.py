@@ -1,4 +1,12 @@
-"""Private CSR-live parameter layout and explicit canonical migration boundary."""
+"""CSR-ordered FP32 master layout, canonical checkpoint format and migration helpers.
+
+With ``use_csr_master_weights`` the live recurrent and named-input FP32 masters,
+their endpoint index variables and paired optimizer slots are stored in stable
+CSR (source-major) order. Checkpoints, exports and loss metadata stay canonical:
+every CSR-ordered checkpointed variable serializes a host-converted canonical
+copy under the ordinary ``VARIABLE_VALUE`` key and converts it back on restore,
+so checkpoints are interchangeable with canonical-order models.
+"""
 
 import hashlib
 import types
@@ -131,21 +139,163 @@ class CsrMasterLayout:
 CSR_MASTER_SCHEMA = "direct_csr_fp32_master_host_lifecycle_v1"
 
 
-def guard_csr_checkpoint(master, layout=None):
-    """Give CSR resources a nonlegacy checkpoint key; never reinterpret old rows."""
-    resource = master.value
-    if callable(resource):
-        resource = master
-    key = "CSR_MASTER_V1" if layout is None else layout.checkpoint_key
+def _raw_variable(variable):
+    value = getattr(variable, "value", None)
+    return variable if value is None or callable(value) else value
 
-    def serialize(variable):
-        return {key: variable.read_value()}
 
-    def restore(variable, restored_tensors):
-        return variable.assign(restored_tensors[key])
+def _convert(layout, value, *, to_live):
+    if tf.executing_eagerly() and layout.host_lifecycle:
+        array = np.asarray(value.numpy() if hasattr(value, "numpy") else value)
+        with tf.device("/CPU:0"):
+            return tf.convert_to_tensor(
+                layout.host_to_live(array) if to_live else layout.host_to_canonical(array)
+            )
+    with tf.device("/CPU:0"):
+        return layout.to_live(value) if to_live else layout.to_canonical(value)
+
+
+def canonical_checkpoint(variable, layout, *, verify_unchanged=False):
+    """Serialize a CSR-ordered edge variable in canonical order under ``VARIABLE_VALUE``.
+
+    Saving converts a host copy (the live variable is never reordered); restoring
+    converts the canonical rows back to the live layout. ``verify_unchanged`` is
+    for immutable topology (endpoint indices): restoring different canonical rows
+    raises instead of silently disagreeing with the native connectivity.
+    """
+    resource = _raw_variable(variable)
+
+    def serialize(var):
+        return {"VARIABLE_VALUE": _convert(layout, var.read_value(), to_live=False)}
+
+    def restore(var, restored_tensors):
+        value = restored_tensors["VARIABLE_VALUE"]
+        if verify_unchanged and tf.executing_eagerly():
+            current = layout.host_to_canonical(var.numpy()) if layout.host_lifecycle else (
+                layout.to_canonical(var.read_value()).numpy()
+            )
+            if not np.array_equal(np.asarray(value), current):
+                raise ValueError(
+                    "Checkpoint connectivity differs from this model's CSR-ordered topology; "
+                    "rebuild the model from the checkpoint's network instead."
+                )
+            return var.read_value()
+        return var.assign(_convert(layout, value, to_live=True))
 
     resource._serialize_to_tensors = types.MethodType(serialize, resource)
     resource._restore_from_tensors = types.MethodType(restore, resource)
+    resource._dpointnet_canonical_layout = layout
+    return variable
+
+
+class CanonicalShadowCheckpoint(tf.Module):
+    """Checkpoint-only stand-in for a canonical-order model's compute-dtype weight shadow.
+
+    Canonical-order models track FP16/compute shadows of their masters in checkpoints.
+    CSR-master models have no shadows; these stand-ins serialize the value such a
+    model would hold (the cast master in canonical or CSR row order), so checkpoint
+    object graphs match in both directions. Restoring ignores the value: the masters
+    are authoritative.
+    """
+
+    def __init__(self, master, layout, dtype, *, canonical_order):
+        super().__init__(name=None)
+        self._source = types.SimpleNamespace(
+            master=master, layout=layout, dtype=tf.as_dtype(dtype), canonical=canonical_order,
+        )
+
+    def _serialize_to_tensors(self):
+        source = self._source
+        value = _raw_variable(source.master).read_value()
+        if source.canonical:
+            value = _convert(source.layout, value, to_live=False)
+        with tf.device("/CPU:0"):
+            return {"VARIABLE_VALUE": tf.cast(value, source.dtype)}
+
+    def _restore_from_tensors(self, restored_tensors):
+        del restored_tensors
+        return tf.no_op()
+
+
+# Per-variable optimizer slot lists, paired with their variable by the optimizer's
+# own variable index (Keras 3 and TF-Keras optimizers, including ExponentiatedAdam).
+_INDEXED_SLOT_ATTRIBUTES = ("_momentums", "_velocities", "_velocity_hats", "momentums")
+
+
+def _optimizer_variable_index(optimizer, variable):
+    lookup = getattr(optimizer, "_get_variable_index", None)
+    if lookup is not None:
+        try:
+            return lookup(variable)
+        except (KeyError, ValueError, AttributeError):
+            pass
+    index_dict = getattr(optimizer, "_index_dict", None)
+    var_key = getattr(optimizer, "_var_key", None)
+    if index_dict is not None and var_key is not None:
+        return index_dict.get(var_key(variable))
+    return None
+
+
+def paired_optimizer_slots(optimizer, variable):
+    """Explicit per-edge optimizer slots of ``variable``, by optimizer variable identity.
+
+    Uses the optimizer's variable index for Keras 3/TF-Keras ``_momentums``,
+    ``_velocities``, ``_velocity_hats`` and SGD ``momentums`` lists, or legacy
+    ``get_slot``; never infers ownership from slot shapes. Returns None when the
+    optimizer's slot structure is not recognized.
+    """
+    optimizer = getattr(optimizer, "inner_optimizer", None) or optimizer
+    if hasattr(optimizer, "get_slot_names") and hasattr(optimizer, "get_slot"):
+        return [
+            slot for slot in (optimizer.get_slot(variable, name) for name in optimizer.get_slot_names())
+            if slot is not None
+        ]
+    index = _optimizer_variable_index(optimizer, variable)
+    if index is None:
+        return None
+    slots = []
+    for attribute in _INDEXED_SLOT_ATTRIBUTES:
+        values = getattr(optimizer, attribute, None)
+        if isinstance(values, (list, tuple)) and len(values) > index and values[index] is not None:
+            slots.append(values[index])
+    return slots
+
+
+def bind_optimizer_checkpoint_slots(cell, optimizer):
+    """Give every per-edge optimizer slot of a CSR-ordered master the canonical format.
+
+    Call after the optimizer has created its slots (``optimizer.build``). Idempotent.
+    Returns ``{surface: number_of_slots}``; raises when a trainable CSR master's
+    slots cannot be paired explicitly, because their checkpoints would otherwise
+    hold live CSR rows under canonical keys.
+    """
+    if not getattr(cell, "_csr_master_weights", False):
+        return {}
+    surfaces = [("<recurrent>", cell.recurrent_weight_values, cell.recurrent_master_layout)]
+    surfaces += [
+        (name, net["input_weight_values"], net["master_layout"]) for name, net in cell.inputs.items()
+    ]
+    inner = getattr(optimizer, "inner_optimizer", None) or optimizer
+    bound = {}
+    for name, master, layout in surfaces:
+        if _optimizer_variable_index(inner, master) is None and not (
+            hasattr(inner, "get_slot_names") and master.trainable
+        ):
+            continue
+        slots = paired_optimizer_slots(optimizer, master)
+        if slots is None:
+            raise ValueError(
+                f"Cannot pair optimizer slots of CSR-ordered master {name!r} for "
+                f"{type(inner).__name__}; use Adam/SGD/ExponentiatedAdam or set "
+                "use_csr_master_weights=False."
+            )
+        for slot in slots:
+            if tuple(slot.shape) != tuple(master.shape):
+                raise ValueError(f"Optimizer slot of {name!r} is not a per-edge slot.")
+            if getattr(_raw_variable(slot), "_dpointnet_canonical_layout", None) is not layout:
+                canonical_checkpoint(slot, layout)
+        bound[name] = len(slots)
+    return bound
 
 
 def transfer_canonical_state(source, target, *, per_edge_slots, scalar_state=()):

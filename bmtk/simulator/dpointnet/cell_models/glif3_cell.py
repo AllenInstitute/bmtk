@@ -7,6 +7,7 @@ from numbers import Integral
 import numpy as np
 import pickle as pkl
 from pathlib import Path
+from types import SimpleNamespace
 from .._options import UNSET, resolve_renamed_option, validate_bool_option
 from .nest_dynamics import (
     integration_coefficients,
@@ -836,6 +837,73 @@ class GLIF3Cell(tf.keras.layers.Layer):
         else:
             master.assign(values)
         self.refresh_recurrent_weight_shadow()
+
+    def bind_optimizer_checkpoint_slots(self, optimizer):
+        """Serialize optimizer slots of CSR-ordered masters in canonical order.
+
+        ``RNN.train`` calls this after building its optimizer. Custom training loops
+        that build their own optimizer must call it before saving checkpoints that
+        include the optimizer. No-op with canonical-order masters.
+        """
+        from ..csr_master import bind_optimizer_checkpoint_slots
+
+        return bind_optimizer_checkpoint_slots(self, optimizer)
+
+    def _trackable_children(self, save_type="checkpoint", **kwargs):
+        children = super()._trackable_children(save_type, **kwargs)
+        view = getattr(self, "_canonical_shadow_view", None)
+        if view is not None and getattr(save_type, "value", save_type) == "checkpoint":
+            children = dict(children)
+            children.update(view.children)
+        return children
+
+    def _register_canonical_shadow_checkpoints(self, individual_training):
+        """Checkpoint stand-ins for the shadows a canonical-order cell would track."""
+        from ..csr_master import CanonicalShadowCheckpoint
+
+        children = {}
+        master, layout = self.recurrent_weight_values, self.recurrent_master_layout
+        if self.variable_dtype != self.compute_dtype or individual_training:
+            children["recurrent_weight_values_compute"] = CanonicalShadowCheckpoint(
+                master, layout, self.compute_dtype, canonical_order=True,
+            )
+        if self._use_fused_cuda:
+            children["recurrent_csr_weight_values_compute"] = CanonicalShadowCheckpoint(
+                master, layout, self.compute_dtype, canonical_order=False,
+            )
+        # SimpleNamespace keeps the stand-ins out of automatic attribute tracking.
+        self._canonical_shadow_view = SimpleNamespace(children=children)
+
+    def _own_store_variables(self):
+        if hasattr(self, "_trainable_variables") and hasattr(self, "_non_trainable_variables"):
+            return list(self._trainable_variables) + list(self._non_trainable_variables)
+        return list(self._trainable_weights) + list(self._non_trainable_weights)
+
+    @staticmethod
+    def _canonical_store_layout(variable):
+        from ..csr_master import _raw_variable
+
+        return getattr(_raw_variable(variable), "_dpointnet_canonical_layout", None)
+
+    def save_own_variables(self, store):
+        """Keras weights files store CSR-ordered edge variables in canonical order."""
+        if not getattr(self, "_csr_master_weights", False):
+            return super().save_own_variables(store)
+        for index, variable in enumerate(self._own_store_variables()):
+            layout = self._canonical_store_layout(variable)
+            value = np.asarray(variable.numpy())
+            store[f"{index}"] = value if layout is None else layout.host_to_canonical(value)
+
+    def load_own_variables(self, store):
+        if not getattr(self, "_csr_master_weights", False):
+            return super().load_own_variables(store)
+        converted = {key: store[key] for key in store.keys()}
+        for index, variable in enumerate(self._own_store_variables()):
+            layout = self._canonical_store_layout(variable)
+            key = f"{index}"
+            if layout is not None and key in converted:
+                converted[key] = layout.host_to_live(np.asarray(converted[key]))
+        return super().load_own_variables(converted)
 
     def csr_host_lifecycle_metadata(self):
         """Exact owned payload bytes; not allocator, cache or driver measurements."""
@@ -1908,7 +1976,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
 
         if self._csr_master_weights:
-            from ..csr_master import CsrMasterLayout, guard_csr_checkpoint
+            from ..csr_master import CsrMasterLayout, canonical_checkpoint
             from ..custom_ops.master_projection import cpu_connectivity
             self._master_recurrent_connectivity = (
                 self.recurrent_fused_connectivity if self._use_fused_cuda
@@ -1932,7 +2000,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         indices,
                         None if _host_index_variables is None else _host_index_variables["recurrent"],
                     )
-                guard_csr_checkpoint(self.recurrent_indices, layout)
+                canonical_checkpoint(self.recurrent_indices, layout, verify_unchanged=True)
         recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
         if use_fused_recurrent_accumulation and (
             not self._use_fused_cuda
@@ -1985,10 +2053,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )  # shape = (n_synapses,)
 
         if self._csr_master_weights:
-            guard_csr_checkpoint(self.recurrent_weight_values, self.recurrent_master_layout)
+            canonical_checkpoint(self.recurrent_weight_values, self.recurrent_master_layout)
             if tf.as_dtype(self.variable_dtype) != tf.float32:
                 raise ValueError("use_csr_master_weights=True requires FP32 master variables.")
             self.recurrent_weight_values_compute = self.recurrent_weight_values
+            self._register_canonical_shadow_checkpoints(individual_training)
         elif self.variable_dtype != self.compute_dtype or individual_training:
             # Keep a non-trainable compute-lane shadow. Two reasons:
             #  (1) mixed precision: avoids casting the full weight table every timestep;
@@ -2096,7 +2165,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if self._csr_master_weights:
                 if input_type == "current":
                     raise ValueError("use_csr_master_weights=True requires spike or count inputs; set use_csr_master_weights=False for current inputs.")
-                from ..csr_master import CsrMasterLayout, guard_csr_checkpoint
+                from ..csr_master import CsrMasterLayout, canonical_checkpoint
                 from ..custom_ops.master_projection import cpu_connectivity
                 input_props["master_connectivity"] = (
                     build_csr_connectivity(
@@ -2130,7 +2199,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                             input_indices,
                             None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
                         )
-                    guard_csr_checkpoint(input_props["input_indices"], layout)
+                    canonical_checkpoint(input_props["input_indices"], layout, verify_unchanged=True)
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
 
             input_props["input_weight_values"] = self._tracked_weight(
@@ -2145,7 +2214,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             # a trainable MirroredVariable inside the RNN while_loop), while the gradient targets the
             # master above. Kept in sync via refresh_recurrent_weight_shadow() after each step.
             if self._csr_master_weights:
-                guard_csr_checkpoint(input_props["input_weight_values"], input_props["master_layout"])
+                canonical_checkpoint(input_props["input_weight_values"], input_props["master_layout"])
                 if input_type == "current":
                     raise ValueError("use_csr_master_weights=True requires spike or count inputs.")
                 input_props["input_weight_values_compute"] = input_props["input_weight_values"]

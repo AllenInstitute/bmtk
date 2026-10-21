@@ -1,4 +1,4 @@
-"""CSR ownership, canonical migration, and fail-closed checkpoint boundaries."""
+"""CSR ownership, canonical migration and canonical checkpoint format."""
 
 from types import SimpleNamespace
 
@@ -7,7 +7,7 @@ import pytest
 import tensorflow as tf
 
 from bmtk.simulator.dpointnet.csr_master import (
-    CsrMasterLayout, guard_csr_checkpoint, transfer_canonical_state,
+    CsrMasterLayout, canonical_checkpoint, transfer_canonical_state,
 )
 from bmtk.simulator.dpointnet.custom_ops.master_projection import cpu_connectivity
 
@@ -88,31 +88,37 @@ def test_training_engine_never_canonical_restores_live_csr_gradients(checkpointi
         assert transform((), gradients) is gradients
 
 
+@pytest.mark.parametrize("host_lifecycle", [False, True])
 @pytest.mark.parametrize("source_csr", [False, True])
-def test_checkpoint_formats_reject_cross_layout_restore(tmp_path, source_csr):
-    source = tf.Variable([0.11, -0.23, 0.37])
-    target = tf.Variable([1., 2., 3.])
-    guard_csr_checkpoint(source if source_csr else target)
+def test_checkpoint_is_canonical_across_layouts(tmp_path, source_csr, host_lifecycle):
+    mapping = layout(host_lifecycle)
+    canonical = np.array([0.11, -0.23, 0.37, -0.41, 0.59], np.float32)
+    live = mapping.host_to_live(canonical)
+    source = tf.Variable(live if source_csr else canonical)
+    target = tf.Variable(np.zeros(5, np.float32))
+    canonical_checkpoint(source if source_csr else target, mapping)
     path = tf.train.Checkpoint(master=source).save(str(tmp_path / "layout"))
-    before = target.numpy().copy()
-    with pytest.raises(tf.errors.NotFoundError):
-        tf.train.Checkpoint(master=target).restore(path).assert_consumed()
-    np.testing.assert_array_equal(target, before)
+    assert dict(tf.train.list_variables(path))["master/.ATTRIBUTES/VARIABLE_VALUE"] == [5]
+    np.testing.assert_array_equal(
+        tf.train.load_checkpoint(path).get_tensor("master/.ATTRIBUTES/VARIABLE_VALUE"), canonical,
+    )
+    np.testing.assert_array_equal(source, live if source_csr else canonical)
+    tf.train.Checkpoint(master=target).restore(path).assert_consumed()
+    np.testing.assert_array_equal(target, canonical if source_csr else live)
 
 
-def test_checkpoint_rejects_changed_csr_permutation(tmp_path):
+def test_checkpoint_portable_between_layout_implementations(tmp_path):
     first = layout()
     second = CsrMasterLayout(cpu_connectivity(
-        np.array([[0, 0], [0, 1], [1, 2], [1, 2], [1, 0]]),
-        [0, 1, 0, 0, 1], 3, 2,
-    ))
-    source, target = tf.Variable(tf.range(5, dtype=tf.float32)), tf.Variable(tf.zeros(5))
-    guard_csr_checkpoint(source, first)
-    guard_csr_checkpoint(target, second)
+        np.array([[1, 2], [0, 0], [1, 2], [0, 1], [1, 0]]), [0, 1, 0, 1, 0], 3, 2,
+        host_lifecycle=True,
+    ), host_lifecycle=True)
+    canonical = np.arange(5, dtype=np.float32)
+    source = canonical_checkpoint(tf.Variable(first.host_to_live(canonical)), first)
+    target = canonical_checkpoint(tf.Variable(np.zeros(5, np.float32)), second)
     path = tf.train.Checkpoint(master=source).save(str(tmp_path / "mapping"))
-    with pytest.raises(tf.errors.NotFoundError):
-        tf.train.Checkpoint(master=target).restore(path).assert_consumed()
-    np.testing.assert_array_equal(target, np.zeros(5))
+    tf.train.Checkpoint(master=target).restore(path).assert_consumed()
+    np.testing.assert_array_equal(second.host_to_canonical(target.numpy()), canonical)
 
 
 def fake_cell(csr, host_lifecycle=False):
@@ -125,7 +131,7 @@ def fake_cell(csr, host_lifecycle=False):
     ]
     if csr:
         for master in masters:
-            guard_csr_checkpoint(master)
+            canonical_checkpoint(master, mapping)
     cell = SimpleNamespace(
         _csr_master_weights=csr, recurrent_master_layout=mapping,
         recurrent_weight_values=masters[0],
@@ -211,41 +217,50 @@ def test_native_reader_is_raw_contiguous_float_pointer():
     assert "return values.flat<float>().data();" in source
 
 
-def test_keras_tracked_master_uses_guarded_checkpoint_key(tmp_path):
+def test_keras_tracked_master_serializes_canonical_rows(tmp_path):
+    mapping = CsrMasterLayout(cpu_connectivity(
+        [[1, 1], [0, 0], [1, 1]], [0, 1, 0], 2, 2, host_lifecycle=True,
+    ), host_lifecycle=True)
+    canonical = np.array([0.17, -0.31, 0.43], np.float32)
     layer = tf.keras.layers.Layer()
     master = layer.add_weight(
         name="csr_weight", shape=(3,), dtype=tf.float32,
-        initializer=tf.keras.initializers.Constant([0.17, -0.31, 0.43]),
+        initializer=tf.keras.initializers.Constant(mapping.host_to_live(canonical)),
     )
-    guard_csr_checkpoint(master)
+    canonical_checkpoint(master, mapping)
     checkpoint = tf.train.Checkpoint(layer=layer, master=raw(master))
     path = checkpoint.save(str(tmp_path / "keras"))
-    keys = [name for name, _ in tf.train.list_variables(path)]
-    assert any(name.endswith("/CSR_MASTER_V1") for name in keys)
+    keys = dict(tf.train.list_variables(path))
+    assert "master/.ATTRIBUTES/VARIABLE_VALUE" in keys
+    np.testing.assert_array_equal(
+        tf.train.load_checkpoint(path).get_tensor("master/.ATTRIBUTES/VARIABLE_VALUE"), canonical,
+    )
     master.assign([1., 2., 3.])
     checkpoint.restore(path).assert_consumed()
-    np.testing.assert_array_equal(master, np.array([0.17, -0.31, 0.43], np.float32))
+    np.testing.assert_array_equal(master, mapping.host_to_live(canonical))
 
 
-def test_one_replica_mirrored_master_checkpoint_guard(tmp_path):
+def test_one_replica_mirrored_master_canonical_checkpoint(tmp_path):
     strategy = tf.distribute.MirroredStrategy(devices=["/CPU:0"])
+    mapping = CsrMasterLayout(cpu_connectivity(
+        [[1, 1], [0, 0], [1, 1]], [0, 1, 0], 2, 2, host_lifecycle=True,
+    ), host_lifecycle=True)
+    canonical = np.array([0.17, -0.31, 0.43], np.float32)
     with strategy.scope():
         layer = tf.keras.layers.Layer()
         master = layer.add_weight(
             name="csr_weight", shape=(3,), dtype=tf.float32,
-            initializer=tf.keras.initializers.Constant([0.17, -0.31, 0.43]),
+            initializer=tf.keras.initializers.Constant(mapping.host_to_live(canonical)),
         )
-        mapping = CsrMasterLayout(cpu_connectivity(
-            [[1, 1], [0, 0], [1, 1]], [0, 1, 0], 2, 2,
-        ))
-        guard_csr_checkpoint(master, mapping)
+        canonical_checkpoint(master, mapping)
     checkpoint = tf.train.Checkpoint(master=raw(master))
     path = checkpoint.save(str(tmp_path / "one_replica"))
-    keys = [name for name, _ in tf.train.list_variables(path)]
-    assert any("/CSR_MASTER_V1_" in name for name in keys)
+    np.testing.assert_array_equal(
+        tf.train.load_checkpoint(path).get_tensor("master/.ATTRIBUTES/VARIABLE_VALUE"), canonical,
+    )
     master.assign([1., 2., 3.])
     checkpoint.restore(path).assert_consumed()
-    np.testing.assert_array_equal(master, np.array([0.17, -0.31, 0.43], np.float32))
+    np.testing.assert_array_equal(master, mapping.host_to_live(canonical))
 
 
 @pytest.mark.parametrize("deep_copy", [False, True])

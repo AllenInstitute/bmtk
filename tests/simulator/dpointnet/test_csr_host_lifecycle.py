@@ -11,6 +11,13 @@ from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops as ops
 from bmtk.simulator.dpointnet.custom_ops.master_projection import cpu_connectivity
 
 
+@pytest.fixture(autouse=True)
+def restore_policy():
+    policy = tf.keras.mixed_precision.global_policy()
+    yield
+    tf.keras.mixed_precision.set_global_policy(policy)
+
+
 def mapping():
     return CsrMasterLayout(cpu_connectivity(
         [[1, 2], [0, 0], [1, 2], [0, 1], [1, 0]], [0, 1, 0, 1, 0],
@@ -72,19 +79,34 @@ def test_unused_fixed_four_tables_are_absent_only_in_lifecycle():
         new.close()
         old.close()
 
-@pytest.mark.parametrize("from_lifecycle", [False, True])
-def test_endpoint_checkpoint_cross_format_rejects_without_mutation(tmp_path, from_lifecycle):
-    from bmtk.simulator.dpointnet.csr_master import guard_csr_checkpoint
+@pytest.mark.parametrize("from_live", [False, True])
+def test_endpoint_checkpoint_is_canonical_and_portable(tmp_path, from_live):
+    from bmtk.simulator.dpointnet.csr_master import canonical_checkpoint
     layout = mapping()
     canonical = np.arange(10).reshape(5, 2)
-    source = tf.Variable(layout.host_to_live(canonical) if from_lifecycle else canonical)
-    target = tf.Variable(canonical if from_lifecycle else layout.host_to_live(canonical))
-    guard_csr_checkpoint(source if from_lifecycle else target, layout)
-    checkpoint = tf.train.Checkpoint(indices=source)
-    saved = checkpoint.save(str(tmp_path / "endpoints"))
+    source = tf.Variable(layout.host_to_live(canonical) if from_live else canonical)
+    target = tf.Variable(canonical if from_live else layout.host_to_live(canonical))
+    canonical_checkpoint(source if from_live else target, layout, verify_unchanged=True)
+    saved = tf.train.Checkpoint(indices=source).save(str(tmp_path / "endpoints"))
+    stored = tf.train.load_checkpoint(saved).get_tensor("indices/.ATTRIBUTES/VARIABLE_VALUE")
+    np.testing.assert_array_equal(stored, canonical)
+    np.testing.assert_array_equal(source, layout.host_to_live(canonical) if from_live else canonical)
     before = target.numpy().copy()
-    with pytest.raises(tf.errors.NotFoundError):
-        tf.train.Checkpoint(indices=target).restore(saved).assert_consumed()
+    tf.train.Checkpoint(indices=target).restore(saved).assert_consumed()
+    np.testing.assert_array_equal(target, before)
+
+
+def test_endpoint_restore_rejects_different_connectivity(tmp_path):
+    from bmtk.simulator.dpointnet.csr_master import canonical_checkpoint
+    layout = mapping()
+    canonical = np.arange(10).reshape(5, 2)
+    saved = tf.train.Checkpoint(indices=tf.Variable(canonical[::-1].copy())).save(
+        str(tmp_path / "other"))
+    target = canonical_checkpoint(tf.Variable(layout.host_to_live(canonical)), layout,
+                                  verify_unchanged=True)
+    before = target.numpy().copy()
+    with pytest.raises(ValueError, match="connectivity differs"):
+        tf.train.Checkpoint(indices=target).restore(saved)
     np.testing.assert_array_equal(target, before)
 
 
@@ -145,19 +167,26 @@ def test_prepared_loss_indices_are_host_only_and_exact(dtype):
         layout.canonical_indices_to_live(tf.constant([-1]))
 
 
-def test_lifecycle_requires_direct_csr(monkeypatch):
+def test_csr_master_option_always_uses_host_lifecycle():
     from test_precision_credit import make_cell
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "0")
-    with pytest.raises(ValueError, match="requires CSR"):
-        make_cell()
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("the CPU CSR-master reference requires no visible GPU")
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+    network, inputs, arguments = make_cell(
+        "nest", use_csr_master_weights=True, train_recurrent=True, return_spec=True,
+    )
+    for props in inputs.values():
+        props["input_type"] = "spikes"
+    cell = GLIF3Cell(network, inputs, **arguments)
+    assert cell._csr_master_weights and cell._csr_host_lifecycle
+    assert cell.recurrent_master_layout.host_lifecycle
+    assert cell.recurrent_master_layout.csr_to_canonical.dtype == np.uint32
 
 
 def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch):
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     import bmtk.simulator.dpointnet.csr_master as module
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "1")
     network, inputs, arguments = make_cell(
         "nest", two_inputs=True, train_recurrent=True, return_spec=True,
     )
@@ -169,11 +198,10 @@ def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch
         props["syn_ids"] = np.zeros(5, np.int64)
     for props in inputs.values():
         props["input_type"] = "spikes"
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "0")
-    control = GLIF3Cell(network, inputs, **arguments)
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
+    # Control: canonical-order masters (use_csr_master_weights=False, the previous path).
+    control = GLIF3Cell(network, inputs, **{**arguments, "use_csr_master_weights": False})
     monkeypatch.setattr(module, "_permute", lambda *args: pytest.fail("Initialization used TF permutation"))
-    cell = GLIF3Cell(network, inputs, **arguments)
+    cell = GLIF3Cell(network, inputs, **{**arguments, "use_csr_master_weights": True})
     for name in ("<recurrent>", *inputs):
         layout = cell.recurrent_master_layout if name == "<recurrent>" else cell.inputs[name]["master_layout"]
         actual_indices = cell.recurrent_indices if name == "<recurrent>" else cell.inputs[name]["input_indices"]
@@ -182,12 +210,14 @@ def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch
         reference_types = control.syn_ids if name == "<recurrent>" else control.inputs[name]["input_syn_ids"]
         actual = cell.weight_loss_values(name)
         reference = control.weight_loss_values(name)
-        np.testing.assert_array_equal(actual, reference)
+        np.testing.assert_array_equal(actual, layout.host_to_live(reference.numpy()))
         np.testing.assert_array_equal(actual_indices, layout.host_to_live(reference_indices))
         np.testing.assert_array_equal(actual_types, layout.host_to_live(reference_types))
-        np.testing.assert_array_equal(actual.constraint.condition, reference.constraint.condition)
+        np.testing.assert_array_equal(
+            actual.constraint.condition, layout.host_to_live(np.asarray(reference.constraint.condition)),
+        )
         assert "CPU:" in actual_indices.device and "CPU:" in actual_types.device
-        np.testing.assert_array_equal(cell.canonical_weight_values(name), layout.host_to_canonical(reference))
+        np.testing.assert_array_equal(cell.canonical_weight_values(name), reference)
         actual.assign(tf.where(actual.constraint.condition, -tf.ones_like(actual), tf.ones_like(actual)))
         actual.assign(actual.constraint(actual))
         np.testing.assert_array_equal(actual, np.zeros(5))
@@ -195,7 +225,6 @@ def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch
 
 def test_host_initialization_hash_export_never_calls_tf_gather(monkeypatch):
     from test_master_projection import make_model
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
     cell, _, _, _ = make_model(monkeypatch)
     def forbidden(*args, **kwargs):
         pytest.fail("Host boundary called tf.gather")
@@ -218,7 +247,6 @@ def test_runtime_metadata_and_canonical_export(monkeypatch, deep_copy):
     import pandas as pd
     from test_master_projection import make_model
     from bmtk.simulator.dpointnet.weights import ModelWeights
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
     cell, _, _, _ = make_model(monkeypatch)
     names = ["<recurrent>", *cell.inputs]
     expected = {}
