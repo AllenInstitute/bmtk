@@ -271,9 +271,12 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
     from bmtk.simulator.dpointnet.acceleration import JOINT_SWEEP_ARCHITECTURES
     if csr_spike_ops._gpu_compute_architecture() not in JOINT_SWEEP_ARCHITECTURES:
         pytest.skip("Automatic joint sweep requires a fat-binary target architecture")
-    # None: default automatic CSR masters/uint8/adaptive; False: previous route.
+    # None: default automatic CSR masters/uint8 (and adaptive routing from batch 8);
+    # False: previous route.
+    from bmtk.simulator.dpointnet.acceleration import ADAPTIVE_ROUTING_MIN_BATCH
     default = csr_masters is None
-    tile = 2048 if default or batch != 1 else 256
+    adaptive = default and batch >= ADAPTIVE_ROUTING_MIN_BATCH
+    tile = 2048 if adaptive or batch != 1 else 256
     from bmtk.simulator.dpointnet.rnn_model import RNN
     from bmtk.simulator.dpointnet.cell_models.state_rnn import _rollout_context
     from test_s8_type_indexed_nest_coefficients import _small_network_inputs
@@ -313,13 +316,13 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
         )
         assert cell._csr_master_weights is default
         assert cell._uint8_synapse_types is default
-        assert cell._adaptive_routing is default
+        assert cell._adaptive_routing is adaptive
         report = rnn.acceleration_report
         assert report["csr_master_weights"] == (
             "direct_csr_fp32_master_host_lifecycle_v1" if default else "disabled"
         )
         assert report["adaptive_routing"] == (
-            "adaptive_segment_ticket_v1" if default else "disabled"
+            "adaptive_segment_ticket_v1" if adaptive else "disabled"
         )
         assert report["launch_geometry"]["valid"] and report["launch_geometry"]["tile"] == tile
 
@@ -351,7 +354,9 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
         ]
         assert len(sweep) == 1
         if default:
-            assert sweep[0].attr["adaptive_routing"].b and sweep[0].attr["uint8_types"].b
+            assert sweep[0].attr["uint8_types"].b
+            assert sweep[0].attr["adaptive_routing"].b is adaptive
+        if adaptive:
             assert len(sweep[0].attr["adaptive_traversal"].list.i) == len(cell.inputs) + 1
         assert sweep[0].attr["fanout_rows"].b
         assert sweep[0].attr["target_tile_size"].i == tile
