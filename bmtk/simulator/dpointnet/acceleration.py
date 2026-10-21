@@ -57,6 +57,12 @@ JOINT_SWEEP_ARCHITECTURES = (61, 70, 75, 80, 86, 89, 90)
 # Native small-batch routes cap at 32 samples; larger batches keep previous routes.
 JOINT_SWEEP_MAX_BATCH = 32
 COMBINED_TARGET_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
+# Smallest batch for which automatic adaptive routing is selected. Matched full-V1
+# FR-loss arms on an RTX 3090 (20-sample medians, adaptive vs dense routing):
+# B1 +5.4% slower (0.4304 vs 0.4085 s/update, a 256 wide tile did not help),
+# B8 -1.6%, B16 -2.3%, B32 -2.3%. Batches 2..7 were not measured and keep the
+# previous dense route. Explicit ``use_adaptive_routing=True`` is still honored.
+ADAPTIVE_ROUTING_MIN_BATCH = 8
 
 # Architecture-determined limits (CUDA programming guide, technical specifications
 # per compute capability). Multiprocessor counts differ between products; the
@@ -208,7 +214,7 @@ def _option_names_requiring(missing):
 
 def resolve_csr_master_options(
     options, report, *, select, admitted, joint, variable_dtype, train_recurrent_per_type,
-    performance_context, synapse_type_range,
+    performance_context, synapse_type_range, batch_size=None,
 ):
     """Resolve the CSR-master layout, uint8 type tail and adaptive routing options.
 
@@ -278,11 +284,23 @@ def resolve_csr_master_options(
             "use_adaptive_routing=True requires use_uint8_synapse_types, which resolved to "
             "False: " + report["reasons"]["use_uint8_synapse_types"]
         )
-    select(
-        "use_adaptive_routing", not missing,
-        "compressed segment routing with per-launch wide/narrow tiles" if not missing
-        else "dense tile routing kept; requires " + _option_names_requiring(missing),
-    )
+    if (
+        not missing and isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
+        and batch_size < ADAPTIVE_ROUTING_MIN_BATCH
+    ):
+        reason = (
+            f"dense tile routing kept; automatic adaptive routing requires batch >= "
+            f"{ADAPTIVE_ROUTING_MIN_BATCH} (measured slower at batch 1, unmeasured below "
+            f"{ADAPTIVE_ROUTING_MIN_BATCH}); explicit True is honored"
+        )
+        enabled = False
+    else:
+        enabled = not missing
+        reason = (
+            "compressed segment routing with per-launch wide/narrow tiles" if not missing
+            else "dense tile routing kept; requires " + _option_names_requiring(missing)
+        )
+    select("use_adaptive_routing", enabled, reason)
 
 
 def resolve_acceleration_options(
@@ -374,6 +392,7 @@ def resolve_acceleration_options(
         options, report, select=select, admitted=currents and combined, joint=joint,
         variable_dtype=variable_dtype, train_recurrent_per_type=train_recurrent_per_type,
         performance_context=performance_context, synapse_type_range=synapse_type_range,
+        batch_size=batch_size,
     )
     if joint:
         tile_name = "combined_current_target_tile_size"

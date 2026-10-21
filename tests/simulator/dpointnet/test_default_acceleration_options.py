@@ -67,18 +67,34 @@ def resolve(options=None, metadata=None, type_range=(0, 89), **overrides):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("architecture", FAT_BINARY_ARCHITECTURES)
-@pytest.mark.parametrize("batch", [1, 2, 7, 16, 31, 32])
+@pytest.mark.parametrize("batch", [1, 2, 7, 8, 16, 31, 32])
 def test_auto_enables_all_three_on_every_target_and_batch_up_to_32(hardware, architecture, batch):
     hardware(architecture=architecture)
     options, report = resolve(batch_size=batch)
     assert options["use_combined_current_sweep"] is True
+    adaptive = batch >= acceleration.ADAPTIVE_ROUTING_MIN_BATCH
     for name in NEW_OPTIONS:
-        assert options[name] is True and report["selected"][name] is True, name
-        assert "requires" not in report["reasons"][name], report["reasons"][name]
-    assert options["combined_current_target_tile_size"] == 2048
+        expected = adaptive if name == "use_adaptive_routing" else True
+        assert options[name] is expected and report["selected"][name] is expected, name
+        assert "requires" not in report["reasons"][name] or not expected, report["reasons"][name]
+    if not adaptive:
+        assert "batch >= 8" in report["reasons"]["use_adaptive_routing"]
+    # Below the adaptive threshold the previous dense tile policy applies.
+    assert options["combined_current_target_tile_size"] == (256 if batch == 1 else 2048)
     geometry = report["launch_geometry"]
     assert geometry["valid"] and geometry["threads"] == 512 and geometry["dynamic_shared_bytes"] == 0
     assert geometry["architecture"] == architecture
+
+
+def test_adaptive_routing_min_batch_is_eight_and_explicit_true_is_honored(hardware):
+    assert acceleration.ADAPTIVE_ROUTING_MIN_BATCH == 8
+    for batch in range(1, 33):
+        options, _ = resolve(batch_size=batch)
+        assert options["use_adaptive_routing"] is (batch >= 8), batch
+        explicit, report = resolve({"use_adaptive_routing": True}, batch_size=batch)
+        assert explicit["use_adaptive_routing"] is True
+        assert report["reasons"]["use_adaptive_routing"].startswith("explicit override")
+        assert explicit["combined_current_target_tile_size"] == 2048
 
 
 @pytest.mark.parametrize("batch", [33, 64, 128])
@@ -129,9 +145,10 @@ def test_missing_native_capabilities_disable_only_dependent_options(hardware):
     assert options["use_uint8_synapse_types"] is options["use_adaptive_routing"] is False
     assert "native uint8 type capability" in report["reasons"]["use_uint8_synapse_types"]
     hardware(adaptive=False)
-    options, report = resolve(batch_size=1)
+    options, report = resolve(batch_size=8)
     assert options["use_uint8_synapse_types"] is True and options["use_adaptive_routing"] is False
     assert "native adaptive routing capability" in report["reasons"]["use_adaptive_routing"]
+    options, report = resolve(batch_size=1)
     assert options["combined_current_target_tile_size"] == 256
 
 
