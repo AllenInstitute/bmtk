@@ -39,11 +39,38 @@ def kernel_body(text, name):
     return text[start:end]
 
 
+# SHA-256 of each kernel body (text between its outer braces) in
+# csr_spike_ops.cu.cc at develop 9f881373, recorded so the check runs on any
+# checkout. Regenerate only for an intentional, separately qualified change.
+DEVELOP_KERNEL_BODY_SHA256 = {
+    "DpointnetCombinedSweepKernel": "d034e603c604a7363d9b8f932d6070745bcdcc12bb9e52ed8d811974336357de",
+    "DpointnetCombinedAccumulateEdge": "5c8b06047cf6c019955e8273304e396d9f0161cecba8eff4ab75bf76c972d318",
+    "CsrSpikeGradKernel": "d198f35b5d318dfa1fb5805e940ef1cda8bbfb81027bb2424cfd251ad2e84ecb",
+    "CsrSpikeGradSmallBatchKernel": "da5a7c598d17606718a80b110347544e81f321c23d04b23cc8d77c284f62dfa3",
+    "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel": "c70c68fee148ce16ccddf26d0258da60759262526d1471acbaae4748abb89984",
+    "CsrSpikeGradPairBatch32Kernel": "c8bd5f8cd60f647bb12a80b7f6bdd532acad3b3ffced9fd31c9480f92d3fdc65",
+    "CsrSpikeGradPairVariableBatchKernel": "6a43a98be599d50c274861cc1ef8f557e51cfb687fc948f9e1862a4d7e579172",
+    "CsrSpikeGradPairPackedBatch32Kernel": "9ea22f9248ff0a78fd86590983f69d4552318d2719a656e403ba6bf237caf727",
+}
+# Whitespace-free SHA-256 of the develop 9f881373 weight-gradient kernel bodies.
+DEVELOP_WEIGHT_KERNEL_SHA256 = {
+    "CsrWeightGradKernel": "8aa8de273a92b5c1cce1fa54ba8ce6d60eaa45c8978db8bff555e85f299f5245",
+    "CsrWeightGradPairPackedBatch32Kernel": "6230f7b4e97721e7685a65fe3979cb3db42eb00dcbb7583fb5148196668d9de4",
+}
+
+
+def sha256(text):
+    import hashlib
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def candidate_source():
+    return Path(ops.__file__).with_name("csr_spike_ops.cu.cc").read_text()
+
+
 @pytest.mark.parametrize("name", KERNELS)
 def test_optimized_kernel_bodies_are_unchanged(name):
-    baseline = Path("/local2/bmtk/bmtk/simulator/dpointnet/custom_ops/csr_spike_ops.cu.cc")
-    candidate = Path(ops.__file__).with_name("csr_spike_ops.cu.cc")
-    assert kernel_body(candidate.read_text(), name) == kernel_body(baseline.read_text(), name)
+    assert sha256(kernel_body(candidate_source(), name)) == DEVELOP_KERNEL_BODY_SHA256[name]
 
 
 def test_native_bindings_preserve_optimized_attributes():
@@ -67,19 +94,16 @@ def test_native_bindings_preserve_optimized_attributes():
 @pytest.mark.parametrize("name", ["CsrWeightGradKernel", "CsrWeightGradPairPackedBatch32Kernel"])
 def test_weight_only_kernel_changes_only_output_destination(name):
     import re
-    baseline = Path("/local2/bmtk/bmtk/simulator/dpointnet/custom_ops/csr_spike_ops.cu.cc")
-    candidate = Path(ops.__file__).with_name("csr_spike_ops.cu.cc")
-    before = kernel_body(baseline.read_text(), name)
-    after = kernel_body(candidate.read_text(), name)
+    after = re.sub(r"\s+", "", kernel_body(candidate_source(), name))
     expression = "static_cast<int64_t>(edge_ids[edge])"
-    replacement = (
+    replacement = re.sub(r"\s+", "", (
         "(kWriteCsrGradient ? edge : static_cast<int64_t>(edge_ids[edge]))"
         if name == "CsrWeightGradKernel" else
         "kWriteCsrGradient ? static_cast<int64_t>(edge) : static_cast<int64_t>(edge_ids[edge])"
-    )
-    assert before.count(expression) == 1
-    expected = before.replace(expression, replacement)
-    assert re.sub(r"\s+", "", after) == re.sub(r"\s+", "", expected)
+    ))
+    assert after.count(replacement) == 1
+    # Undoing the single destination change must give the develop body exactly.
+    assert sha256(after.replace(replacement, expression)) == DEVELOP_WEIGHT_KERNEL_SHA256[name]
 
 
 @pytest.mark.parametrize("carrier_enabled", [False, True])
