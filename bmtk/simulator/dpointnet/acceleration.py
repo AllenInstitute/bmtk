@@ -492,10 +492,10 @@ def resolve_acceleration_options(
         and csr_spike_ops._auto_native_architecture(architecture) and pair_projection
     )
     select("use_packed_sm120_backward", packed,
-           "FP16 temporal backward, automatic policy SM75/SM86+, batch32, four bases and pair metadata; "
+           "FP16 temporal backward, automatic policy SM70+, batch32, four bases and pair metadata; "
            "per-connectivity checks remain automatic")
     select("use_packed_sm120_external_backward", packed,
-           "FP16 temporal backward, automatic policy SM75/SM86+, batch32 and four bases")
+           "FP16 temporal backward, automatic policy SM70+, batch32 and four bases")
     # Auto keeps the existing per-connectivity fallback for oversized/int64 metadata.
     if packed and cell_params.get("use_packed_sm120_backward") is None:
         options["use_packed_sm120_backward"] = "auto"
@@ -528,7 +528,7 @@ def resolve_acceleration_options(
         and pair_projection and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     select("use_fused_recurrent_accumulation", accumulator,
-           "Automatic policy SM61, SM75 FP16 temporal backward or SM86+ accumulator library, "
+           "Automatic policy SM61, SM70+ (SM75 with FP16 temporal backward) accumulator library, "
            "batch1..32/four bases, per-edge training, direct CSR "
            "and explicitly selected direct-loop or FP32 replay route")
     select(
@@ -538,7 +538,7 @@ def resolve_acceleration_options(
     )
     if options["use_fused_recurrent_accumulation"] is True and not accumulator:
         raise ValueError(
-            "use_fused_recurrent_accumulation=True with auto requires admitted SM61/SM75/SM86+ "
+            "use_fused_recurrent_accumulation=True with auto requires an admitted SM61/SM70+ GPU "
             "operators and the declared per-edge/direct-CSR carrier route."
         )
     if options["use_javier_recurrent_vjp"] is True and not (

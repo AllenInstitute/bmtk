@@ -55,7 +55,7 @@ def test_architecture_and_precision_gate_packed_flags(hardware, monkeypatch, arc
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
     params = {"temporal_gradient_precision": temporal}
     actual, report = resolve(params)
-    enabled = architecture is not None and (architecture == 75 or architecture >= 86) and temporal == "compute"
+    enabled = architecture is not None and architecture >= 70 and temporal == "compute"
     assert actual["use_packed_sm120_backward"] == ("auto" if enabled else False)
     assert actual["use_packed_sm120_external_backward"] == ("auto" if enabled else False)
     assert report["architecture"] == architecture
@@ -396,7 +396,7 @@ def test_runner_carriers_gate_native_op_independently(hardware, monkeypatch, arc
     options, _ = resolve({"use_direct_state_rnn_loop": True})
     rec = acceleration.resolve_weight_carry_options(options)
     audio = acceleration.resolve_weight_carry_options(options, stopped_input=True)
-    eligible = architecture == 75 or architecture >= 86
+    eligible = architecture >= 70
     assert rec["resolved"]["native_accumulator"] == eligible
     assert rec["resolved"]["compute_spike_gradient"] is True
     assert audio["resolved"]["native_accumulator"] == eligible
@@ -406,27 +406,36 @@ def test_runner_carriers_gate_native_op_independently(hardware, monkeypatch, arc
 
 def test_incompatible_explicit_carrier_override_rejected(hardware, monkeypatch):
     csr, _ = hardware
-    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
-    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    # SM75 admits the automatic accumulator only with FP16 temporal backward.
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 75)
+    options, _ = resolve({"use_direct_state_rnn_loop": True}, compute_dtype=tf.float32)
     with pytest.raises(ValueError, match="admitted carrier route"):
         acceleration.resolve_weight_carry_options(options, overrides={"native_accumulator": True})
     with pytest.raises(ValueError, match="stopped"):
         acceleration.resolve_weight_carry_options(options, overrides={"compute_spike_gradient": False})
-    with pytest.raises(ValueError, match="SM86"):
-        resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": True})
+    with pytest.raises(ValueError, match="SM61/SM70"):
+        resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": True},
+                compute_dtype=tf.float32)
     with pytest.raises(ValueError, match="FP16"):
-        resolve({"use_direct_state_rnn_loop": True, "use_javier_recurrent_vjp": True})
+        resolve({"use_direct_state_rnn_loop": True, "use_javier_recurrent_vjp": True},
+                compute_dtype=tf.float32)
 
 
 @pytest.mark.parametrize("architecture", [70, 80])
-def test_unqualified_architectures_keep_conservative_auto(hardware, monkeypatch, architecture):
+@pytest.mark.parametrize("batch", [8, 32])
+def test_volta_ampere_auto_admit_native_accumulator(hardware, monkeypatch, architecture, batch):
+    # Admitted with the joint sweep on every SM70+ fat-binary target.
     csr, _ = hardware
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
-    actual, _ = resolve({"use_direct_state_rnn_loop": True})
-    assert actual["use_fused_recurrent_accumulation"] is False
-    assert actual["use_javier_recurrent_vjp"] is False
-    assert actual["use_packed_sm120_backward"] is False
-    assert actual["use_packed_sm120_external_backward"] is False
+    actual, report = resolve({"use_direct_state_rnn_loop": True}, batch_size=batch)
+    assert actual["use_fused_recurrent_accumulation"] is True
+    assert actual["use_javier_recurrent_vjp"] is True
+    assert actual["use_packed_sm120_backward"] == ("auto" if batch == 32 else False)
+    assert actual["use_packed_sm120_external_backward"] == ("auto" if batch == 32 else False)
+    assert "SM70+" in report["reasons"]["use_fused_recurrent_accumulation"]
+    explicit, _ = resolve({"use_direct_state_rnn_loop": True,
+                           "use_fused_recurrent_accumulation": True}, batch_size=batch)
+    assert explicit["use_fused_recurrent_accumulation"] is True
 
 
 @pytest.mark.parametrize("batch", [8, 16, 32])
@@ -472,9 +481,9 @@ def test_generic_carrier_keeps_live_credit_without_calling_accumulator(hardware,
     import numpy as np
     csr, _ = hardware
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
-    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("SM70 native op called"))
+    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("native op called"))
     monkeypatch.setattr(csr, "fused_spike_currents", lambda z, carrier, *a, **k: z * tf.reduce_sum(carrier))
-    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    options, _ = resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": False})
     for stopped in (False, True):
         route = acceleration.resolve_weight_carry_options(options, stopped_input=stopped)["resolved"]
         spikes, carrier = tf.ones((2, 2)), tf.ones((3,))
@@ -542,14 +551,14 @@ def test_generic_carrier_nested_recompute_while_loop_resource_capture(hardware, 
     import numpy as np
     csr, _ = hardware
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
-    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("SM70 native op called"))
+    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("native op called"))
     metadata = tf.Variable(2., trainable=False)
 
     def projection(z, carrier, shadow, connectivity, *args, **kwargs):
         return z * tf.reduce_sum(carrier) * connectivity["metadata_handle"].read_value()
 
     monkeypatch.setattr(csr, "fused_spike_currents", projection)
-    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    options, _ = resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": False})
     route = acceleration.resolve_weight_carry_options(options, stopped_input=stopped)["resolved"]
 
     @tf.recompute_grad

@@ -170,7 +170,12 @@ def _gpu_compute_architecture():
 
 
 def _auto_native_architecture(architecture):
-    return architecture is not None and (architecture == 75 or architecture >= 86)
+    """Automatic packed-backward/accumulator policy: every SM70+ fat-binary target.
+
+    SM70 and SM80 were excluded before the joint sweep was admitted on them; the
+    kernels carry native SASS for every target and FP64-oracle tests qualify them.
+    """
+    return architecture is not None and architecture >= 70
 
 
 def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
