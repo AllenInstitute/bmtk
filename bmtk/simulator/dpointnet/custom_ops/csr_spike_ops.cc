@@ -181,6 +181,7 @@ REGISTER_OP("DpointnetCsrRestore")
     });
 
 REGISTER_OP("DpointnetCsrSpikeForward")
+    .Attr("uint8_types: bool = false")
     .Input("spikes: T")
     .Input("master_weights: Tmaster")
     .Input("metadata: resource")
@@ -307,6 +308,7 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
     });
 
 REGISTER_OP("DpointnetCsrWeightGrad")
+    .Attr("uint8_types: bool = false")
     .Input("spikes: T")
     .Input("current_grad: T")
     .Input("metadata: resource")
@@ -359,6 +361,7 @@ REGISTER_OP("DpointnetCsrSpikeGradAccumulate")
     });
 
 REGISTER_OP("DpointnetCombinedSweepCsrMaster")
+    .Attr("uint8_types: bool = false")
     .Input("spikes: N * T")
     .Input("weights: N * float")
     .Input("metadata: N * resource")
@@ -390,6 +393,7 @@ REGISTER_OP("DpointnetCombinedSweepCsrMaster")
     });
 
 REGISTER_OP("DpointnetCsrSpikeGradCsrMaster")
+    .Attr("uint8_types: bool = false")
     .Input("spikes: T")
     .Input("current_grad: T")
     .Input("metadata: resource")
@@ -421,6 +425,7 @@ REGISTER_OP("DpointnetCsrSpikeGradCsrMaster")
     });
 
 REGISTER_OP("DpointnetCsrSpikeGradAccumulateCsrMaster")
+    .Attr("uint8_types: bool = false")
     .Input("spikes: T")
     .Input("current_grad: T")
     .Input("metadata: resource")

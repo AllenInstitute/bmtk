@@ -173,6 +173,67 @@ Status BuildActiveSlotQueue(
 
 constexpr int kCombinedSources = 8;
 
+template <typename Index>
+struct CsrTypeIds {
+  const Index* wide = nullptr;
+  const uint8* bytes = nullptr;
+  __host__ CsrTypeIds() = default;
+  __host__ CsrTypeIds(const Index* values) : wide(values) {}
+  __device__ __forceinline__ Index operator[](int64_t edge) const {
+    return bytes ? static_cast<Index>(bytes[edge]) : wide[edge];
+  }
+};
+
+template <typename Index>
+struct CsrMetadataView {
+  const Index* posts;
+  CsrTypeIds<Index> types;
+  const Index* splits;
+  bool compact;
+};
+
+template <typename Index>
+Status ReadCsrMetadata(
+    const Tensor& metadata, int64_t edges, int64_t sources, int64_t pairs,
+    bool allow_compact, bool uint8_types, CsrMetadataView<Index>* view) {
+  if (!TensorShapeUtils::IsVector(metadata.shape()) ||
+      metadata.dtype() != DataTypeToEnum<Index>::v() ||
+      edges < 0 || sources < 0 || pairs < 0) {
+    return errors::InvalidArgument("CSR metadata rank, dtype or dimensions disagree.");
+  }
+  // Bounds also protect every subsequent pointer offset and byte multiplication.
+  const int64_t limit = std::numeric_limits<int64_t>::max() / sizeof(Index);
+  if (edges > limit / 8 || pairs > limit / 8 || sources > limit / 8) {
+    return errors::InvalidArgument("CSR metadata dimensions exceed safe byte range.");
+  }
+  const int64_t pair_words = pairs ? edges + 2 * pairs : 0;
+  const int64_t compact_words = 2 * edges + sources + 1 + pair_words;
+  const Index* data = metadata.flat<Index>().data();
+  if (uint8_types) {
+    if (!allow_compact) {
+      return errors::InvalidArgument("uint8 CSR types require direct CSR host lifecycle.");
+    }
+    const int64_t index_words = edges + sources + 1 + pair_words;
+    const int64_t type_words = edges / sizeof(Index) + (edges % sizeof(Index) != 0);
+    if (metadata.NumElements() != index_words + type_words) {
+      return errors::InvalidArgument("uint8 CSR metadata byte size does not match connectivity.");
+    }
+    view->posts = data;
+    view->splits = data + edges;
+    view->types.bytes = reinterpret_cast<const uint8*>(data + index_words);
+    view->compact = true;
+  } else {
+    view->compact = allow_compact && metadata.NumElements() == compact_words;
+    if (!view->compact && metadata.NumElements() != compact_words + edges) {
+      return errors::InvalidArgument("metadata length does not match n_edges and n_pre.");
+    }
+    view->posts = data;
+    view->splits = data + 2 * edges;
+    view->types.wide = data + edges;
+  }
+  return OkStatus();
+}
+
 template <typename T, typename Index, bool Canonical>
 using ProjectionWeights = std::conditional_t<Canonical, const float*, const T*>;
 
@@ -188,7 +249,7 @@ struct CombinedSource {
   const T* spikes;
   W weights;
   const Index* posts;
-  const Index* types;
+  CsrTypeIds<Index> types;
   const Index* splits;
   const Index* tile_starts;
   const int* queue;
@@ -591,7 +652,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int index = blockIdx.x;
   if (index >= count) {
@@ -624,7 +685,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardGroupedBatch32Kernel(
   int64_t n_active_rows, int64_t n_pre, int n_post, int batch_size,
     const T* spikes, const int64_t* active_rows, const Index* post_ids,
-    const T* weights, const Index* synapse_types, const T* basis,
+    const T* weights, CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int64_t active_id = blockIdx.x;
   if (active_id >= n_active_rows) {
@@ -688,7 +749,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardGroupedBatch32AggregateRunsKernel(
   int64_t n_active_rows, int64_t n_pre, int n_post, int batch_size,
     const T* spikes, const int64_t* active_rows, const Index* post_ids,
-    const T* weights, const Index* synapse_types, const T* basis,
+    const T* weights, CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int64_t active_id = blockIdx.x;
   if (active_id >= n_active_rows) {
@@ -779,7 +840,7 @@ __global__ void CsrSpikeForwardDeviceQueueKernel(
     int64_t n_pre, int n_post, const T* spikes, const unsigned int* queue,
     const unsigned int* queue_count, unsigned int* ticket,
     unsigned int slots_per_ticket, const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis, const Index* row_splits,
+    CsrTypeIds<Index> synapse_types, const T* basis, const Index* row_splits,
     T* currents) {
   __shared__ unsigned int next_slot;
   const unsigned int total = *queue_count;
@@ -916,7 +977,7 @@ template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids, W weights,
-    const Index* synapse_types, const T* basis,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids, T* spike_grad,
     float* weight_grad, const T* spike_gradient_scale,
     bool write_csr_weight_gradient, const float* projected,
@@ -976,7 +1037,7 @@ template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradSmallBatchKernel(
     int batch_size, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids, W weights,
-    const Index* synapse_types, const T* basis, const Index* row_splits,
+    CsrTypeIds<Index> synapse_types, const T* basis, const Index* row_splits,
     const Index* edge_ids, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale, bool write_csr_weight_gradient,
     const float* projected, const Index* pair_ids) {
@@ -1367,7 +1428,7 @@ __global__ __launch_bounds__(kDpointnetEventThreads)
 void DpointnetEventWeightGradKernel(
     int64_t n_pre, int n_post, int n_basis, int64_t batch, const T* activity,
     const T* current_grad, const T* basis, const Index* post_ids,
-    const Index* synapse_types, const Index* row_splits, const Index* edge_ids,
+    CsrTypeIds<Index> synapse_types, const Index* row_splits, const Index* edge_ids,
     const unsigned int* queue, const unsigned int* queue_count, float* weight_grad) {
   constexpr int kWarpsPerBlock = kDpointnetEventThreads / 32;
   constexpr int kEdgesPerThread = kDpointnetEventChunk / 32;
@@ -1693,7 +1754,7 @@ template <typename T, typename Index, bool kWriteCsrGradient = false>
 __global__ void CsrWeightGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids,
-    const Index* synapse_types, const T* basis,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids,
     float* weight_grad) {
   const int index = blockIdx.x;
@@ -1915,6 +1976,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
             "use_device_active_queue_forward", &use_device_active_queue_forward_));
     OP_REQUIRES_OK(context, context->GetAttr("vjp_only", &vjp_only_));
     OP_REQUIRES_OK(context, context->GetAttr("csr_master_weights", &csr_master_weights_));
+    OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    OP_REQUIRES(context, !uint8_types_ || csr_master_weights_,
+                errors::InvalidArgument("uint8 types require direct CSR masters."));
     OP_REQUIRES(context, !csr_master_weights_ || vjp_only_,
                 errors::InvalidArgument("Canonical-master forward operands require VJP-only proxies."));
   }
@@ -1964,16 +2028,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context, master_weights.NumElements() == n_edges_,
         errors::InvalidArgument(
             "master_weights length must equal n_edges."));
-    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
-        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
-    OP_REQUIRES(
-        context,
-      (csr_master_weights_ && metadata.NumElements() == compact_size) ||
-      metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_, csr_master_weights_, uint8_types_, &view));
     OP_REQUIRES(
         context, basis.dim_size(0) > 0 && n_basis > 0,
         errors::InvalidArgument("basis must have non-zero dimensions."));
@@ -2002,10 +2059,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
           "postsynaptic neuron."));
     }
 
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
     Tensor* currents = nullptr;
     if (use_fixed4_forward_) {
       OP_REQUIRES_OK(
@@ -2174,6 +2230,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
   bool use_device_active_queue_forward_;
   bool vjp_only_;
   bool csr_master_weights_;
+  bool uint8_types_ = false;
 };
 
 template <typename T, typename Index, bool kAccumulate = false, bool Canonical = false>
@@ -2181,6 +2238,9 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeGradOp(OpKernelConstruction* context)
       : OpKernel(context) {
+    if constexpr (Canonical) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    }
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
@@ -2251,17 +2311,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES(
         context, weights.NumElements() == n_edges_,
         errors::InvalidArgument("weights length must equal n_edges."));
-    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
-        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
-    const bool compact = Canonical && write_csr_weight_gradient_ &&
-        metadata.NumElements() == compact_size;
-    OP_REQUIRES(
-        context,
-      compact || metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_,
+        Canonical && write_csr_weight_gradient_, uint8_types_, &view));
+    const bool compact = view.compact;
     OP_REQUIRES(
         context,
         current_grad.dim_size(0) == batch * n_post_ &&
@@ -2293,10 +2347,9 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           "SM61 or newer."));
       }
     }
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
     const Index* after_splits = row_splits + n_pre + 1;
     const Index* edge_ids = compact ? nullptr : after_splits;
     using W = ProjectionWeights<T, Index, Canonical>;
@@ -2664,6 +2717,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   bool use_javier_batch32_backward_;
   bool use_small_batch_backward_;
   bool compute_spike_gradient_;
+  bool uint8_types_ = false;
 };
 
 template <typename T, typename Index>
@@ -2671,6 +2725,7 @@ class DpointnetCsrWeightGradOp : public OpKernel {
  public:
   explicit DpointnetCsrWeightGradOp(OpKernelConstruction* context)
       : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
@@ -2703,17 +2758,10 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     const int64_t batch = spikes.dim_size(0);
     const int64_t n_pre = spikes.dim_size(1);
     const int64_t n_basis = basis.dim_size(1);
-    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
-        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
-    const bool compact = write_csr_weight_gradient_ &&
-        metadata.NumElements() == compact_size;
-    OP_REQUIRES(
-        context,
-      compact || metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_, write_csr_weight_gradient_, uint8_types_, &view));
+    const bool compact = view.compact;
     OP_REQUIRES(
         context,
         current_grad.dim_size(0) == batch * n_post_ &&
@@ -2747,10 +2795,9 @@ class DpointnetCsrWeightGradOp : public OpKernel {
       }
     }
 
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
     const Index* after_splits = row_splits + n_pre + 1;
     const Index* edge_ids = compact ? nullptr : after_splits;
     const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
@@ -2832,12 +2879,16 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   int64_t n_pairs_;
   bool use_packed_sm120_backward_;
   bool write_csr_weight_gradient_;
+  bool uint8_types_ = false;
 };
 
 template <typename T, typename Index, bool Canonical = false>
 class DpointnetCombinedSweepOp : public OpKernel {
  public:
   explicit DpointnetCombinedSweepOp(OpKernelConstruction* context) : OpKernel(context) {
+    if constexpr (Canonical) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    }
     OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &edges_));
@@ -2894,13 +2945,9 @@ class DpointnetCombinedSweepOp : public OpKernel {
       if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
       const Tensor& metadata = *resources[source]->tensor();
       const int width = spikes.dim_size(1);
-      const int64_t compact_size = 2 * edges_[source] + width + 1 +
-          (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0);
-      OP_REQUIRES(context, (Canonical && metadata.NumElements() == compact_size) ||
-                      metadata.NumElements() ==
-                      3 * edges_[source] + width + 1 +
-                          (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0),
-                  errors::InvalidArgument("Combined sweep metadata shape mismatch."));
+      CsrMetadataView<Index> view{};
+      OP_REQUIRES_OK(context, ReadCsrMetadata(
+          metadata, edges_[source], width, pairs_[source], Canonical, uint8_types_, &view));
       OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch, width}), &queues[source]));
       OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch}), &counts[source]));
       OP_REQUIRES_OK(context, GpuLaunchKernel(
@@ -2911,14 +2958,14 @@ class DpointnetCombinedSweepOp : public OpKernel {
             256, 0, device.stream(), width, spikes.flat<T>().data(),
             queues[source].flat<int32>().data(), counts[source].flat<int32>().data()));
       }
-      const Index* data = metadata.flat<Index>().data();
+      const Index* data = view.posts;
       const bool gather = !gather_sources_.empty() && gather_sources_[source];
       if (!cached_metadata_[source].IsInitialized() ||
           cached_metadata_[source].tensor_data().data() != metadata.tensor_data().data() ||
           cached_width_[source] != width) {
         if (gather) {
           OP_REQUIRES_OK(context, BuildCscTables(
-              context, edges_[source], width, data, data + 2 * edges_[source],
+              context, edges_[source], width, data, view.splits,
               &csc_splits_[source], &csc_targets_[source], &csc_edges_[source],
               &csc_sources_[source]));
         }
@@ -2931,15 +2978,15 @@ class DpointnetCombinedSweepOp : public OpKernel {
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               CombinedTileStartsKernel<Index>,
               std::min<int64_t>((entries + 255) / 256, 65535), 256, 0, device.stream(),
-              entries, boundaries, tile_targets_, data, data + 2 * edges_[source],
+              entries, boundaries, tile_targets_, data, view.splits,
               tile_starts_[source].flat<Index>().data()));
         }
         cached_metadata_[source] = metadata;
         cached_width_[source] = width;
       }
       views.source[source] = {
-          spikes.flat<T>().data(), ProjectionWeightView<T, Index, Canonical>(weights, data + 2 * edges_[source] + width + 1), data, data + edges_[source],
-          data + 2 * edges_[source], tile_starts_[source].flat<Index>().data(),
+          spikes.flat<T>().data(), ProjectionWeightView<T, Index, Canonical>(weights, view.splits + width + 1),
+          data, view.types, view.splits, tile_starts_[source].flat<Index>().data(),
           queues[source].flat<int32>().data(),
           counts[source].flat<int32>().data(), width,
           width > 0 && edges_[source] / width >= 512,
@@ -3056,6 +3103,7 @@ class DpointnetCombinedSweepOp : public OpKernel {
   std::vector<bool> gather_sources_;
   bool use_cooperative_;
   bool use_fanout_;
+  bool uint8_types_ = false;
   std::vector<int64_t> edges_;
   std::vector<int64_t> pairs_;
 };

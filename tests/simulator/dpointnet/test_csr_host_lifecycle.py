@@ -52,6 +52,12 @@ def test_unused_fixed_four_tables_are_absent_only_in_lifecycle():
             assert (conn["canonical_edge_id_offset"] is not None) is has_ids
             assert len(conn.metadata_resource_handles) == 1
             assert conn.metadata_resource_handles[0] is conn["metadata_handle"]
+            spec, = conn["metadata_resource_specs"]
+            assert spec["handle"] is conn["metadata_handle"]
+            assert spec["dtype"] == conn["metadata_dtype"]
+            assert spec["shape"] == conn["metadata_shape"]
+            assert spec["payload_bytes"] == conn["metadata_bytes"]
+            assert spec["type_logical_min"] == spec["type_logical_max"] == 0
             actual = tf.raw_ops.ReadVariableOp(
                 resource=conn["metadata_handle"], dtype=tf.as_dtype(conn["index_dtype"]),
             )
@@ -242,6 +248,7 @@ def test_runtime_metadata_and_canonical_export(monkeypatch, deep_copy):
 
 
 @pytest.mark.parametrize("index_dtype", [tf.uint32, tf.int64])
+@pytest.mark.parametrize("typed", [False, True])
 @pytest.mark.parametrize("dtype,batch,packed,small,event", [
     (np.float16, 1, False, True, False),
     (np.float16, 3, False, False, True),
@@ -249,7 +256,7 @@ def test_runtime_metadata_and_canonical_export(monkeypatch, deep_copy):
     (np.float16, 32, False, False, True),
     (np.float32, 32, False, False, False),
 ])
-def test_gpu_compact_metadata_native_oracle(dtype, batch, packed, small, event, index_dtype, monkeypatch):
+def test_gpu_compact_metadata_native_oracle(dtype, batch, packed, small, event, index_dtype, monkeypatch, typed):
     if not ops.combined_sweep_available():
         pytest.skip("Focused native GPU qualification requires rebuilt operators")
     if (packed or event) and index_dtype != tf.uint32:
@@ -267,15 +274,19 @@ def test_gpu_compact_metadata_native_oracle(dtype, batch, packed, small, event, 
     upstream = rng.uniform(-0.4, 0.5, (batch, posts, 4)).astype(dtype)
     args = dict(build_compact_pairs=True, sort_by_target=True)
     full = ops.build_csr_connectivity(indices, types, width, posts, 3, **args)
-    compact = ops.build_csr_connectivity(indices, types, width, posts, 3, **args, host_lifecycle=True)
+    compact = ops.build_csr_connectivity(
+        indices, types, width, posts, 3, **args, host_lifecycle=True, uint8_types=typed,
+    )
     try:
         layout = CsrMasterLayout(compact, host_lifecycle=True)
-        assert compact["metadata_bytes"] == (
-            3 * edges + width + 1 + 2 * compact["n_pairs"]
-        ) * index_dtype.size
+        expected_bytes = (3 * edges + width + 1 + 2 * compact["n_pairs"]) * index_dtype.size
+        if typed:
+            expected_bytes -= (index_dtype.size - 1) * edges - (-edges) % index_dtype.size
+        assert compact["metadata_bytes"] == expected_bytes
         metadata = tf.raw_ops.ReadVariableOp(resource=compact["metadata_handle"], dtype=index_dtype)
         old = tf.raw_ops.ReadVariableOp(resource=full["metadata_handle"], dtype=index_dtype)
-        np.testing.assert_array_equal(metadata, np.r_[old.numpy()[:2*edges+width+1], old.numpy()[3*edges+width+1:]])
+        if not typed:
+            np.testing.assert_array_equal(metadata, np.r_[old.numpy()[:2*edges+width+1], old.numpy()[3*edges+width+1:]])
         master = tf.Variable(layout.host_to_live(weights))
         spikes = tf.Variable(z)
         def evaluate():
@@ -300,6 +311,7 @@ def test_gpu_compact_metadata_native_oracle(dtype, batch, packed, small, event, 
         np.testing.assert_allclose(dz, 2 * expected[1], rtol=tol, atol=tol)
         np.testing.assert_allclose(dw, layout.host_to_live(2 * expected[2]), rtol=tol, atol=tol)
         kw = dict(Tindex=index_dtype, n_post=posts, n_edges=edges, n_pairs=compact["n_pairs"])
+        kw.update(ops._uint8_type_options(compact))
         if event:
             event_dz, event_dw = ops._OPS.dpointnet_csr_spike_grad_accumulate_csr_master(
                 tf.constant(z), tf.constant(upstream.reshape(-1, 4)), compact["metadata_handle"],
@@ -315,12 +327,12 @@ def test_gpu_compact_metadata_native_oracle(dtype, batch, packed, small, event, 
             tf.constant(basis), write_csr_weight_gradient=True, use_packed_sm120_backward=packed, **kw,
         )
         np.testing.assert_allclose(named, layout.host_to_live(expected[2]), rtol=2e-5, atol=2e-5)
-        with pytest.raises(tf.errors.InvalidArgumentError, match="metadata"):
+        with pytest.raises(tf.errors.InvalidArgumentError, match="metadata|direct CSR host lifecycle"):
             ops._OPS.dpointnet_csr_weight_grad(
                 tf.constant(z), tf.constant(upstream.reshape(-1, 4)), compact["metadata_handle"],
                 tf.constant(basis), write_csr_weight_gradient=False, **kw,
             )
-        with pytest.raises(tf.errors.InvalidArgumentError, match="metadata"):
+        with pytest.raises(ValueError if typed else tf.errors.InvalidArgumentError, match="metadata|canonical edge IDs"):
             ops.reorder_csr_values(master, compact)
     finally:
         compact.close()

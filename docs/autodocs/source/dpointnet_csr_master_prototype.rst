@@ -74,6 +74,83 @@ optimized native combined sweep. CPU primitive probes are correctness
 references only. This is not FP32-temporal, distributed, local-learning,
 continuous-current or arbitrary saved-projection support.
 
+Optional native uint8 synapse types
+----------------------------------
+
+The isolated typed successor additionally accepts
+``_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES=1`` before construction. Both CSR
+FP32-master and host-lifecycle flags must also be ``1``. Explicit typed mode
+requires the native combined route; CPU probes, current inputs and other
+unsupported direct-master compositions raise rather than fall back. Unset/0
+preserves the exact preceding lifecycle packing in this same source. No
+installed profile, dynamics, optimizer, loss, traversal or geometry changes.
+The new acceleration-report marker ``experimental_csr_uint8_types`` is
+``csr_live_uint8_type_tail_v1`` or ``disabled``; existing markers are unchanged.
+
+Every per-edge ID must have an integer dtype and be nonnegative, no larger
+than 255, and inside the declared basis table before any uint8 conversion.
+Fractional, nonfinite, Boolean, complex, string and out-of-range IDs reject
+before resource allocation. Valid larger IDs still use the wide representation
+when the private flag is disabled; explicit typed mode never truncates them.
+Type-table rows and pair-type IDs keep their existing interpretation.
+
+There is still one packed resource per surface with the original index dtype
+(``uint32`` or ``int64``). Its mixed-width schema is index-width
+``posts[E], splits[S+1], [pair_ids[E], pair_posts[P], pair_types[P]]``,
+then exactly ``E`` uint8 type bytes and zero tail padding to an index-word
+boundary. The original widened per-edge type section is absent, not retained
+beside a byte shadow. All index sections remain naturally aligned, including
+odd and empty edge counts. Native consumers validate resource dtype, rank,
+exact shape and overflow-safe byte counts before interpreting pointers.
+Reorder/canonical-restore consumers reject this host-lifecycle representation.
+Required CSC routing remains unchanged, with the cached Tensor retaining
+ownership of the actual mixed-width allocation.
+
+For index width ``w``, actual resource bytes are
+``w*(E+S+1+(E+2*P if P else 0)) + E + ((-E) % w)``.
+Saving against the lifecycle baseline is
+``(w-1)*E - ((-E) % w)``, not simply three bytes per edge when a surface
+requires tail padding. ``metadata_bytes`` and ``metadata_shape`` describe
+the actual resource including that padding; shape counts index words.
+``metadata_payload_bytes`` excludes padding, and ``metadata_padding_bytes``
+reports it separately. ``metadata_dtype`` equals ``index_dtype``;
+``type_dtype`` alone is uint8. ``type_byte_offset`` points into
+``ReadVariableOp(..., dtype=index_dtype).numpy().view(numpy.uint8)``;
+decode only the next ``E`` bytes as edge types. ``type_payload_bytes``
+counts that section once. These fields are also returned symmetrically by
+``csr_host_lifecycle_metadata()``. Deduplicate master/fused resource aliases;
+payload bytes are not allocator capacity or driver reservations.
+
+For resource-independent census, iterate
+``connectivity["metadata_resource_specs"]`` (also available as the
+``metadata_resource_specs`` property). Every owned replica resource has an
+entry containing its existing ``handle``, true ``dtype``, allocation
+``shape``, ``payload_bytes`` and ``role="csr_metadata"``. Read each resource
+with its own declared dtype, not a dtype inferred from ``index_dtype``:
+``ReadVariableOp(resource=spec["handle"], dtype=tf.as_dtype(spec["dtype"]))``.
+The read shape and dtype-size product must equal ``payload_bytes``. This
+field includes explicit alignment padding; ``logical_payload_bytes`` excludes
+it and ``alignment_bytes`` reports it separately. ``schema``, ``type_dtype``,
+``type_payload_bytes`` and exact ``type_logical_min``/``type_logical_max``
+are included in each spec in homogeneous and typed modes. Empty type vectors
+have null extrema, not a fabricated zero. Deduplicate by ``handle.ref()``.
+Specs are creation-time Python receipts: accessing them performs no tensor
+read, materialization, allocation, synchronization or host/device copy.
+All prior singular fields and ``metadata_resource_handles`` remain available.
+
+Both fat operators must be rebuilt. The existing native forward proxy,
+weight-only VJP, direct-master spike VJP, direct-master carrier VJP and
+direct-master combined sweep advertise a new default-false ``uint8_types``
+attribute. Disabled Python calls omit it, retaining old-library call
+signatures. Explicit typed construction checks all five capabilities and
+errors before allocation with old/partial libraries. The attribute selects
+the byte pointer reader; all accumulation arithmetic, queues, source splits,
+pair metadata, CSC and launch attributes remain the existing implementation.
+Actual graph attributes and independently decoded resource bytes, not the
+report marker alone, establish execution. Metadata is derived at construction;
+master/permutation checkpoint keys, Adam slots, canonical loss references and
+canonical export boundaries are unchanged.
+
 Ownership and native reads
 --------------------------
 

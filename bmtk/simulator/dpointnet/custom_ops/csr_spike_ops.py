@@ -141,6 +141,11 @@ class CsrConnectivity(Mapping):
         """Owned resident resource handles, without reading or copying their values."""
         return self._handles
 
+    @property
+    def metadata_resource_specs(self):
+        """Creation-time census of owned resources; no tensor reads or copies."""
+        return self._values["metadata_resource_specs"]
+
 
 def _environment_flag(name):
     value = os.environ.get(name, "").strip().lower()
@@ -309,6 +314,22 @@ def _projection_type_representatives(basis, n_synapse_types):
     return representatives
 
 
+def _uint8_type_options(connectivity):
+    if not connectivity.get("uint8_types", False):
+        return {}
+    names = (
+        "dpointnet_csr_spike_forward", "dpointnet_csr_weight_grad",
+        "dpointnet_csr_spike_grad_csr_master",
+        "dpointnet_csr_spike_grad_accumulate_csr_master",
+        "dpointnet_combined_sweep_csr_master",
+    )
+    for name in names:
+        operator = getattr(_OPS, name, None)
+        if operator is None or "uint8_types" not in inspect.signature(operator).parameters:
+            raise RuntimeError("Rebuild both CUDA operators for uint8 CSR type metadata: " + name)
+    return {"uint8_types": True}
+
+
 def build_csr_connectivity(
     indices,
     synapse_types,
@@ -320,6 +341,7 @@ def build_csr_connectivity(
     sort_by_target=False,
     projection_basis=None,
     host_lifecycle=False,
+    uint8_types=False,
 ):
     """Build canonical CSR routing and optional immutable-basis projection sharing.
 
@@ -329,6 +351,16 @@ def build_csr_connectivity(
     """
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
+    if type(uint8_types) is not bool:
+        raise TypeError("uint8_types must be an explicit boolean.")
+    if uint8_types:
+        if host_lifecycle is not True:
+            raise ValueError("uint8 CSR types require the host lifecycle.")
+        if not np.issubdtype(synapse_types.dtype, np.integer):
+            raise TypeError("uint8 synapse_types must have an integer dtype.")
+        if np.any(synapse_types < 0) or np.any(synapse_types > 255):
+            raise ValueError("uint8 synapse_types must be in [0, 255]; no narrowing fallback.")
+        _uint8_type_options({"uint8_types": True})
     for dimension, name in (
         (n_source_neurons, "n_source_neurons"),
         (n_target_neurons, "n_target_neurons"),
@@ -477,7 +509,30 @@ def build_csr_connectivity(
                 )
             )
             n_pairs = int(pairs.shape[0])
-        metadata = np.concatenate(metadata_parts)
+        type_byte_offset = None
+        padding_bytes = 0
+        if uint8_types:
+            # All index sections precede the byte tail, so no index is unaligned.
+            index_parts = [metadata_parts[0], *metadata_parts[2:]]
+            wide = np.concatenate(index_parts)
+            type_byte_offset = int(wide.nbytes)
+            padding_bytes = (-int(sorted_synapse_types.size)) % index_dtype.size
+            packed = np.concatenate((
+                wide.view(np.uint8),
+                sorted_synapse_types.astype(np.uint8),
+                np.zeros(padding_bytes, np.uint8),
+            ))
+            metadata = packed.view(numpy_index_dtype)
+        else:
+            metadata = np.concatenate(metadata_parts)
+        metadata_schema = (
+            "csr_live_uint8_type_tail_v1" if uint8_types else
+            "csr_live_without_edge_ids_v1" if host_lifecycle else "canonical_edge_ids_v1"
+        )
+        type_dtype = "uint8" if uint8_types else index_dtype.name
+        type_payload_bytes = int(indices.shape[0]) * (1 if uint8_types else index_dtype.size)
+        type_logical_min = int(synapse_types.min()) if synapse_types.size else None
+        type_logical_max = int(synapse_types.max()) if synapse_types.size else None
         from ..distribution import data_parallel_worker_devices
         devices = data_parallel_worker_devices() or (device,)
         handles = []
@@ -507,9 +562,30 @@ def build_csr_connectivity(
                 "n_pairs": n_pairs,
                 "metadata_shape": tuple(metadata.shape),
                 "metadata_bytes": int(metadata.nbytes),
-                "metadata_schema": (
-                    "csr_live_without_edge_ids_v1" if host_lifecycle else "canonical_edge_ids_v1"
-                ),
+                "metadata_schema": metadata_schema,
+                "metadata_resource_specs": tuple({
+                    "handle": handle,
+                    "dtype": index_dtype.name,
+                    "shape": tuple(metadata.shape),
+                    "payload_bytes": int(metadata.nbytes),
+                    "logical_payload_bytes": int(metadata.nbytes) - padding_bytes,
+                    "alignment_bytes": padding_bytes,
+                    "role": "csr_metadata",
+                    "schema": metadata_schema,
+                    "type_dtype": type_dtype,
+                    "type_payload_bytes": type_payload_bytes,
+                    "type_logical_min": type_logical_min,
+                    "type_logical_max": type_logical_max,
+                } for handle in handles),
+                "uint8_types": bool(uint8_types),
+                "metadata_dtype": index_dtype.name,
+                "type_dtype": type_dtype,
+                "type_byte_offset": type_byte_offset,
+                "type_payload_bytes": type_payload_bytes,
+                "type_logical_min": type_logical_min,
+                "type_logical_max": type_logical_max,
+                "metadata_padding_bytes": padding_bytes,
+                "metadata_payload_bytes": int(metadata.nbytes) - padding_bytes,
                 "canonical_edge_id_offset": (
                     None if host_lifecycle else 2 * int(indices.shape[0]) + int(n_source_neurons) + 1
                 ),
@@ -535,6 +611,8 @@ def build_csr_connectivity(
 
 
 def reorder_csr_values(values, connectivity):
+    if connectivity.get("uint8_types"):
+        raise ValueError("Typed host-lifecycle metadata has no device canonical edge IDs.")
     if _OPS is None:
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
@@ -550,6 +628,8 @@ def reorder_csr_values(values, connectivity):
 
 
 def restore_csr_values(values, connectivity):
+    if connectivity.get("uint8_types"):
+        raise ValueError("Typed host-lifecycle metadata has no device canonical edge IDs.")
     if _OPS is None:
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
@@ -566,6 +646,11 @@ def restore_csr_values(values, connectivity):
 
 @ops.RegisterGradient("DpointnetCsrSpikeForward")
 def _fused_spike_currents_gradient(op, current_grad):
+    type_options = (
+        {"uint8_types": True}
+        if "uint8_types" in inspect.signature(_OPS.dpointnet_csr_spike_forward).parameters
+        and op.get_attr("uint8_types") else {}
+    )
     compute_spike_gradient = op.get_attr("compute_spike_gradient")
     compute_weight_gradient = op.get_attr("compute_weight_gradient")
     n_post = op.get_attr("n_post")
@@ -592,6 +677,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             ),
             use_small_batch_backward=op.get_attr("use_small_batch_backward"),
             use_javier_batch32_backward=False,
+            **type_options,
         )
         if not compute_weight_gradient:
             weight_grad = None
@@ -602,6 +688,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             current_grad,
             op.inputs[2],
             op.inputs[4],
+            **type_options,
             Tindex=index_dtype,
             n_post=n_post,
             n_edges=op.get_attr("n_edges"),
@@ -746,6 +833,7 @@ def fused_recurrent_weight_carry(
                 n_pairs=connectivity["n_pairs"],
                 use_javier_batch32_backward=use_javier_batch32_backward,
                 **spike_options,
+                **_uint8_type_options(connectivity),
             )
             return (
                 dz if compute_spike_gradient else None,
@@ -805,6 +893,9 @@ def fused_spike_currents(
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
         )
+    type_options = _uint8_type_options(connectivity)
+    if type_options and not csr_master_weights:
+        raise ValueError("uint8 CSR metadata requires direct CSR FP32 masters.")
     if spikes.dtype not in (tf.float16, tf.float32):
         raise TypeError(
             f"Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}."
@@ -924,6 +1015,7 @@ def fused_spike_currents(
         use_small_batch_backward=use_small_batch_backward,
         vjp_only=vjp_only,
         **({"csr_master_weights": True} if csr_master_weights else {}),
+        **type_options,
     )
 
 
@@ -1015,9 +1107,14 @@ def fused_combined_currents(
         raise ValueError("Combined sweep requires two to eight matching sources and VJP proxies.")
     dtype = spikes[0].dtype
     index = connectivities[0]["index_dtype"]
+    type_options = _uint8_type_options(connectivities[0])
+    if type_options and not csr_master_weights:
+        raise ValueError("uint8 CSR metadata requires direct CSR FP32 masters.")
     if dtype not in (tf.float16, tf.float32) or basis.dtype != dtype or basis.shape[1] != 4:
         raise ValueError("Combined sweep requires matching FP16/FP32 operands and four bases.")
     for z, weight, connectivity in zip(spikes, weights, connectivities):
+        if bool(connectivity.get("uint8_types")) != bool(type_options):
+            raise ValueError("Combined sweep requires matching type metadata schemas.")
         weight_dtype = tf.float32 if csr_master_weights else dtype
         if z.dtype != dtype or weight.dtype != weight_dtype or z.shape.rank != 2:
             raise ValueError("Combined sweep spike/weight dtypes and spike ranks must match.")
@@ -1054,6 +1151,7 @@ def fused_combined_currents(
         n_pairs=[conn["n_pairs"] for conn in connectivities],
         target_tile_size=target_tile_size,
         **schedule,
+        **type_options,
     )
     return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
 

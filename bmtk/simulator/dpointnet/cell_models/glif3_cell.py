@@ -858,6 +858,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 **({
                     "metadata_shape": connectivity["metadata_shape"],
                     "metadata_schema": connectivity["metadata_schema"],
+                    **{key: connectivity[key] for key in (
+                        "metadata_dtype", "type_dtype", "type_byte_offset",
+                        "type_payload_bytes", "metadata_padding_bytes", "metadata_payload_bytes",
+                        "type_logical_min", "type_logical_max",
+                    )},
                     "canonical_edge_id_offset": connectivity["canonical_edge_id_offset"],
                     "canonical_edge_ids_present": connectivity["device_edge_ids"],
                     "metadata_resource_ids": [
@@ -1033,6 +1038,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._experimental_csr_host_lifecycle = (
             os.environ.get("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE") == "1"
         )
+        uint8_type_flag = os.environ.get("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES", "0")
+        if uint8_type_flag not in ("0", "1"):
+            raise ValueError("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES must be 0 or 1.")
+        self._experimental_csr_uint8_types = uint8_type_flag == "1"
+        if self._experimental_csr_uint8_types and not (
+            self._experimental_csr_master and self._experimental_csr_host_lifecycle
+        ):
+            raise ValueError("uint8 CSR types require CSR FP32 masters and host lifecycle flags.")
         if self._experimental_csr_host_lifecycle and not self._experimental_csr_master:
             raise ValueError("CSR host lifecycle requires CSR FP32 masters.")
         self._performance_auto_context = _performance_auto_context
@@ -1150,6 +1163,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
             if use_fused_cuda and not use_combined_current_sweep:
                 raise ValueError("Optimized direct masters require the combined native sweep.")
+            if self._experimental_csr_uint8_types and not use_fused_cuda:
+                raise ValueError("uint8 CSR types require native fused CUDA and the combined sweep.")
             if not use_fused_cuda and tf.config.get_visible_devices("GPU"):
                 raise ValueError("CPU primitive probes cannot substitute for the optimized GPU candidate.")
             if not use_fused_cuda:
@@ -1172,6 +1187,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 )
                 self.acceleration_report["experimental_csr_lifecycle"] = (
                     self.acceleration_report["experimental_csr_host_lifecycle"]
+                )
+                self.acceleration_report["experimental_csr_uint8_types"] = (
+                    "csr_live_uint8_type_tail_v1" if self._experimental_csr_uint8_types else "disabled"
                 )
         use_prepacked_nest_coefficients = execution.get("use_prepacked_nest_coefficients", False)
         use_type_indexed_nest_coefficients = execution.get("use_type_indexed_nest_coefficients", False)
@@ -1839,6 +1857,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     else None
                 ),
                 host_lifecycle=self._experimental_csr_host_lifecycle,
+                uint8_types=self._experimental_csr_uint8_types,
             )
             self.pre_ind_table = None
         else:
@@ -2049,6 +2068,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         build_fixed4_incoming=self._use_fixed4_input_forward,
                         sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
                         host_lifecycle=self._experimental_csr_host_lifecycle,
+                        uint8_types=self._experimental_csr_uint8_types,
                     ) if self._use_fused_cuda else cpu_connectivity(
                         input_indices, input_syn_ids, input_dense_shape[1], self._n_neurons,
                         host_lifecycle=self._experimental_csr_host_lifecycle,
