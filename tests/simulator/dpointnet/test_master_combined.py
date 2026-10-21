@@ -266,6 +266,13 @@ def test_gpu_matched_optimized_forward_and_master_vjps(dtype, batch, tile, mode,
         pytest.skip("Parent-only GPU execution; rebuilt optimized operators required")
     if packed and index_dtype != "uint32":
         pytest.skip("Existing packed backward requires uint32 metadata")
+    from bmtk.simulator.dpointnet import acceleration
+    architecture = ops._gpu_compute_architecture()
+    geometry = acceleration.combined_sweep_launch_geometry(
+        architecture, tile, index_bytes=4 if index_dtype == "uint32" else 8,
+    )
+    if not geometry["valid"]:
+        pytest.skip(f"tile {tile} is not launchable on SM{architecture}: {geometry['reasons']}")
     from test_combined_sweep import fixture
     from test_master_projection import oracle
     monkeypatch.setattr(ops, "_csr_index_dtype", lambda *args: tf.as_dtype(index_dtype))
