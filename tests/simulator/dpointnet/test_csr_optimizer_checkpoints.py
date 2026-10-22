@@ -470,6 +470,39 @@ def test_separate_roots_still_detect_missing_named_input_masters(
         assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
 
 
+@pytest.mark.parametrize("name", ["adam", "sgd_momentum"])
+def test_shared_optimizer_with_same_shaped_canonical_trainable(forward_free, tmp_path, name):
+    """A custom loop may update CSR masters and other same-shaped trainables with one
+    optimizer; the other variables are model variables, not unpaired optimizer state."""
+    cell, optimizer, surfaces, trainable = model(True, FACTORIES[name], build_and_bind=False)
+    master = cell.weight_loss_values("<recurrent>")
+    peer = tf.Variable(np.linspace(-1.0, 1.0, master.shape[0], dtype=np.float32), name="canonical_peer")
+    optimizers.build_optimizer(optimizer, [*trainable, peer])
+    bound = cell.bind_optimizer_checkpoint_slots(optimizer)
+    assert bound["<recurrent>"] == len(csr_master.paired_optimizer_slots(optimizer, master)) > 0
+    peer_slots = csr_master.paired_optimizer_slots(optimizer, peer)
+    assert peer_slots and all(
+        getattr(csr_master._raw_variable(slot), "_dpointnet_canonical_layout", None) is None
+        for slot in peer_slots
+    )
+    optimizer.apply_gradients([(tf.ones_like(peer), peer)])
+    before = [peer.numpy().copy(), *(slot.numpy().copy() for slot in peer_slots)]
+    path = tf.train.Checkpoint(cell=cell, peer=peer, optimizer=optimizer).save(str(tmp_path / "shared"))
+    peer.assign(tf.zeros_like(peer))
+    for slot in peer_slots:
+        slot.assign(tf.zeros_like(slot))
+    tf.train.Checkpoint(cell=cell, peer=peer, optimizer=optimizer).restore(path).assert_consumed()
+    for value, expected in zip([peer, *peer_slots], before):
+        np.testing.assert_array_equal(value, expected)
+    # Unrecognized per-edge optimizer state is still rejected.
+    stray = tf.Variable(tf.zeros_like(master), trainable=False)
+    optimizer._stray_per_edge_state = stray
+    assert any(csr_master._raw_variable(v) is csr_master._raw_variable(stray)
+               for v in csr_master._optimizer_state_variables(optimizer))
+    with pytest.raises(ValueError, match="not paired with an optimizer variable"):
+        cell.bind_optimizer_checkpoint_slots(optimizer)
+
+
 def test_update_before_binding_a_restored_slot_raises(forward_free, tmp_path):
     factory = FACTORIES["adam"]
     _, _, surfaces, path = trained_checkpoint(False, factory, tmp_path / "source")

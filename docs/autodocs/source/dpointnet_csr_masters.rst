@@ -338,6 +338,9 @@ list, which ``optimizer.build`` replaces, so restore after
 ``TrainingEngine.build_optimizer()``. Masters that the model's own checkpoint
 graph saves (the recurrent master, and every master under TF-Keras 2) may be
 restored from separate model-only and optimizer-only checkpoints in either order.
+Other variables the same optimizer updates (for example a same-shaped
+canonical-order trainable in a custom loop) are model variables, not optimizer
+state, and are neither bound nor rejected.
 Endpoint restores verify that the stored canonical connectivity equals the
 model's, in eager and graph mode, and never assign the endpoint variable: a
 mismatch raises ``ValueError`` eagerly and ``InvalidArgumentError`` from a

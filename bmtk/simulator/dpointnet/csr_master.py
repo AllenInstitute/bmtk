@@ -542,10 +542,11 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
         for slot in slots:
             canonical_checkpoint(slot, layout, restored="raise" if after_update else "convert")
         bound[name] = len(slots)
-    # Safety net: everything shaped like a CSR master that the optimizer checkpoints
-    # must be a bound slot or a slot paired with another (canonical-order) variable.
+    # Safety net: optimizer state shaped like a CSR master must be a bound slot or a
+    # slot paired with another (canonical-order) variable. Model variables the
+    # optimizer updates (tracked by Keras 3 optimizers) are not optimizer state.
     paired = set() if attributes is None else _all_paired_slot_ids(inner, attributes)
-    for value in _optimizer_state_variables(optimizer):
+    for value in (state if attributes is not None else _optimizer_state_variables(optimizer)):
         raw = _raw_variable(value)
         if tuple(value.shape) not in edge_shapes or id(raw) in master_ids:
             continue
