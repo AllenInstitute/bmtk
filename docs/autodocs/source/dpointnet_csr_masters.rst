@@ -196,6 +196,12 @@ No ``DpointnetCsrReorder`` or ``DpointnetCsrRestore`` is needed in a native
 update. Both operators must be rebuilt for this attribute; an older
 library is not sufficient.
 Constraint signs and EMD connection-type groups are reordered with weights.
+``EMDWeightRegularization`` groups edges in canonical edge order and then
+addresses their live rows, so ties among equal current weights break in
+canonical order and both layouts receive identical updates. Its
+``_group_order`` already holds live rows: do not apply the external adapter
+below to it. ``emd.canonical_group_order()`` returns the layout-independent
+canonical rows (for example for provenance digests).
 Frozen inputs remain live resource reads without optimizer participation.
 Noise streams, Poisson count generation, delays and neuron dynamics are
 unchanged. No trajectory-equivalence or convergence claim follows from this
@@ -334,7 +340,8 @@ model's, in eager and graph mode, and never assign the endpoint variable: a
 mismatch raises ``ValueError`` eagerly and ``InvalidArgumentError`` from a
 graph-mode restore op. Keras weight files
 (``save_own_variables``/``load_own_variables``) and the EMD regularizer's group
-order store canonical rows as well Keras 3 weight files are interchangeable
+order store canonical rows as well; the group order keeps its canonical group
+sequence, so it restores across layouts and versions unchanged. Keras 3 weight files are interchangeable
 between layouts; TF-Keras 2 weight files list canonical models' compute shadows
 positionally, so cross-layout loads there are rejected by the variable count.
 Under TF-Keras 2 the tracked ``inputs`` dictionary also receives per-input shadow

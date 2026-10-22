@@ -291,6 +291,51 @@ def test_model_weights_exports_canonical_rows_and_live_assignments(deep_copy):
         np.testing.assert_array_equal(frame["syn_weight"].to_numpy()[offset:offset + 5], expected)
 
 
+@pytest.mark.parametrize("host_lifecycle", [False, True])
+def test_emd_tie_break_follows_canonical_edge_order(monkeypatch, tmp_path, host_lifecycle):
+    """Tied current weights get the same EMD update in both layouts, also after the
+    group order round-trips through checkpoints in either direction."""
+    from bmtk.simulator.dpointnet.loss_functions import weight_regularization as wr
+    source, source_masters = fake_cell(False, host_lifecycle)
+    target, target_masters = fake_cell(True, host_lifecycle)
+    mapping = target.recurrent_master_layout
+    # Canonical edges 0 and 3 share group 0 and are reversed in CSR order.
+    live_rows = mapping.canonical_to_csr if host_lifecycle else mapping.canonical_to_csr.numpy()
+    assert live_rows[0] > live_rows[3]
+    groups = np.array([0, 1, 2, 0, 3], np.int64)
+    monkeypatch.setattr(wr, "_connection_type_ids", lambda *args, **kwargs: groups)
+    initial = tf.constant([1.0, 5.0, 6.0, 3.0, 7.0])
+    current = tf.constant([2.0, 5.0, 6.0, 2.0, 7.0])
+    source_masters[0].assign(initial)
+    target_masters[0].assign(mapping.to_live(initial))
+    canonical_emd, live_emd = [
+        wr.EMDWeightRegularization(SimpleNamespace(cell=cell, recurrent_network={}), cost=1.0)
+        for cell in (source, target)
+    ]
+    source_masters[0].assign(current)
+    target_masters[0].assign(mapping.to_live(current))
+
+    def canonical_gradients():
+        result = []
+        for emd, master in ((canonical_emd, source_masters[0]), (live_emd, target_masters[0])):
+            with tf.GradientTape() as tape:
+                value = emd()
+            result.append((value.numpy(), tape.gradient(value, master)))
+        (value, expected), (live_value, live_gradient) = result
+        assert value == live_value
+        np.testing.assert_array_equal(mapping.to_canonical(live_gradient), expected)
+        return expected.numpy()
+
+    gradient = canonical_gradients()
+    assert gradient[0] > 0 > gradient[3]
+    np.testing.assert_array_equal(live_emd.canonical_group_order(), canonical_emd._group_order.numpy())
+    for source_order in (live_emd._group_order, canonical_emd._group_order):
+        path = tf.train.Checkpoint(order=source_order).save(str(tmp_path / f"order{id(source_order)}"))
+        live_emd._group_order.assign(tf.zeros_like(live_emd._group_order))
+        tf.train.Checkpoint(order=live_emd._group_order).restore(path).assert_consumed()
+        np.testing.assert_array_equal(canonical_gradients(), gradient)
+
+
 def test_emd_groups_and_live_gradient_follow_csr_layout(monkeypatch):
     from bmtk.simulator.dpointnet.loss_functions import weight_regularization as wr
     source, source_masters = fake_cell(False)
