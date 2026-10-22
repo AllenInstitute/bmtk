@@ -110,6 +110,39 @@ def test_endpoint_restore_rejects_different_connectivity(tmp_path):
     np.testing.assert_array_equal(target, before)
 
 
+@pytest.mark.parametrize("mode", ["tf_function", "v1_session"])
+def test_graph_mode_endpoint_restore_verifies_connectivity(tmp_path, mode):
+    from bmtk.simulator.dpointnet.csr_master import canonical_checkpoint
+    layout = mapping()
+    canonical = np.arange(10).reshape(5, 2)
+    other = canonical[::-1].copy()
+    live = layout.host_to_live(canonical)
+    if mode == "tf_function":
+        target = canonical_checkpoint(tf.Variable(live), layout, verify_unchanged=True)
+        restore = tf.function(
+            lambda value: target._restore_from_tensors({"VARIABLE_VALUE": value})
+        )
+        with pytest.raises(tf.errors.InvalidArgumentError, match="connectivity differs"):
+            restore(tf.constant(other))
+        np.testing.assert_array_equal(target, live)
+        restore(tf.constant(canonical))
+        np.testing.assert_array_equal(target, live)
+        return
+    paths = {
+        name: tf.train.Checkpoint(indices=tf.Variable(values)).save(str(tmp_path / name))
+        for name, values in (("other", other), ("same", canonical))
+    }
+    with tf.Graph().as_default(), tf.compat.v1.Session() as session:
+        target = canonical_checkpoint(tf.Variable(live), layout, verify_unchanged=True)
+        session.run(target.initializer)
+        status = tf.train.Checkpoint(indices=target).restore(paths["other"])
+        with pytest.raises(tf.errors.InvalidArgumentError, match="connectivity differs"):
+            status.run_restore_ops(session)
+        np.testing.assert_array_equal(session.run(target), live)
+        tf.train.Checkpoint(indices=target).restore(paths["same"]).run_restore_ops(session)
+        np.testing.assert_array_equal(session.run(target), live)
+
+
 def test_old_direct_to_lifecycle_nonzero_adam_slots_and_export(tmp_path):
     from test_csr_master_layout import fake_cell, raw
     from bmtk.simulator.dpointnet.csr_master import transfer_canonical_state

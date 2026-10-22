@@ -209,16 +209,33 @@ def canonical_checkpoint(variable, layout, *, verify_unchanged=False, restored="
 
     def restore(var, restored_tensors):
         value = restored_tensors["VARIABLE_VALUE"]
-        if verify_unchanged and tf.executing_eagerly():
-            current = layout.host_to_canonical(var.numpy()) if layout.host_lifecycle else (
-                layout.to_canonical(var.read_value()).numpy()
+        if verify_unchanged:
+            # Immutable topology: verify and never assign, in eager and graph mode alike,
+            # because native CSR metadata is not rebuilt from restored endpoints.
+            message = (
+                "Checkpoint connectivity differs from this model's CSR-ordered topology; "
+                "rebuild the model from the checkpoint's network instead."
             )
-            if not np.array_equal(np.asarray(value), current):
-                raise ValueError(
-                    "Checkpoint connectivity differs from this model's CSR-ordered topology; "
-                    "rebuild the model from the checkpoint's network instead."
+            if tf.executing_eagerly():
+                current = layout.host_to_canonical(var.numpy()) if layout.host_lifecycle else (
+                    layout.to_canonical(var.read_value()).numpy()
                 )
-            return var.read_value()
+                if not np.array_equal(np.asarray(value), current):
+                    raise ValueError(message)
+                return var.read_value()
+            current = _convert(layout, var.read_value(), to_live=False)
+            value = tf.convert_to_tensor(value)
+            if value.shape.rank is not None and value.shape.rank != current.shape.rank:
+                same = tf.constant(False)
+            else:
+                same = tf.cond(
+                    tf.reduce_all(tf.equal(tf.shape(value), tf.shape(current))),
+                    lambda: tf.reduce_all(tf.equal(tf.cast(value, current.dtype), current)),
+                    lambda: tf.constant(False),
+                )
+            check = tf.debugging.Assert(same, [message])
+            with tf.control_dependencies([check]):
+                return tf.identity(var.read_value())
         return var.assign(_convert(layout, value, to_live=True))
 
     resource._serialize_to_tensors = types.MethodType(serialize, resource)

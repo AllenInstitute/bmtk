@@ -328,7 +328,9 @@ when a checkpoint restored a master's slots but not the master itself: Keras 3
 checkpoints trainable named-input masters only through the optimizer's variable
 list, which ``optimizer.build`` replaces, so restore after
 ``TrainingEngine.build_optimizer()``. Endpoint restores verify that the stored
-canonical connectivity equals the model's and raise otherwise. Keras weight files
+canonical connectivity equals the model's, in eager and graph mode, and never
+assign the endpoint variable: a mismatch raises ``ValueError`` eagerly and
+``InvalidArgumentError`` from a graph-mode restore op. Keras weight files
 (``save_own_variables``/``load_own_variables``) and the EMD regularizer's group
 order store canonical rows as well. Keras 3 weight files are interchangeable
 between layouts; TF-Keras 2 weight files list canonical models' compute shadows
