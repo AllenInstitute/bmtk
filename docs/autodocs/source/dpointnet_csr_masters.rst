@@ -13,8 +13,13 @@ Explicit ``true`` requires NEST dynamics, compute temporal gradients, per-edge
 recurrent weights, one replica, FP32 masters, spike or count inputs and, with
 native CUDA, the combined current sweep; otherwise construction raises. Without
 native CUDA and with no visible GPU, explicit ``true`` selects a CPU reference
-implementation used for correctness tests. ``false`` keeps canonical-order masters
-with their compute shadows. The acceleration report records
+implementation used for correctness tests; construction raises when the loaded
+operator library lacks its ``dpointnet_master_projection`` reference ops (for
+example a library built before this option existed). These reference ops reject
+metadata whose splits, post indices, synapse types or canonical edge IDs fall
+outside the operand dimensions; their GPU registration (tests only) validates
+with one flag read-back per call and is never launched by the combined sweep.
+``false`` keeps canonical-order masters with their compute shadows. The acceleration report records
 ``csr_master_weights`` (``direct_csr_fp32_master_host_lifecycle_v1`` or
 ``disabled``) and ``csr_master_projection``
 (``optimized_combined_csr_fp32_master``, ``cpu_reference_csr_fp32_master`` or

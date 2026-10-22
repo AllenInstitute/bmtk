@@ -271,3 +271,36 @@ def test_csr_master_proxy_without_uint8_attribute_defaults_to_wide_types(monkeyp
         tf.ones((10, 4), tf.float16),
     )
     assert seen[0]["uint8_types"] is True
+
+
+@pytest.mark.parametrize("entry_points,available", [
+    ((), False),
+    (("dpointnet_master_projection",), False),
+    (("dpointnet_master_projection_grad",), False),
+    (("dpointnet_master_projection", "dpointnet_master_projection_grad"), True),
+])
+def test_reference_availability_requires_both_entry_points(monkeypatch, entry_points, available):
+    from bmtk.simulator.dpointnet.custom_ops import master_projection
+    # A develop-built _csr_spike_ops.so loads but has neither reference op.
+    fake = SimpleNamespace(**{name: object() for name in entry_points})
+    monkeypatch.setattr(master_projection, "_LIBRARY", fake)
+    assert master_projection.reference_available() is available
+
+
+def test_explicit_cpu_master_cell_rejects_a_library_without_reference_ops(monkeypatch):
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("The CPU CSR-master reference is selected only with no visible GPU.")
+    from bmtk.simulator.dpointnet.custom_ops import master_projection
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+    from test_precision_credit import make_cell
+    monkeypatch.setattr(master_projection, "_LIBRARY", SimpleNamespace(
+        dpointnet_csr_spike_forward=object(),
+    ))
+    network, inputs, arguments = make_cell(
+        "nest", two_inputs=True, return_spec=True, train_recurrent=True,
+        use_csr_master_weights=True,
+    )
+    for props in inputs.values():
+        props["input_type"] = "spikes"
+    with pytest.raises(RuntimeError, match="dpointnet_master_projection"):
+        GLIF3Cell(network, inputs, **arguments)

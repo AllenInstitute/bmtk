@@ -18,13 +18,21 @@ def library():
     return _LIBRARY
 
 
+_REFERENCE_ENTRY_POINTS = (
+    "dpointnet_master_projection", "dpointnet_master_projection_grad",
+)
+
+
 def reference_available():
-    """Whether the built operator library (with its CPU reference kernels) loads here."""
+    """Whether the operator library loads here and contains both reference projection ops.
+
+    A library built before CSR masters existed loads but lacks them.
+    """
     try:
-        library()
+        native = library()
     except (tf.errors.NotFoundError, OSError):
         return False
-    return True
+    return all(hasattr(native, name) for name in _REFERENCE_ENTRY_POINTS)
 
 
 def project(spikes, master, metadata, basis, n_post, n_edges, spike_scale=1.0):

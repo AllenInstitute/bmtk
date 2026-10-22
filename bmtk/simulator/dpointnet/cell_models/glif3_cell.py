@@ -1326,7 +1326,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     raise RuntimeError(
                         "use_csr_master_weights=True without native fused CUDA uses the CPU "
                         "reference kernels in _csr_spike_ops.so, which could not be loaded for "
-                        "this TensorFlow; build the operators or set use_csr_master_weights=False."
+                        "this TensorFlow or lack the dpointnet_master_projection/"
+                        "dpointnet_master_projection_grad reference ops; rebuild the operators "
+                        "or set use_csr_master_weights=False."
                     )
                 use_direct_csr_recurrent_gradient = False
                 use_fused_recurrent_accumulation = False
