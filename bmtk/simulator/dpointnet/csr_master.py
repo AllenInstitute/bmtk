@@ -487,6 +487,13 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
     )
     edge_shapes = {tuple(master.shape) for _, master, _ in surfaces}
     master_ids = {id(_raw_variable(master)) for _, master, _ in surfaces}
+    # Latest restore that reached the optimizer's own unbound state (iterations,
+    # learning rate, loss scale, slots), independent of whether it has per-edge slots.
+    optimizer_restore_uid = -1 if attributes is None else max([
+        _restore_uid(value) for value in _optimizer_state_variables(optimizer)
+        if id(_raw_variable(value)) not in master_ids
+        and getattr(_raw_variable(value), "_dpointnet_canonical_layout", None) is None
+    ] or [-1])
     bound = {}
     for name, master, layout in surfaces:
         if attributes is None:
@@ -494,7 +501,8 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
                 raise ValueError(unsupported)
             continue
         slots = paired_optimizer_slots(inner, master)
-        if not slots and (attributes == _LEGACY or _optimizer_variable_index(inner, master) is None):
+        updated = _optimizer_variable_index(inner, master) is not None
+        if not slots and (attributes == _LEGACY or not updated):
             continue
         for slot in slots:
             if tuple(slot.shape) != tuple(master.shape):
@@ -503,12 +511,15 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
             _restore_uid(slot) for slot in slots
             if getattr(_raw_variable(slot), "_dpointnet_canonical_layout", None) is None
         ]
+        if updated:
+            restored.append(optimizer_restore_uid)
         if restored and max(restored) > _restore_uid(master):
             # Keras 3 checkpoints named-input masters only through the optimizer's
             # variable list, which optimizer.build replaces: a restore issued before
-            # the build restores their slots but not the weights themselves.
+            # the build restores the optimizer (and its slots, if any) but not the
+            # weights themselves.
             raise ValueError(
-                f"A checkpoint restored the optimizer slots of CSR-ordered master {name!r} "
+                f"A checkpoint restored the optimizer state of CSR-ordered master {name!r} "
                 "before the optimizer was built, but not the master itself. Build the "
                 "optimizer before restoring (TrainingEngine.build_optimizer()), then "
                 "restore again."

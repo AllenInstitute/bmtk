@@ -370,10 +370,16 @@ def test_loss_scale_wrapper_around_a_built_optimizer_is_not_reported_built():
     assert optimizers.optimizer_is_built(wrapped)
 
 
-def test_restore_before_build_of_trainable_named_inputs(forward_free, tmp_path):
+# Slotless: Keras SGD without momentum (the training config's sgd is "create_sgd").
+SLOTLESS = {"sgd": lambda: tf.keras.optimizers.SGD(0.01)}
+
+
+@pytest.mark.parametrize("name", ["adam", "sgd", "create_sgd"])
+def test_restore_before_build_of_trainable_named_inputs(forward_free, tmp_path, name):
     """Keras 3 cannot restore optimizer-only named-input masters before the build:
-    CSR masters raise instead of resuming from unrestored weights."""
-    factory = FACTORIES["adam"]
+    CSR masters raise instead of resuming from unrestored weights, also for slotless
+    optimizers (SGD without momentum). TF-Keras 2 tracks them in the cell and resumes."""
+    factory = SLOTLESS.get(name) or FACTORIES[name]
     source, source_optimizer, surfaces, path = trained_checkpoint(False, factory, tmp_path / "source")
     target, target_optimizer, _, trainable = model(True, factory, build_and_bind=False)
     checkpoint(target, target_optimizer).restore(path)
@@ -383,6 +389,23 @@ def test_restore_before_build_of_trainable_named_inputs(forward_free, tmp_path):
     else:
         _resume_rnn(target, trainable).train(_RecordingEngine(target_optimizer))
         assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
+        step(source, source_optimizer, surfaces, 4)
+        step(target, target_optimizer, surfaces, 4)
+        assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
+
+
+@pytest.mark.parametrize("name", ["adam", "sgd"])
+def test_separate_model_then_optimizer_restores_resume(forward_free, tmp_path, name):
+    """Restoring the model, building, then restoring the optimizer is not an
+    incomplete restore."""
+    factory = SLOTLESS.get(name) or FACTORIES[name]
+    source, source_optimizer, surfaces, path = trained_checkpoint(False, factory, tmp_path / "source")
+    target, target_optimizer, _, trainable = model(True, factory, build_and_bind=False)
+    checkpoint(target, target_optimizer).restore(path)
+    optimizers.build_optimizer(target_optimizer, trainable)
+    checkpoint(target, target_optimizer).restore(path).assert_consumed()
+    target.bind_optimizer_checkpoint_slots(target_optimizer)
+    assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
 
 
 def test_update_before_binding_a_restored_slot_raises(forward_free, tmp_path):
