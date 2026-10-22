@@ -1989,7 +1989,9 @@ class DpointnetCsrRestoreOp : public OpKernel {
   int64_t n_pairs_;
 };
 
-template <typename T, typename Index>
+// CsrMaster selects DpointnetCsrSpikeForwardCsrMaster (FP32 CSR-ordered
+// weights, VJP-only); otherwise the develop DpointnetCsrSpikeForward schema.
+template <typename T, typename Index, bool CsrMaster = false>
 class DpointnetCsrSpikeForwardOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeForwardOp(OpKernelConstruction* context)
@@ -2013,10 +2015,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context->GetAttr(
             "use_device_active_queue_forward", &use_device_active_queue_forward_));
     OP_REQUIRES_OK(context, context->GetAttr("vjp_only", &vjp_only_));
-    OP_REQUIRES_OK(context, context->GetAttr("csr_master_weights", &csr_master_weights_));
-    OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
-    OP_REQUIRES(context, !uint8_types_ || csr_master_weights_,
-                errors::InvalidArgument("uint8 types require direct CSR masters."));
+    if constexpr (CsrMaster) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    }
     OP_REQUIRES(context, !csr_master_weights_ || vjp_only_,
                 errors::InvalidArgument("Canonical-master forward operands require VJP-only proxies."));
   }
@@ -2267,7 +2268,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
   bool use_forward_run_aggregation_;
   bool use_device_active_queue_forward_;
   bool vjp_only_;
-  bool csr_master_weights_;
+  static constexpr bool csr_master_weights_ = CsrMaster;
   bool uint8_types_ = false;
 };
 
@@ -3463,7 +3464,10 @@ REGISTER_KERNEL_BUILDER(
       DpointnetCombinedSweepOp<T, Index, true>); \
   REGISTER_KERNEL_BUILDER(Name("DpointnetCsrSpikeGradCsrMaster").Device(DEVICE_GPU) \
       .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
-      DpointnetCsrSpikeGradOp<T, Index, false, true>);
+      DpointnetCsrSpikeGradOp<T, Index, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCsrSpikeForwardCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCsrSpikeForwardOp<T, Index, true>);
 REGISTER_MASTER_MATCHED(Eigen::half, uint32)
 REGISTER_MASTER_MATCHED(Eigen::half, int64_t)
 REGISTER_MASTER_MATCHED(float, uint32)

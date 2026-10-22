@@ -78,8 +78,10 @@ def test_native_bindings_preserve_optimized_attributes():
     combined = inspect.signature(native.dpointnet_combined_sweep_csr_master).parameters
     for name in ("cooperative_rows", "fanout_rows", "gather_sources", "target_tile_size"):
         assert name in combined
-    forward = inspect.signature(native.dpointnet_csr_spike_forward).parameters
-    assert forward["csr_master_weights"].default is False
+    develop_forward = inspect.signature(native.dpointnet_csr_spike_forward).parameters
+    assert not {"csr_master_weights", "uint8_types", "W"} & set(develop_forward)
+    forward = inspect.signature(native.dpointnet_csr_spike_forward_csr_master).parameters
+    assert forward["uint8_types"].default is False and forward["vjp_only"].default is True
     weight_grad = inspect.signature(native.dpointnet_csr_weight_grad).parameters
     assert weight_grad["write_csr_weight_gradient"].default is False
     for name in ("dpointnet_csr_spike_grad_csr_master", "dpointnet_csr_spike_grad_accumulate_csr_master"):
@@ -181,9 +183,9 @@ def test_actual_native_while_vjp_graph_traces_without_gpu_execution(monkeypatch,
         "DpointnetCsrSpikeGradAccumulateCsrMaster" if carrier_enabled
         else "DpointnetCsrSpikeGradCsrMaster"
     ) in names
-    forward = [node for node in nodes if node.op == "DpointnetCsrSpikeForward"]
-    assert forward and all(node.attr["csr_master_weights"].b for node in forward)
-    assert all(tf.as_dtype(node.attr["W"].type) == tf.float32 for node in forward)
+    assert "DpointnetCsrSpikeForward" not in names
+    forward = [node for node in nodes if node.op == "DpointnetCsrSpikeForwardCsrMaster"]
+    assert forward and all(node.attr["vjp_only"].b for node in forward)
     assert not names.intersection({"DpointnetCsrReorder", "DpointnetCsrRestore"})
     weight_vjps = [node for node in nodes if node.op == "DpointnetCsrWeightGrad"]
     assert all(node.attr["write_csr_weight_gradient"].b for node in weight_vjps)
@@ -207,7 +209,7 @@ def test_carrier_boundary_keeps_live_canonical_weights_with_cpu_native_oracle(mo
     seen = []
 
     def forward(spikes, master, routing, weights, coefficients, scale, *unused, **options):
-        assert options["vjp_only"] and options["csr_master_weights"]
+        assert options["vjp_only"] and "csr_master_weights" not in options
         assert weights.dtype == tf.float32
         # Match the producer's resource input position for the retained carrier wrapper.
         return tf.raw_ops.IdentityN(input=[
@@ -224,7 +226,7 @@ def test_carrier_boundary_keeps_live_canonical_weights_with_cpu_native_oracle(mo
         return tf.cast(dz * tf.cast(scale, tf.float32), spikes.dtype), seed + tf.gather(dw, order)
 
     monkeypatch.setattr(ops, "_OPS", SimpleNamespace(
-        dpointnet_csr_spike_forward=forward,
+        dpointnet_csr_spike_forward_csr_master=forward,
         dpointnet_csr_spike_grad_accumulate=lambda *a, **k: None,
         dpointnet_csr_spike_grad_accumulate_csr_master=accumulate,
     ))

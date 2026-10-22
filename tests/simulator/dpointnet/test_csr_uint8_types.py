@@ -12,7 +12,7 @@ from bmtk.simulator.dpointnet.csr_master import CsrMasterLayout
 
 
 NAMES = (
-    "dpointnet_csr_spike_forward", "dpointnet_csr_weight_grad",
+    "dpointnet_csr_spike_forward_csr_master", "dpointnet_csr_weight_grad",
     "dpointnet_csr_spike_grad_csr_master",
     "dpointnet_csr_spike_grad_accumulate_csr_master",
     "dpointnet_combined_sweep_csr_master",
@@ -228,7 +228,7 @@ def test_gpu_fp64_forward_spike_weight_and_queue_gather_oracles(monkeypatch, ind
             graph = run.get_concrete_function().graph.as_graph_def()
             nodes = [*graph.node, *(n for f in graph.library.function for n in f.node_def)]
             consumers = [n for n in nodes if n.op in (
-                "DpointnetCsrSpikeForward", "DpointnetCsrSpikeGradCsrMaster", "DpointnetCombinedSweepCsrMaster",
+                "DpointnetCsrSpikeForwardCsrMaster", "DpointnetCsrSpikeGradCsrMaster", "DpointnetCombinedSweepCsrMaster",
             )]
             assert len(consumers) == 3
             assert all(n.attr["uint8_types"].b == conn["uint8_types"] for n in consumers)
@@ -462,7 +462,7 @@ def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(tmp_path
         graph = candidate[4][1].get_concrete_function().graph.as_graph_def()
         nodes = [*graph.node, *(n for f in graph.library.function for n in f.node_def)]
         consumers = [n for n in nodes if n.op in (
-            "DpointnetCsrSpikeForward", "DpointnetCsrWeightGrad", "DpointnetCsrSpikeGradCsrMaster",
+            "DpointnetCsrSpikeForwardCsrMaster", "DpointnetCsrWeightGrad", "DpointnetCsrSpikeGradCsrMaster",
             "DpointnetCsrSpikeGradAccumulateCsrMaster", "DpointnetCombinedSweepCsrMaster",
         )]
         assert consumers and all(n.attr["uint8_types"].b for n in consumers)

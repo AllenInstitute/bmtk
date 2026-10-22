@@ -645,12 +645,30 @@ def restore_csr_values(values, connectivity):
     )
 
 
+# Op type of the VJP-only producer over CSR-ordered FP32 masters. The develop
+# DpointnetCsrSpikeForward schema is unchanged, so GraphDefs serialized before
+# CSR masters existed import and differentiate as before.
+CSR_MASTER_FORWARD_OP = "DpointnetCsrSpikeForwardCsrMaster"
+
+
+def _optional_bool_attr(op, name):
+    """``op``'s boolean attribute, False when its (older) schema lacks it."""
+    try:
+        return bool(op.get_attr(name))
+    except (ValueError, TypeError):
+        return False
+
+
 @ops.RegisterGradient("DpointnetCsrSpikeForward")
+@ops.RegisterGradient(CSR_MASTER_FORWARD_OP)
 def _fused_spike_currents_gradient(op, current_grad):
+    # Resolved once from the op type: only the CSR-master proxy carries FP32
+    # masters and the uint8 type tail, so develop-schema nodes and libraries
+    # without these attributes take the canonical gradient operators.
+    csr_master_weights = op.type == CSR_MASTER_FORWARD_OP
     type_options = (
         {"uint8_types": True}
-        if "uint8_types" in inspect.signature(_OPS.dpointnet_csr_spike_forward).parameters
-        and op.get_attr("uint8_types") else {}
+        if csr_master_weights and _optional_bool_attr(op, "uint8_types") else {}
     )
     compute_spike_gradient = op.get_attr("compute_spike_gradient")
     compute_weight_gradient = op.get_attr("compute_weight_gradient")
@@ -659,7 +677,7 @@ def _fused_spike_currents_gradient(op, current_grad):
     if compute_spike_gradient:
         gradient_operator = (
             _OPS.dpointnet_csr_spike_grad_csr_master
-            if op.get_attr("csr_master_weights") else _OPS.dpointnet_csr_spike_grad
+            if csr_master_weights else _OPS.dpointnet_csr_spike_grad
         )
         spike_grad, weight_grad = gradient_operator(
             op.inputs[0],
@@ -674,7 +692,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
             write_csr_weight_gradient=(
-                op.get_attr("write_csr_weight_gradient") or op.get_attr("csr_master_weights")
+                op.get_attr("write_csr_weight_gradient") or csr_master_weights
             ),
             use_small_batch_backward=op.get_attr("use_small_batch_backward"),
             use_javier_batch32_backward=False,
@@ -695,7 +713,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
-            **({"write_csr_weight_gradient": True} if op.get_attr("csr_master_weights") else {}),
+            **({"write_csr_weight_gradient": True} if csr_master_weights else {}),
         )
     else:
         spike_grad = None
@@ -990,7 +1008,11 @@ def fused_spike_currents(
     elif initial_currents.shape.num_elements() == 0:
         raise ValueError("A rank-two initial_currents tensor must be nonempty.")
 
-    return _OPS.dpointnet_csr_spike_forward(
+    forward = (
+        _OPS.dpointnet_csr_spike_forward_csr_master
+        if csr_master_weights else _OPS.dpointnet_csr_spike_forward
+    )
+    return forward(
         spikes,
         master_weights,
         connectivity["metadata_handle"],
@@ -1015,7 +1037,6 @@ def fused_spike_currents(
         write_csr_weight_gradient=write_csr_weight_gradient,
         use_small_batch_backward=use_small_batch_backward,
         vjp_only=vjp_only,
-        **({"csr_master_weights": True} if csr_master_weights else {}),
         **type_options,
     )
 
@@ -1079,11 +1100,11 @@ _CSR_MASTER_OPERATORS = (
     ("dpointnet_csr_spike_grad_csr_master", ("write_csr_weight_gradient",)),
     ("dpointnet_csr_spike_grad_accumulate_csr_master", ("write_csr_weight_gradient",)),
     ("dpointnet_csr_weight_grad", ("write_csr_weight_gradient",)),
-    ("dpointnet_csr_spike_forward", ("csr_master_weights",)),
+    ("dpointnet_csr_spike_forward_csr_master", ()),
 )
 # Every native consumer of per-edge synapse types must read the uint8 tail.
 _UINT8_TYPE_OPERATORS = (
-    "dpointnet_csr_spike_forward", "dpointnet_csr_weight_grad",
+    "dpointnet_csr_spike_forward_csr_master", "dpointnet_csr_weight_grad",
     "dpointnet_csr_spike_grad_csr_master",
     "dpointnet_csr_spike_grad_accumulate_csr_master",
     "dpointnet_combined_sweep_csr_master",

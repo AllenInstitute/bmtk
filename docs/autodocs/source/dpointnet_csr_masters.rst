@@ -173,7 +173,10 @@ carrier accumulation remain the baseline mechanisms.
 Native hooks are ``dpointnet_combined_sweep_csr_master``,
 ``dpointnet_csr_spike_grad_csr_master`` and
 ``dpointnet_csr_spike_grad_accumulate_csr_master``. The retained producer is
-``dpointnet_csr_spike_forward(csr_master_weights=True, vjp_only=True)``.
+the separately named VJP-only proxy ``dpointnet_csr_spike_forward_csr_master``
+(op type ``DpointnetCsrSpikeForwardCsrMaster``, FP32 ``weights``, optional
+``uint8_types``); ``DpointnetCsrSpikeForward`` keeps its previous schema, so
+GraphDefs and SavedModels serialized before CSR masters existed import unchanged.
 The acceleration-report marker is ``optimized_combined_csr_fp32_master``.
 These hooks prove selection, not executed-kernel coverage.
 

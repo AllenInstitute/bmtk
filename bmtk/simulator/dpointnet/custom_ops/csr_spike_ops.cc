@@ -180,12 +180,46 @@ REGISTER_OP("DpointnetCsrRestore")
       return absl::OkStatus();
     });
 
+// Shared by the develop forward op and its CSR-master proxy (same input order).
+static absl::Status CsrSpikeForwardShape(InferenceContext* context) {
+  ShapeHandle spikes;
+  ShapeHandle basis;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(4), 2, &basis));
+  ShapeHandle spike_gradient_scale;
+  TF_RETURN_IF_ERROR(context->WithRank(
+      context->input(5), 0, &spike_gradient_scale));
+  ShapeHandle active_rows;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(6), 1, &active_rows));
+  ShapeHandle incoming_pre_ids;
+  ShapeHandle incoming_edge_ids;
+  ShapeHandle incoming_types;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(7), 1, &incoming_pre_ids));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(8), 1, &incoming_edge_ids));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(9), 1, &incoming_types));
+  ShapeHandle initial = context->input(10);
+  if (context->RankKnown(initial) && context->Rank(initial) != 1 &&
+      context->Rank(initial) != 2) {
+    return absl::InvalidArgumentError(
+        "initial currents must be an empty vector or rank two");
+  }
+  int n_post;
+  TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
+  DimensionHandle flattened_batch;
+  TF_RETURN_IF_ERROR(context->Multiply(
+      context->Dim(spikes, 0), n_post, &flattened_batch));
+  context->set_output(
+      0, context->Matrix(flattened_batch, context->Dim(basis, 1)));
+  return absl::OkStatus();
+}
+
+// Schema identical to develop so serialized GraphDefs and SavedModels import
+// unchanged; CSR-ordered FP32 masters use DpointnetCsrSpikeForwardCsrMaster.
 REGISTER_OP("DpointnetCsrSpikeForward")
-    .Attr("uint8_types: bool = false")
     .Input("spikes: T")
     .Input("master_weights: Tmaster")
     .Input("metadata: resource")
-    .Input("weights: W")
+    .Input("weights: T")
     .Input("basis: T")
     .Input("spike_gradient_scale: T")
     .Input("active_rows: int64")
@@ -195,7 +229,6 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Input("initial: T")
     .Attr("T: {half, float}")
     .Attr("Tmaster: {half, float}")
-    .Attr("W: {half, float}")
     .Attr("Tindex: {uint32, int64}")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
@@ -211,39 +244,43 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Attr("use_small_batch_backward: bool = false")
     .Attr("use_javier_batch32_backward: bool = false")
     .Attr("vjp_only: bool = false")
-    .Attr("csr_master_weights: bool = false")
     .Output("currents: T")
-    .SetShapeFn([](InferenceContext* context) -> absl::Status {
-      ShapeHandle spikes;
-      ShapeHandle basis;
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(4), 2, &basis));
-        ShapeHandle spike_gradient_scale;
-        TF_RETURN_IF_ERROR(context->WithRank(
-          context->input(5), 0, &spike_gradient_scale));
-      ShapeHandle active_rows;
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(6), 1, &active_rows));
-      ShapeHandle incoming_pre_ids;
-      ShapeHandle incoming_edge_ids;
-      ShapeHandle incoming_types;
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(7), 1, &incoming_pre_ids));
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(8), 1, &incoming_edge_ids));
-      TF_RETURN_IF_ERROR(context->WithRank(context->input(9), 1, &incoming_types));
-      ShapeHandle initial = context->input(10);
-      if (context->RankKnown(initial) && context->Rank(initial) != 1 &&
-          context->Rank(initial) != 2) {
-        return absl::InvalidArgumentError(
-            "initial currents must be an empty vector or rank two");
-      }
-      int n_post;
-      TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
-      DimensionHandle flattened_batch;
-      TF_RETURN_IF_ERROR(context->Multiply(
-          context->Dim(spikes, 0), n_post, &flattened_batch));
-      context->set_output(
-          0, context->Matrix(flattened_batch, context->Dim(basis, 1)));
-      return absl::OkStatus();
-    });
+    .SetShapeFn(CsrSpikeForwardShape);
+
+// VJP-only producer over CSR-ordered FP32 master weights (zeros forward; the
+// registered gradient supplies the joint-sweep VJP).
+REGISTER_OP("DpointnetCsrSpikeForwardCsrMaster")
+    .Attr("uint8_types: bool = false")
+    .Input("spikes: T")
+    .Input("master_weights: Tmaster")
+    .Input("metadata: resource")
+    .Input("weights: float")
+    .Input("basis: T")
+    .Input("spike_gradient_scale: T")
+    .Input("active_rows: int64")
+    .Input("incoming_pre_ids: Tindex")
+    .Input("incoming_edge_ids: Tindex")
+    .Input("incoming_types: Tindex")
+    .Input("initial: T")
+    .Attr("T: {half, float}")
+    .Attr("Tmaster: {half, float}")
+    .Attr("Tindex: {uint32, int64}")
+    .Attr("n_post: int >= 1")
+    .Attr("n_edges: int >= 0")
+    .Attr("n_pairs: int >= 0")
+    .Attr("compute_spike_gradient: bool")
+    .Attr("compute_weight_gradient: bool = true")
+    .Attr("use_grouped_batch32_forward: bool = false")
+    .Attr("use_fixed4_forward: bool = false")
+    .Attr("use_forward_run_aggregation: bool = false")
+    .Attr("use_device_active_queue_forward: bool = false")
+    .Attr("use_packed_sm120_backward: bool = false")
+    .Attr("write_csr_weight_gradient: bool = false")
+    .Attr("use_small_batch_backward: bool = false")
+    .Attr("use_javier_batch32_backward: bool = false")
+    .Attr("vjp_only: bool = true")
+    .Output("currents: T")
+    .SetShapeFn(CsrSpikeForwardShape);
 
 REGISTER_OP("DpointnetCombinedSweep")
     .Input("spikes: N * T")
