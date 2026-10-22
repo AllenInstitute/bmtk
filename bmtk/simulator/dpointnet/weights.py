@@ -22,8 +22,17 @@ class ModelWeights:
             self._networks = ['<recurrent>'] + self.rnn.inputs_populations
 
         self._network_weights = {}
+        csr_masters = getattr(cell, '_csr_master_weights', False)
         for name in self._networks:
-            model_vals = cell.recurrent_weight_values if name == '<recurrent>' else self.cell.inputs[name]['input_weight_values']
+            if deep_copy and csr_masters:
+                # Deep copies snapshot canonical rows; live exports keep the CSR-ordered
+                # master and to_dataframe() converts it when exporting.
+                self._network_weights[name] = self._copy_to_host(cell.canonical_weight_values(name))
+                continue
+            model_vals = (
+                cell.recurrent_weight_values if name == '<recurrent>'
+                else self.cell.inputs[name]['input_weight_values']
+            )
             model_vals = self._copy_to_host(model_vals) if deep_copy else model_vals
             self._network_weights[name] = model_vals
 
@@ -51,6 +60,8 @@ class ModelWeights:
     def to_dataframe(self, cache=False):
         ret_df = None
         for netname, netweights in self._network_weights.items():
+            if not self.deep_copy and getattr(self.cell, '_csr_master_weights', False):
+                netweights = self.cell.canonical_weight_values(netname)
             netadaptor = self.rnn.get_network(netname)
             conn_table_df = netadaptor.connection_table
             # Recover physical syn_weight from the internally-scaled weights the cell trains on
@@ -60,6 +71,12 @@ class ModelWeights:
                 export_factor = self.cell._recurrent_export_factor
             else:
                 export_factor = self.cell.inputs[netname]['export_factor']
+            if getattr(self.cell, '_csr_host_lifecycle', False):
+                layout = (
+                    self.cell.recurrent_master_layout if netname == '<recurrent>'
+                    else self.cell.inputs[netname]['master_layout']
+                )
+                export_factor = layout.host_to_canonical(export_factor)
             netweights_np = netweights.numpy() if hasattr(netweights, 'numpy') else netweights
             conn_table_df['syn_weight'] = np.asarray(netweights_np, dtype=np.float32) * export_factor
             order = netadaptor.canonical_edge_order

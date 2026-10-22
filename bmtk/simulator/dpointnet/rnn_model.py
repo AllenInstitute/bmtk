@@ -544,7 +544,14 @@ class RNN:
                     if cell_params.get("temporal_checkpoint_chunk_size", size) != size:
                         raise ValueError("Cell temporal and training checkpoint chunk sizes conflict.")
                     cell_params["temporal_checkpoint_chunk_size"] = size
-                cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
+                # Automatic packing applies to segmented recomputation; the FP32 temporal
+                # adjoint keeps unpacked checkpoints unless packing is explicitly requested.
+                explicit_packing = getattr(
+                    self.training_engine, "pack_spike_checkpoints_explicit",
+                    self.training_engine.pack_spike_checkpoints,
+                )
+                if explicit_packing is not None:
+                    cell_params["temporal_pack_spike_checkpoints"] = explicit_packing
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
         combined_auto = False
@@ -562,6 +569,10 @@ class RNN:
                     self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
                 ),
                 sequence_length=self._declared_sequence_length(),
+                bptt_training=(
+                    None if self.training_engine is None
+                    else bool(getattr(self.training_engine.learning_rule, "uses_bptt", True))
+                ),
             )
             cell_params["_performance_auto_context"] = context
             basis = cell_params.get("tau_basis")
@@ -921,11 +932,13 @@ class RNN:
         with self.strategy.scope():
             optimizer = training_engine.optimizer
             training_engine.learning_rule.build(self)
-            if self.dtype == tf.float16 and not optimizers.optimizer_supports_loss_scaling(optimizer):
-                # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
-                # must be built and applied as the active optimizer, especially under Keras 3.
-                from tensorflow.keras import mixed_precision as mixed_precision_module
-                optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
+            # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
+            # must be built and applied as the active optimizer, especially under Keras 3.
+            # A wrapper prepared earlier (TrainingEngine.build_optimizer before a
+            # checkpoint restore) is reused, never replaced or rebuilt.
+            wrapped = optimizers.loss_scale_optimizer_for(optimizer, self.dtype)
+            if wrapped is not optimizer:
+                optimizer = wrapped
                 training_engine.set_optimizer(optimizer)
                 io.log_info(
                     'Mixed-precision optimizer loss scaling enabled with '
@@ -938,7 +951,13 @@ class RNN:
                     surface.variable
                     for surface in training_engine.learning_rule.weight_surfaces
                 ]
-            optimizer.build(optimizer_variables)
+            if not optimizers.optimizer_is_built(optimizer):
+                # Keras 3 LossScaleOptimizer.build recreates its loss-scale variables.
+                optimizers.build_optimizer(optimizer, optimizer_variables)
+            bind_slots = getattr(self._cell, "bind_optimizer_checkpoint_slots", None)
+            if bind_slots is not None:
+                # CSR-ordered masters: optimizer slots join the canonical checkpoint format.
+                bind_slots(optimizer)
 
         training_engine.train()
 
@@ -1292,7 +1311,7 @@ class RNN:
             gradient_checkpoint_chunk_size = train_dict.get(
                 "gradient_checkpoint_chunk_size", UNSET
             )
-            pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", False)
+            pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", "auto")
             regenerate_initial_state_each_epoch = train_dict.get(
                 "regenerate_initial_state_each_epoch", True
             )

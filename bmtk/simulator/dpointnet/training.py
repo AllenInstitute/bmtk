@@ -1,10 +1,12 @@
+import contextlib
+
 import tensorflow as tf
 import numpy as np
 import pandas as pd
 import copy
 
 from . import optimizers
-from ._options import UNSET
+from ._options import UNSET, validate_bool_option
 from .callbacks import Callbacks
 from .callbacks import callback_classes
 from .io_tools import io
@@ -14,6 +16,28 @@ from .learning_rules import LearningRuleObservations
 from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
 from .loss_functions import loss_utils
 from .loss_functions.weight_regularization import weight_regularization_scope
+
+
+def _live_master_gradients(variables, gradients):
+    return gradients
+
+
+def _binary_spike_checkpoint_state(rnn):
+    """Whether the RNN cell's first state is the binary GLIF3 spike buffer."""
+    from .cell_models.glif3_cell import GLIF3Cell
+
+    cell = getattr(rnn, "_cell", None)
+    if cell is None:
+        cell_cls = getattr(rnn, "cell_cls", None)
+        return isinstance(cell_cls, type) and issubclass(cell_cls, GLIF3Cell)
+    if not isinstance(cell, GLIF3Cell):
+        return False
+    try:
+        _, names = cell.zero_state(1, tf.float32, with_names=True)
+    except (TypeError, ValueError):
+        return False
+    return bool(names) and names[0] == "z0_buf"
+
 
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
@@ -146,7 +170,7 @@ class TrainingEngine:
         self._gradient_checkpoint_chunk_size = (
             UNSET if chunk_size is UNSET else int(chunk_size)
         )
-        self.pack_spike_checkpoints = bool(kwargs.get("pack_spike_checkpoints", False))
+        self.pack_spike_checkpoints = kwargs.get("pack_spike_checkpoints", "auto")
         if chunk_size is not UNSET and self._gradient_checkpoint_chunk_size < 1:
             raise ValueError("gradient_checkpoint_chunk_size must be positive.")
         self.regenerate_initial_state_each_epoch = kwargs.get(
@@ -170,6 +194,31 @@ class TrainingEngine:
     @property
     def optimizer(self):
         return self._optimizer
+
+    @property
+    def pack_spike_checkpoints(self):
+        """Whether segmented recomputation stores bit-packed spike checkpoints.
+
+        Default ``"auto"`` packs (63 spikes per on-device int64 word) when the cell's
+        first recurrent state is the binary spike buffer of the GLIF3 family; other
+        cells keep unpacked checkpoints. Explicit booleans are used as given.
+        """
+        if self._pack_spike_checkpoints != "auto":
+            return self._pack_spike_checkpoints
+        return _binary_spike_checkpoint_state(self.rnn)
+
+    @pack_spike_checkpoints.setter
+    def pack_spike_checkpoints(self, value):
+        if value is None or value is UNSET:
+            value = "auto"
+        if value != "auto":
+            validate_bool_option(value, "pack_spike_checkpoints")
+        self._pack_spike_checkpoints = value
+
+    @property
+    def pack_spike_checkpoints_explicit(self):
+        """The explicit boolean request, or None when automatic."""
+        return None if self._pack_spike_checkpoints == "auto" else self._pack_spike_checkpoints
 
     @property
     def adjusted_batch_size(self):
@@ -237,6 +286,90 @@ class TrainingEngine:
 
     def set_optimizer(self, optimizer):
         self._optimizer = optimizer
+        self._checkpoint_slots_optimizer = None
+
+    def _optimizer_update_variables(self):
+        if self.learning_rule.uses_bptt:
+            model = getattr(self.rnn, "model", None)
+            return None if model is None else list(model.trainable_variables)
+        surfaces = getattr(self.learning_rule, "weight_surfaces", None)
+        return [surface.variable for surface in surfaces] if surfaces else None
+
+    def _build_optimizer_state(self):
+        if optimizers.optimizer_is_built(self.optimizer):
+            return True
+        variables = self._optimizer_update_variables()
+        if not variables:
+            return False
+        strategy = getattr(self.rnn, "strategy", None)
+        with tf.init_scope(), (strategy.scope() if strategy is not None else contextlib.nullcontext()):
+            optimizers.build_optimizer(self.optimizer, variables)
+        return True
+
+    def prepare_optimizer(self):
+        """Return the optimizer that training applies, wrapping it once for float16.
+
+        Mixed-float16 models (``rnn.dtype`` float16) train through a
+        ``LossScaleOptimizer``; the wrapper replaces ``self.optimizer`` here, and
+        ``RNN.train`` reuses it instead of creating another one.
+        """
+        optimizer = self.optimizer
+        strategy = getattr(self.rnn, "strategy", None)
+        with strategy.scope() if strategy is not None else contextlib.nullcontext():
+            wrapped = optimizers.loss_scale_optimizer_for(
+                optimizer, getattr(self.rnn, "dtype", None)
+            )
+        if wrapped is not optimizer:
+            self.set_optimizer(wrapped)
+            io.log_info(
+                'Mixed-precision optimizer loss scaling enabled with LossScaleOptimizer.'
+            )
+        return wrapped
+
+    def build_optimizer(self):
+        """Build the optimizer that ``train`` will apply and bind CSR-master slots.
+
+        Resume flow: build the RNN, call this, restore ``tf.train.Checkpoint(model=...,
+        optimizer=engine.optimizer)``, then train. For a float16 model the optimizer is
+        first wrapped in the ``LossScaleOptimizer`` that ``RNN.train`` uses, so read
+        ``engine.optimizer`` after this call; restoring into that exact object restores
+        the loss scale and the slots, and training continues with it. Restoring after
+        the build also restores weights that Keras 3 checkpoints only through the
+        optimizer's variable list (trainable named-input weights), which
+        ``optimizer.build`` replaces. The update variables are the model's trainable
+        variables for BPTT, else the built learning rule's weight surfaces. Returns
+        False when they are not known yet.
+        """
+        if self.optimizer is None:
+            raise ValueError("Set an optimizer before building it.")
+        self.prepare_optimizer()
+        if not self._build_optimizer_state():
+            return False
+        return self.bind_optimizer_checkpoint_slots()
+
+    def bind_optimizer_checkpoint_slots(self, *, after_update=False):
+        """Bind CSR-master optimizer slots to the canonical checkpoint format.
+
+        ``train`` and ``train_step`` call this before the first update, building an
+        unbuilt optimizer first, so CSR-ordered slots restored by a
+        ``tf.train.Checkpoint`` before or after the build are converted correctly.
+        Returns False when the optimizer could not be built yet. No-op without
+        CSR-ordered masters.
+        """
+        cell = getattr(self.rnn, "_cell", None)
+        if not getattr(cell, "_csr_master_weights", False):
+            return True
+        optimizer = self.optimizer
+        if optimizer is None:
+            return True
+        if getattr(self, "_checkpoint_slots_optimizer", None) is optimizer:
+            return True
+        if not after_update and not self._build_optimizer_state():
+            return False
+        with tf.init_scope():
+            cell.bind_optimizer_checkpoint_slots(optimizer, after_update=after_update)
+        self._checkpoint_slots_optimizer = optimizer
+        return True
 
     @property
     def learning_rule(self):
@@ -586,6 +719,7 @@ class TrainingEngine:
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
         )
+        csr_live_masters = getattr(cell, "_csr_master_weights", False)
         if self._extractor_forward is not None:
             return
         if not self.gradient_checkpointing and not use_direct_csr_gradient:
@@ -596,9 +730,13 @@ class TrainingEngine:
             )
         if not self.gradient_checkpointing:
             self._extractor_forward = FullBPTTGradientRunner(
-                self.rnn.extractor_model, cell.restore_segmented_variable_gradients
+                self.rnn.extractor_model,
+                _live_master_gradients if csr_live_masters
+                else cell.restore_segmented_variable_gradients,
             )
             io.log_info(
+                "Full BPTT with live CSR-master gradients enabled."
+                if csr_live_masters else
                 "Full BPTT with one canonical recurrent-gradient restore enabled."
             )
             return
@@ -611,7 +749,7 @@ class TrainingEngine:
             pack_spike_checkpoints=self.pack_spike_checkpoints,
             variable_gradient_transform=(
                 cell.restore_segmented_variable_gradients
-                if use_direct_csr_gradient
+                if use_direct_csr_gradient and not csr_live_masters
                 else None
             ),
         )
@@ -1003,6 +1141,14 @@ class TrainingEngine:
 
     def train_step(self, x, y, init_state):
         """Apply one update; process collectives run outside TensorFlow graphs."""
+        ready = self.bind_optimizer_checkpoint_slots()
+        metrics = self._train_step_unbound(x, y, init_state)
+        if not ready:
+            # The update built the optimizer; restored-but-unbound CSR slots now raise.
+            self.bind_optimizer_checkpoint_slots(after_update=True)
+        return metrics
+
+    def _train_step_unbound(self, x, y, init_state):
         parallel = getattr(self.rnn, "data_parallel", None)
         if not getattr(parallel, "process_based", False):
             return self._distributed_train_step(x, y, init_state)
@@ -1228,9 +1374,12 @@ class TrainingEngine:
                     else:
                         spikes, ys = values
                     if self.training_approach == "series_accumulate":
+                        ready = self.bind_optimizer_checkpoint_slots()
                         step_loss_vals = self._distributed_train_step_series_accumulate(
                             spikes, ys, init_state=init_state
                         )
+                        if not ready:
+                            self.bind_optimizer_checkpoint_slots(after_update=True)
                     else:
                         step_loss_vals = self.train_step(
                             spikes, ys, init_state=init_state

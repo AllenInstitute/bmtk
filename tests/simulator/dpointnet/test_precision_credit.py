@@ -748,7 +748,7 @@ def test_actual_legacy_compute_factory_executes_auto_weight_carrier(monkeypatch)
     from bmtk.simulator.dpointnet.training import TrainingEngine
 
     if not csr_spike_ops._auto_native_architecture(csr_spike_ops._gpu_compute_architecture()):
-        pytest.skip("Published automatic native policy requires SM75/SM86+")
+        pytest.skip("Published automatic native policy requires SM70+")
     network, inputs, options = make_cell(
         selective=False, return_spec=True, track_voltage_penalty=False,
         return_voltage_sequences=True, use_direct_state_rnn_loop=True,

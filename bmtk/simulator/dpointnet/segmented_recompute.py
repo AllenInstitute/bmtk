@@ -1,7 +1,10 @@
 import tensorflow as tf
 from tensorflow.python.eager import record
 
-_PACKED_SPIKES_PER_WORD = 31
+_PACKED_SPIKES_PER_WORD = 63
+# int64 keeps every packing op on GPU; int32 bitwise/pad/reshape/cast GPU kernels
+# keep their data in host memory, which copied each boundary state to the host.
+_PACKED_CHECKPOINT_DTYPE = tf.int64
 
 
 def _checkpoint_dtype(dtype):
@@ -16,22 +19,26 @@ def _pack_spikes(spikes):
         raise ValueError(
             "Packed spike checkpoints require a rank-two state with a static width."
         )
+    work_dtype = spikes.dtype if spikes.dtype.is_floating else tf.float32
+    bits = tf.cast(tf.not_equal(spikes, tf.zeros((), spikes.dtype)), work_dtype)
     padding = (-width) % _PACKED_SPIKES_PER_WORD
-    bits = tf.cast(tf.not_equal(spikes, tf.zeros((), spikes.dtype)), tf.int32)
     if padding:
         bits = tf.pad(bits, ((0, 0), (0, padding)))
     bits = tf.reshape(bits, (tf.shape(bits)[0], -1, _PACKED_SPIKES_PER_WORD))
-    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=tf.int32)
-    return tf.reduce_sum(tf.bitwise.left_shift(bits, shifts), axis=-1)
+    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=_PACKED_CHECKPOINT_DTYPE)
+    return tf.reduce_sum(
+        tf.bitwise.left_shift(tf.cast(bits, _PACKED_CHECKPOINT_DTYPE), shifts), axis=-1
+    )
 
 
 def _unpack_spikes(packed, width, dtype):
-    """Restore binary spike values from positive int32 words."""
-    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=tf.int32)
+    """Restore binary spike values from nonnegative int64 words."""
+    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=_PACKED_CHECKPOINT_DTYPE)
     bits = tf.bitwise.bitwise_and(
-        tf.bitwise.right_shift(packed[..., tf.newaxis], shifts), 1
+        tf.bitwise.right_shift(packed[..., tf.newaxis], shifts),
+        tf.ones((), _PACKED_CHECKPOINT_DTYPE),
     )
-    spikes = tf.cast(tf.reshape(bits, (tf.shape(packed)[0], -1))[:, :width], dtype)
+    spikes = tf.reshape(tf.cast(bits, dtype), (tf.shape(packed)[0], -1))[:, :width]
     return tf.ensure_shape(spikes, (packed.shape[0], width))
 
 
@@ -182,7 +189,7 @@ class SegmentedRecomputeRunner:
         state_arrays = tuple(
             tf.TensorArray(
                 dtype=(
-                    tf.int32
+                    _PACKED_CHECKPOINT_DTYPE
                     if self.pack_spike_checkpoints and index == 0
                     else _checkpoint_dtype(value.dtype)
                 ),

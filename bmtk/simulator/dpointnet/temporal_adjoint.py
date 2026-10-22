@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.python.framework import cpp_shape_inference_pb2
 from tensorflow.python.ops import handle_data_util
 
-from .segmented_recompute import _pack_spikes, _unpack_spikes
+from .segmented_recompute import _PACKED_CHECKPOINT_DTYPE, _pack_spikes, _unpack_spikes
 from .custom_ops import csr_spike_ops
 
 
@@ -302,7 +302,7 @@ class TemporalAdjointRunner:
         count = tf.size(boundaries) - 1
         state_arrays = tuple(
             tf.TensorArray(
-                tf.int32 if self.pack_spike_checkpoints and index == 0 else value.dtype,
+                _PACKED_CHECKPOINT_DTYPE if self.pack_spike_checkpoints and index == 0 else value.dtype,
                 size=count + 1,
                 clear_after_read=False,
             ).write(

@@ -333,6 +333,13 @@ def fused_nest_state(
             raise RuntimeError("VoltageRateFloor requires rebuilt fused NEST state operators.")
         forward_options["emit_pre_reset_voltage"] = True
 
+    def opaque(branch):
+        # Stop gradients inside conditional branches: differentiating an enclosing
+        # while loop (or a tape around the VJP) otherwise builds If-branch gradients
+        # that reach these operators, which have no registered gradients. The custom
+        # gradient of ``transition`` owns the state VJP.
+        return lambda: tuple(tf.stop_gradient(value) for value in branch())
+
     @tf.custom_gradient
     def transition(*arguments):
         layout = "soa" if dtype == tf.float32 else "aos"
@@ -379,7 +386,9 @@ def fused_nest_state(
             elif device_dispatch:
                 outputs = type_indexed_forward()
             else:
-                outputs = tf.cond(type_identity_arg, type_indexed_forward, full_forward)
+                outputs = tf.cond(
+                    type_identity_arg, opaque(type_indexed_forward), opaque(full_forward),
+                )
         else:
             outputs = forward(
                 *arguments[:6], kernel_coefficients, *arguments[8:11],
@@ -534,7 +543,9 @@ def fused_nest_state(
                 elif device_dispatch:
                     gradients = type_indexed_backward()
                 else:
-                    gradients = tf.cond(type_identity_arg, type_indexed_backward, full_backward)
+                    gradients = tf.cond(
+                        type_identity_arg, opaque(type_indexed_backward), opaque(full_backward),
+                    )
             else:
                 gradients = full_backward()
             if fuse_history:

@@ -191,8 +191,12 @@ calculated. It is enabled by default:
      - ``min(25, sequence length)``
      - Chunk length in simulation steps, not always milliseconds.
    * - ``pack_spike_checkpoints``
-     - ``false``
-     - Additional packing of binary spike-history states.
+     - ``"auto"``
+     - Bit-pack the binary spike-history state at segment boundaries into
+       on-device int64 words (63 spikes per word). ``"auto"`` packs for GLIF3
+       cells, whose first recurrent state is the binary spike buffer, and keeps
+       other cell classes unpacked. ``false`` restores unpacked checkpoints.
+       Nonzero values are treated as spikes, so only binary states are lossless.
    * - ``regenerate_initial_state_each_epoch``
      - ``true``
      - Regenerate the configured initial state at epoch boundaries.
@@ -202,8 +206,13 @@ calculated. It is enabled by default:
 
 Set ``gradient_checkpointing=false`` to disable recomputation. The chunk size
 must be between one and the sequence length. Smaller chunks change memory and
-recomputation costs, not the intended temporal derivative. Spike packing is
-optional and leaves continuous neuron states unpacked.
+recomputation costs, not the intended temporal derivative. Spike packing leaves
+continuous neuron states unpacked; outputs and gradients are identical to the
+unpacked route. On the V1 reference workload (RTX 3090) it cost about 0.5-0.6 percent update
+time at batch 1, 16 and 32 while lowering the stored boundary payload by roughly
+7 MB per sample; it gives no saving at batch 1. The FP32 temporal-adjoint route
+(``temporal_gradient_precision="float32"``) keeps unpacked checkpoints unless
+``pack_spike_checkpoints`` is set explicitly.
 The omitted chunk size follows the effective training-parameter sequence length,
 including a shorter per-condition length; an explicit size is not silently
 clamped. Existing legacy examples pin checkpointing off to preserve their
@@ -211,6 +220,60 @@ integer-refractory-state training route.
 
 This is different from **saved checkpoints**, which store weights and, when
 explicitly included, optimizer/state variables for later restoration.
+
+Saved checkpoints are written in canonical SONATA edge order regardless of the
+selected weight layout. With ``use_csr_master_weights`` (the automatic default on
+admitted GPU routes, see :doc:`dpointnet_performance`) the live FP32 masters,
+their endpoint indices and paired Adam/SGD slots are stored in CSR order, but each
+is serialized as a host-converted canonical copy under the ordinary variable key;
+compute-shadow entries that canonical-order models track are written as the cast
+master values. Consequently ``tf.train.Checkpoint(model=..., optimizer=...)``
+checkpoints restore in both directions between models built with and without
+CSR masters, including checkpoints written before this option existed, and
+``assert_consumed()`` holds when the remaining configuration matches. Saving never
+reorders live variables. Restoring endpoint indices that differ from the model's
+connectivity raises.
+
+``RNN.train`` and ``TrainingEngine`` (``train``/``train_step``) build the optimizer
+and pair its slots with the CSR masters before the first update, so a checkpoint
+restored before or after the optimizer is built restores the slots in the right
+order. To resume a run in either layout:
+
+.. code-block:: python
+
+   rnn.build(training=True)
+   rnn.training_engine.build_optimizer()   # build before restoring
+   tf.train.Checkpoint(model=rnn.model, optimizer=rnn.training_engine.optimizer).restore(path)
+   rnn.train()
+
+``build_optimizer()`` prepares the exact optimizer object that ``rnn.train()``
+applies: for a mixed-float16 model it first wraps the configured optimizer in the
+``LossScaleOptimizer`` that training uses and stores it as
+``rnn.training_engine.optimizer``, so read that attribute after the call (as above)
+and save checkpoints from it as well. Restoring into it restores the loss scale with
+the slots, and ``rnn.train()`` reuses it without re-wrapping or rebuilding it.
+
+Build the optimizer before restoring: under Keras 3, trainable named-input weights
+are checkpointed only through the optimizer's variable list, which building the
+optimizer replaces, so a restore issued earlier does not restore them in either
+layout. A CSR-master model then raises when binding instead of continuing from
+unrestored weights; a canonical-order model keeps its unrestored values, as before
+this option existed. Custom loops that apply the optimizer themselves call
+``rnn.cell.bind_optimizer_checkpoint_slots(optimizer)`` after building it and before
+its first update. With CSR masters the supported optimizers are the training
+config's ``adam``, ``exp_adam`` and ``sgd`` and the Keras/TF-Keras Adam, AdamW,
+SGD (momentum, Nesterov), RMSprop (momentum, centered), Adagrad, Adamax, Nadam,
+Adadelta, Ftrl, Lion and Lamb, also with ``use_ema``, Keras 3 gradient
+accumulation or a ``LossScaleOptimizer`` wrapper, and TF-Keras 2 legacy optimizers;
+any other optimizer that tracks a CSR master raises when binding (set
+``use_csr_master_weights=false`` to use it). See :doc:`dpointnet_csr_masters`.
+
+Keras weight
+files (``save_weights``/``load_weights``) store the canonical rows as well; with
+Keras 3 they are interchangeable between layouts, while TF-Keras 2 weight files also
+list canonical models' compute shadows positionally, so a cross-layout load is
+rejected by the variable count (use ``tf.train.Checkpoint`` there).
+Exported SONATA weights (``ModelWeights``) are always canonical.
 
 Voltage regularization without full voltage output
 --------------------------------------------------

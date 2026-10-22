@@ -4,7 +4,10 @@
 
 #include <algorithm>
 #include <limits>
+#include <map>
+#include <memory>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <cub/cub.cuh>
@@ -26,6 +29,41 @@ constexpr int64_t kActiveQueueMaxRows = int64_t{1} << kActiveQueueRowBits;
 constexpr int64_t kActiveQueueMaxBatch = int64_t{1} << (32 - kActiveQueueRowBits);
 constexpr int kDpointnetForwardThreads = 256;
 constexpr int kDpointnetForwardBlocks = 4512;
+
+// Opts ``kernel`` into ``bytes`` of dynamic shared memory after checking the
+// current device's opt-in per-block limit. A failed runtime call must not leave
+// a sticky "last error" behind: CUB and later TensorFlow launches peek at it and
+// would otherwise report unrelated failures (observed on SM75, whose 64 KiB
+// opt-in limit rejects the 4096/5120-target tiles).
+inline Status ConfigureDynamicSharedMemory(const void* kernel, int bytes, const char* what) {
+  int device = 0;
+  int limit = 0;
+  cudaError_t error = cudaGetDevice(&device);
+  if (error == cudaSuccess) {
+    error = cudaDeviceGetAttribute(&limit, cudaDevAttrMaxSharedMemoryPerBlockOptin, device);
+  }
+  cudaFuncAttributes attributes;
+  if (error == cudaSuccess) error = cudaFuncGetAttributes(&attributes, kernel);
+  if (error != cudaSuccess) {
+    cudaGetLastError();
+    return errors::Internal(what, " shared memory limit query failed: ",
+                            cudaGetErrorString(error));
+  }
+  const int64_t total = static_cast<int64_t>(bytes) + attributes.sharedSizeBytes;
+  if (total > limit) {
+    return errors::InvalidArgument(what, " needs ", total, " bytes of shared memory per block (",
+                                   attributes.sharedSizeBytes, " static + ", bytes,
+                                   " dynamic); this device permits at most ", limit,
+                                   ". Choose a narrower tile.");
+  }
+  error = cudaFuncSetAttribute(kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, bytes);
+  if (error != cudaSuccess) {
+    cudaGetLastError();
+    return errors::InvalidArgument("Requested ", what, " shared memory unavailable: ",
+                                   cudaGetErrorString(error));
+  }
+  return OkStatus();
+}
 
 template <typename T>
 __device__ inline float ToFloat(T value) {
@@ -72,6 +110,10 @@ inline int BlockCountFor(int64_t count, int threads, const GPUDevice& device) {
   return static_cast<int>(
       std::max<int64_t>(1, std::min<int64_t>(requested, maximum)));
 }
+
+}  // namespace tensorflow
+#include "master_projection.cuh"
+namespace tensorflow {
 
 template <typename T>
 __device__ inline void FastAtomicAdd(T* address, T value) {
@@ -169,12 +211,83 @@ Status BuildActiveSlotQueue(
 
 constexpr int kCombinedSources = 8;
 
-template <typename T, typename Index>
+template <typename Index>
+struct CsrTypeIds {
+  const Index* wide = nullptr;
+  const uint8* bytes = nullptr;
+  __host__ CsrTypeIds() = default;
+  __host__ CsrTypeIds(const Index* values) : wide(values) {}
+  __device__ __forceinline__ Index operator[](int64_t edge) const {
+    return bytes ? static_cast<Index>(bytes[edge]) : wide[edge];
+  }
+};
+
+template <typename Index>
+struct CsrMetadataView {
+  const Index* posts;
+  CsrTypeIds<Index> types;
+  const Index* splits;
+  bool compact;
+};
+
+template <typename Index>
+Status ReadCsrMetadata(
+    const Tensor& metadata, int64_t edges, int64_t sources, int64_t pairs,
+    bool allow_compact, bool uint8_types, CsrMetadataView<Index>* view) {
+  if (!TensorShapeUtils::IsVector(metadata.shape()) ||
+      metadata.dtype() != DataTypeToEnum<Index>::v() ||
+      edges < 0 || sources < 0 || pairs < 0) {
+    return errors::InvalidArgument("CSR metadata rank, dtype or dimensions disagree.");
+  }
+  // Bounds also protect every subsequent pointer offset and byte multiplication.
+  const int64_t limit = std::numeric_limits<int64_t>::max() / sizeof(Index);
+  if (edges > limit / 8 || pairs > limit / 8 || sources > limit / 8) {
+    return errors::InvalidArgument("CSR metadata dimensions exceed safe byte range.");
+  }
+  const int64_t pair_words = pairs ? edges + 2 * pairs : 0;
+  const int64_t compact_words = 2 * edges + sources + 1 + pair_words;
+  const Index* data = metadata.flat<Index>().data();
+  if (uint8_types) {
+    if (!allow_compact) {
+      return errors::InvalidArgument("uint8 CSR types require direct CSR host lifecycle.");
+    }
+    const int64_t index_words = edges + sources + 1 + pair_words;
+    const int64_t type_words = edges / sizeof(Index) + (edges % sizeof(Index) != 0);
+    if (metadata.NumElements() != index_words + type_words) {
+      return errors::InvalidArgument("uint8 CSR metadata byte size does not match connectivity.");
+    }
+    view->posts = data;
+    view->splits = data + edges;
+    view->types.bytes = reinterpret_cast<const uint8*>(data + index_words);
+    view->compact = true;
+  } else {
+    view->compact = allow_compact && metadata.NumElements() == compact_words;
+    if (!view->compact && metadata.NumElements() != compact_words + edges) {
+      return errors::InvalidArgument("metadata length does not match n_edges and n_pre.");
+    }
+    view->posts = data;
+    view->splits = data + 2 * edges;
+    view->types.wide = data + edges;
+  }
+  return OkStatus();
+}
+
+template <typename T, typename Index, bool Canonical>
+using ProjectionWeights = std::conditional_t<Canonical, const float*, const T*>;
+
+template <typename T, typename Index, bool Canonical>
+ProjectionWeights<T, Index, Canonical> ProjectionWeightView(
+    const Tensor& values, const Index* canonical) {
+  if constexpr (Canonical) return values.flat<float>().data();
+  else return values.flat<T>().data();
+}
+
+template <typename T, typename Index, typename W = const T*>
 struct CombinedSource {
   const T* spikes;
-  const T* weights;
+  W weights;
   const Index* posts;
-  const Index* types;
+  CsrTypeIds<Index> types;
   const Index* splits;
   const Index* tile_starts;
   const int* queue;
@@ -204,9 +317,9 @@ __global__ void CombinedActiveRowsKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 struct CombinedSources {
-  CombinedSource<T, Index> source[kCombinedSources];
+  CombinedSource<T, Index, W> source[kCombinedSources];
 };
 
 template <int kValues>
@@ -277,9 +390,9 @@ __global__ void CombinedCscSourcesKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W>
 __device__ __forceinline__ void DpointnetCombinedAccumulateEdge(
-    const CombinedSource<T, Index>& source, const T* basis, Index edge,
+    const CombinedSource<T, Index, W>& source, const T* basis, Index edge,
     bool valid, float spike, int target_start, int lane, float* sums,
     unsigned int segment = 0) {
   const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
@@ -325,9 +438,9 @@ __device__ __forceinline__ void DpointnetCombinedAccumulateEdge(
 }
 
 template <typename T, typename Index, int kTargets, int kThreads = 512,
-          bool kCooperative = false, bool kFanout = false>
+          bool kCooperative = false, bool kFanout = false, typename W = const T*>
 __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSweepKernel(
-    CombinedSources<T, Index> sources, int source_count, int n_post,
+    CombinedSources<T, Index, W> sources, int source_count, int n_post,
     const T* basis, bool batch_fast, T* output) {
   static_assert(kThreads == 512 || kThreads == 1024, "combined sweep block size");
   __shared__ float static_sums[kTargets <= 2048 ? kTargets * 4 : 1];
@@ -577,7 +690,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int index = blockIdx.x;
   if (index >= count) {
@@ -610,7 +723,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardGroupedBatch32Kernel(
   int64_t n_active_rows, int64_t n_pre, int n_post, int batch_size,
     const T* spikes, const int64_t* active_rows, const Index* post_ids,
-    const T* weights, const Index* synapse_types, const T* basis,
+    const T* weights, CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int64_t active_id = blockIdx.x;
   if (active_id >= n_active_rows) {
@@ -674,7 +787,7 @@ template <typename T, typename Index>
 __global__ void CsrSpikeForwardGroupedBatch32AggregateRunsKernel(
   int64_t n_active_rows, int64_t n_pre, int n_post, int batch_size,
     const T* spikes, const int64_t* active_rows, const Index* post_ids,
-    const T* weights, const Index* synapse_types, const T* basis,
+    const T* weights, CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
   const int64_t active_id = blockIdx.x;
   if (active_id >= n_active_rows) {
@@ -765,7 +878,7 @@ __global__ void CsrSpikeForwardDeviceQueueKernel(
     int64_t n_pre, int n_post, const T* spikes, const unsigned int* queue,
     const unsigned int* queue_count, unsigned int* ticket,
     unsigned int slots_per_ticket, const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis, const Index* row_splits,
+    CsrTypeIds<Index> synapse_types, const T* basis, const Index* row_splits,
     T* currents) {
   __shared__ unsigned int next_slot;
   const unsigned int total = *queue_count;
@@ -898,11 +1011,11 @@ __global__ void AddInitialCurrentsKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
-    const T* current_grad, const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis,
+    const T* current_grad, const Index* post_ids, W weights,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids, T* spike_grad,
     float* weight_grad, const T* spike_gradient_scale,
     bool write_csr_weight_gradient, const float* projected,
@@ -958,11 +1071,11 @@ __global__ void CsrSpikeGradKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradSmallBatchKernel(
     int batch_size, int n_pre, int n_post, int n_basis, const T* spikes,
-    const T* current_grad, const Index* post_ids, const T* weights,
-    const Index* synapse_types, const T* basis, const Index* row_splits,
+    const T* current_grad, const Index* post_ids, W weights,
+    CsrTypeIds<Index> synapse_types, const T* basis, const Index* row_splits,
     const Index* edge_ids, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale, bool write_csr_weight_gradient,
     const float* projected, const Index* pair_ids) {
@@ -1131,9 +1244,9 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
   }
 }
 
-template <typename T, typename Index, int kSlice = 32>
+template <typename T, typename Index, int kSlice = 32, typename W = const T*>
 __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
-  int n_pre, int batch, const Index* row_splits, const Index* pair_ids, const T* weights,
+  int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
     const float* inverse_scale, Index sentinel_pair) {
   constexpr int kPack = kSlice < 8 ? kSlice : 8;
@@ -1203,10 +1316,10 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradPairBatch32Kernel(
     int n_pre, const T* spikes, const Index* row_splits,
-    const Index* edge_ids, const Index* pair_ids, const T* weights,
+    const Index* edge_ids, const Index* pair_ids, W weights,
     const float* projected, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale) {
   constexpr int kBatch = 32;
@@ -1242,10 +1355,10 @@ __global__ void CsrSpikeGradPairBatch32Kernel(
       FromFloat<T>(pre_gradient * ToFloat(*spike_gradient_scale));
 }
 
-template <typename T, typename Index, int kSlice>
+template <typename T, typename Index, int kSlice, typename W = const T*>
 __global__ void CsrSpikeGradPairVariableBatchKernel(
     int batch, int n_pre, const Index* row_splits,
-    const Index* pair_ids, const T* weights, const float* projected,
+    const Index* pair_ids, W weights, const float* projected,
     T* spike_grad, const T* spike_gradient_scale) {
   constexpr int kPack = 4;
   constexpr int kLanesPerEdge = kSlice / kPack;
@@ -1353,7 +1466,7 @@ __global__ __launch_bounds__(kDpointnetEventThreads)
 void DpointnetEventWeightGradKernel(
     int64_t n_pre, int n_post, int n_basis, int64_t batch, const T* activity,
     const T* current_grad, const T* basis, const Index* post_ids,
-    const Index* synapse_types, const Index* row_splits, const Index* edge_ids,
+    CsrTypeIds<Index> synapse_types, const Index* row_splits, const Index* edge_ids,
     const unsigned int* queue, const unsigned int* queue_count, float* weight_grad) {
   constexpr int kWarpsPerBlock = kDpointnetEventThreads / 32;
   constexpr int kEdgesPerThread = kDpointnetEventChunk / 32;
@@ -1432,10 +1545,10 @@ __device__ __forceinline__ int ReverseBits(int value) {
   return result;
 }
 
-template <typename T, typename Index, bool kWriteCsrGradient, bool kAccumulate = false>
+template <typename T, typename Index, bool kWriteCsrGradient, bool kAccumulate = false, typename W = const T*>
 __global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
     int n_pre, const T* spikes, const Index* row_splits,
-    const Index* edge_ids, const Index* pair_ids, const T* weights,
+    const Index* edge_ids, const Index* pair_ids, W weights,
     const float* projected, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale, const float* accumulator) {
   constexpr int kBatch = 32;
@@ -1595,6 +1708,7 @@ inline uint32 PackedRowSplitCount(int64_t n_rows) {
       std::min<int64_t>(64, std::max<int64_t>(1, splits)));
 }
 
+template <bool kWriteCsrGradient = false>
 __global__ __launch_bounds__(64) void CsrWeightGradPairPackedBatch32Kernel(
     int64_t n_pre, const Eigen::half* spikes, const float* projected,
     const uint32* pair_ids, const uint32* edge_ids,
@@ -1668,16 +1782,17 @@ __global__ __launch_bounds__(64) void CsrWeightGradPairPackedBatch32Kernel(
     }
     const uint64_t edge = base + kSlots * target + slot;
     if (sub < kPerSlot && edge < end) {
-      weight_grad[static_cast<int64_t>(edge_ids[edge])] = partial[0];
+      weight_grad[kWriteCsrGradient ? static_cast<int64_t>(edge)
+                                   : static_cast<int64_t>(edge_ids[edge])] = partial[0];
     }
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, bool kWriteCsrGradient = false>
 __global__ void CsrWeightGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids,
-    const Index* synapse_types, const T* basis,
+    CsrTypeIds<Index> synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids,
     float* weight_grad) {
   const int index = blockIdx.x;
@@ -1706,7 +1821,7 @@ __global__ void CsrWeightGradKernel(
           ToFloat(basis[basis_base + receptor]);
     }
     GpuAtomicAdd(
-        weight_grad + static_cast<int64_t>(edge_ids[edge]),
+        weight_grad + (kWriteCsrGradient ? edge : static_cast<int64_t>(edge_ids[edge])),
         edge_gradient * spike);
   }
 }
@@ -1874,7 +1989,9 @@ class DpointnetCsrRestoreOp : public OpKernel {
   int64_t n_pairs_;
 };
 
-template <typename T, typename Index>
+// CsrMaster selects DpointnetCsrSpikeForwardCsrMaster (FP32 CSR-ordered
+// weights, VJP-only); otherwise the develop DpointnetCsrSpikeForward schema.
+template <typename T, typename Index, bool CsrMaster = false>
 class DpointnetCsrSpikeForwardOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeForwardOp(OpKernelConstruction* context)
@@ -1898,6 +2015,11 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context->GetAttr(
             "use_device_active_queue_forward", &use_device_active_queue_forward_));
     OP_REQUIRES_OK(context, context->GetAttr("vjp_only", &vjp_only_));
+    if constexpr (CsrMaster) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    }
+    OP_REQUIRES(context, !csr_master_weights_ || vjp_only_,
+                errors::InvalidArgument("Canonical-master forward operands require VJP-only proxies."));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -1911,6 +2033,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Tensor& incoming_edge_ids = context->input(8);
     const Tensor& incoming_types = context->input(9);
     const Tensor& initial = context->input(10);
+    OP_REQUIRES(context, weights.dtype() == (
+        csr_master_weights_ ? DT_FLOAT : DataTypeToEnum<T>::v()),
+        errors::InvalidArgument("Projection weight storage dtype does not match its representation."));
     core::RefCountPtr<Var> metadata_variable;
     if (!LookupVariable<Index>(
             context, 2, "metadata", &metadata_variable)) {
@@ -1942,13 +2067,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context, master_weights.NumElements() == n_edges_,
         errors::InvalidArgument(
             "master_weights length must equal n_edges."));
-    OP_REQUIRES(
-        context,
-      metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_, csr_master_weights_, uint8_types_, &view));
     OP_REQUIRES(
         context, basis.dim_size(0) > 0 && n_basis > 0,
         errors::InvalidArgument("basis must have non-zero dimensions."));
@@ -1977,10 +2098,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
           "postsynaptic neuron."));
     }
 
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
     Tensor* currents = nullptr;
     if (use_fixed4_forward_) {
       OP_REQUIRES_OK(
@@ -2148,13 +2268,18 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
   bool use_forward_run_aggregation_;
   bool use_device_active_queue_forward_;
   bool vjp_only_;
+  static constexpr bool csr_master_weights_ = CsrMaster;
+  bool uint8_types_ = false;
 };
 
-template <typename T, typename Index, bool kAccumulate = false>
+template <typename T, typename Index, bool kAccumulate = false, bool Canonical = false>
 class DpointnetCsrSpikeGradOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeGradOp(OpKernelConstruction* context)
       : OpKernel(context) {
+    if constexpr (Canonical) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+    }
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
@@ -2225,13 +2350,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES(
         context, weights.NumElements() == n_edges_,
         errors::InvalidArgument("weights length must equal n_edges."));
-    OP_REQUIRES(
-        context,
-      metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_,
+        Canonical && write_csr_weight_gradient_, uint8_types_, &view));
+    const bool compact = view.compact;
     OP_REQUIRES(
         context,
         current_grad.dim_size(0) == batch * n_post_ &&
@@ -2263,12 +2386,14 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           "SM61 or newer."));
       }
     }
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
-    const Index* edge_ids = row_splits + n_pre + 1;
-    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
+    const Index* after_splits = row_splits + n_pre + 1;
+    const Index* edge_ids = compact ? nullptr : after_splits;
+    using W = ProjectionWeights<T, Index, Canonical>;
+    const W weight_values = ProjectionWeightView<T, Index, Canonical>(weights, edge_ids);
+    const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* spike_grad = nullptr;
@@ -2359,10 +2484,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             if (compute_spike_gradient_) {
 #define LAUNCH_HALF_ROWS(SLICE) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE>, \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W>, \
                 static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
-                weights.flat<T>().data(), projected_half.flat<Eigen::half>().data(), \
+                weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
                 scale, static_cast<Index>(n_pairs_)))
             switch (slice) {
@@ -2416,19 +2541,19 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         if (n_pre > 0) {
           if (write_csr_weight_gradient_) {
             OP_REQUIRES_OK(context, GpuLaunchKernel(
-                CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, kAccumulate>,
+                CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, kAccumulate, W>,
                 static_cast<int>(n_pre), 64, 0, device.stream(),
                 static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                edge_ids, pair_ids, weights.flat<T>().data(),
+                edge_ids, pair_ids, weight_values,
                 projected.flat<float>().data(), spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data(), accumulator));
           } else {
             OP_REQUIRES_OK(context, GpuLaunchKernel(
-                CsrSpikeGradPairPackedBatch32Kernel<T, Index, false>,
+                CsrSpikeGradPairPackedBatch32Kernel<T, Index, false, false, W>,
                 static_cast<int>(n_pre), 64, 0, device.stream(),
                 static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                edge_ids, pair_ids, weights.flat<T>().data(),
+                edge_ids, pair_ids, weight_values,
                 projected.flat<float>().data(), spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2468,10 +2593,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
       if (n_pre > 0) {
   #define LAUNCH_VARIABLE_BATCH(SLICE) \
       OP_REQUIRES_OK(context, GpuLaunchKernel( \
-        CsrSpikeGradPairVariableBatchKernel<T, Index, SLICE>, \
+        CsrSpikeGradPairVariableBatchKernel<T, Index, SLICE, W>, \
         static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
         static_cast<int>(batch), static_cast<int>(n_pre), row_splits, pair_ids, \
-        weights.flat<T>().data(), general_projection, \
+        weight_values, general_projection, \
         spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data()))
       if (batch <= 4) { LAUNCH_VARIABLE_BATCH(4); }
       else if (batch <= 8) { LAUNCH_VARIABLE_BATCH(8); }
@@ -2513,10 +2638,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                   errors::InvalidArgument("Small-batch backward requires batch size 1..8."));
       if (n_pre > 0) {
         OP_REQUIRES_OK(context, GpuLaunchKernel(
-            CsrSpikeGradSmallBatchKernel<T, Index>, static_cast<int>(n_pre), 128, 0,
+            CsrSpikeGradSmallBatchKernel<T, Index, W>, static_cast<int>(n_pre), 128, 0,
             device.stream(), static_cast<int>(batch), static_cast<int>(n_pre), n_post_,
             static_cast<int>(n_basis), spikes.flat<T>().data(), current_grad.flat<T>().data(),
-            post_ids, weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
+            post_ids, weight_values, synapse_types, basis.flat<T>().data(),
             row_splits, edge_ids, spike_grad->flat<T>().data(), weight_grad->flat<float>().data(),
             spike_gradient_scale.flat<T>().data(), write_csr_weight_gradient_,
             general_projection, pair_ids));
@@ -2546,10 +2671,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             OP_REQUIRES_OK(
                 context,
                 GpuLaunchKernel(
-                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, true>,
+                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, false, W>,
                     static_cast<int>(n_pre), 64, 0, device.stream(),
                     static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    edge_ids, pair_ids, weight_values,
                     projected.flat<float>().data(), spike_grad->flat<T>().data(),
                     weight_grad->flat<float>().data(),
                     spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2557,10 +2682,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             OP_REQUIRES_OK(
                 context,
                 GpuLaunchKernel(
-                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, false>,
+                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, false, false, W>,
                     static_cast<int>(n_pre), 64, 0, device.stream(),
                     static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    edge_ids, pair_ids, weight_values,
                     projected.flat<float>().data(), spike_grad->flat<T>().data(),
                     weight_grad->flat<float>().data(),
                     spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2573,10 +2698,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           OP_REQUIRES_OK(
               context,
               GpuLaunchKernel(
-                  CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                  CsrSpikeGradPairBatch32Kernel<T, Index, W>, gradient_blocks,
                   gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
                   spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
-                  weights.flat<T>().data(), projected.flat<float>().data(),
+                  weight_values, projected.flat<float>().data(),
                   spike_grad->flat<T>().data(),
                   weight_grad->flat<float>().data(),
                   spike_gradient_scale.flat<T>().data()));
@@ -2589,10 +2714,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         OP_REQUIRES_OK(
             context,
             GpuLaunchKernel(
-                CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                CsrSpikeGradPairBatch32Kernel<T, Index, W>, gradient_blocks,
                 gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
                 spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
-                weights.flat<T>().data(), projected.flat<float>().data(),
+                weight_values, projected.flat<float>().data(),
                 spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data()));
@@ -2609,11 +2734,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
       OP_REQUIRES_OK(
         context,
         GpuLaunchKernel(
-          CsrSpikeGradKernel<T, Index>, work_count, 128, 0,
+          CsrSpikeGradKernel<T, Index, W>, work_count, 128, 0,
           device.stream(), work_count, static_cast<int>(n_pre), n_post_,
           static_cast<int>(n_basis), spikes.flat<T>().data(),
           current_grad.flat<T>().data(), post_ids,
-          weights.flat<T>().data(), synapse_types,
+          weight_values, synapse_types,
           basis.flat<T>().data(), row_splits, edge_ids,
           spike_grad->flat<T>().data(),
           weight_grad->flat<float>().data(),
@@ -2631,6 +2756,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   bool use_javier_batch32_backward_;
   bool use_small_batch_backward_;
   bool compute_spike_gradient_;
+  bool uint8_types_ = false;
 };
 
 template <typename T, typename Index>
@@ -2638,9 +2764,12 @@ class DpointnetCsrWeightGradOp : public OpKernel {
  public:
   explicit DpointnetCsrWeightGradOp(OpKernelConstruction* context)
       : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(
+        context, context->GetAttr("write_csr_weight_gradient", &write_csr_weight_gradient_));
     OP_REQUIRES_OK(
       context,
       context->GetAttr(
@@ -2668,13 +2797,10 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     const int64_t batch = spikes.dim_size(0);
     const int64_t n_pre = spikes.dim_size(1);
     const int64_t n_basis = basis.dim_size(1);
-    OP_REQUIRES(
-        context,
-      metadata.NumElements() ==
-        3 * n_edges_ + n_pre + 1 +
-          (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
-        errors::InvalidArgument(
-            "metadata length does not match n_edges and n_pre."));
+    CsrMetadataView<Index> view{};
+    OP_REQUIRES_OK(context, ReadCsrMetadata(
+        metadata, n_edges_, n_pre, n_pairs_, write_csr_weight_gradient_, uint8_types_, &view));
+    const bool compact = view.compact;
     OP_REQUIRES(
         context,
         current_grad.dim_size(0) == batch * n_post_ &&
@@ -2708,12 +2834,12 @@ class DpointnetCsrWeightGradOp : public OpKernel {
       }
     }
 
-    const Index* metadata_values = metadata.flat<Index>().data();
-    const Index* post_ids = metadata_values;
-    const Index* synapse_types = metadata_values + n_edges_;
-    const Index* row_splits = metadata_values + 2 * n_edges_;
-    const Index* edge_ids = row_splits + n_pre + 1;
-    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* post_ids = view.posts;
+    const auto synapse_types = view.types;
+    const Index* row_splits = view.splits;
+    const Index* after_splits = row_splits + n_pre + 1;
+    const Index* edge_ids = compact ? nullptr : after_splits;
+    const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* weight_grad = nullptr;
@@ -2742,14 +2868,21 @@ class DpointnetCsrWeightGradOp : public OpKernel {
                 n_post_, current_grad.flat<T>().data(), basis.flat<T>().data(),
                 pair_posts, pair_types, projected.flat<float>().data()));
         const uint32 splits = PackedRowSplitCount(n_pre);
-        OP_REQUIRES_OK(
-            context,
-            GpuLaunchKernel(
-                CsrWeightGradPairPackedBatch32Kernel,
-                dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
-                device.stream(), n_pre, spikes.flat<T>().data(),
-                projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
-                splits, weight_grad->flat<float>().data()));
+        if (write_csr_weight_gradient_) {
+          OP_REQUIRES_OK(context, GpuLaunchKernel(
+              CsrWeightGradPairPackedBatch32Kernel<true>,
+              dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
+              device.stream(), n_pre, spikes.flat<T>().data(),
+              projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
+              splits, weight_grad->flat<float>().data()));
+        } else {
+          OP_REQUIRES_OK(context, GpuLaunchKernel(
+              CsrWeightGradPairPackedBatch32Kernel<false>,
+              dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
+              device.stream(), n_pre, spikes.flat<T>().data(),
+              projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
+              splits, weight_grad->flat<float>().data()));
+        }
         return;
       }
     }
@@ -2763,17 +2896,20 @@ class DpointnetCsrWeightGradOp : public OpKernel {
             weight_grad->flat<float>().data()));
 
     const int work_count = static_cast<int>(batch * n_pre);
-    OP_REQUIRES_OK(
-        context,
-        GpuLaunchKernel(
-            CsrWeightGradKernel<T, Index>, work_count, 128, 0,
-            device.stream(),
-            work_count,
-            static_cast<int>(n_pre), n_post_, static_cast<int>(n_basis),
-            spikes.flat<T>().data(), current_grad.flat<T>().data(),
-            post_ids, synapse_types, basis.flat<T>().data(),
-            row_splits, edge_ids,
-            weight_grad->flat<float>().data()));
+#define LAUNCH_WEIGHT_GRAD(CSR) \
+    OP_REQUIRES_OK(context, GpuLaunchKernel( \
+        CsrWeightGradKernel<T, Index, CSR>, work_count, 128, 0, \
+        device.stream(), work_count, static_cast<int>(n_pre), n_post_, \
+        static_cast<int>(n_basis), spikes.flat<T>().data(), \
+        current_grad.flat<T>().data(), post_ids, synapse_types, \
+        basis.flat<T>().data(), row_splits, edge_ids, \
+        weight_grad->flat<float>().data()))
+    if (write_csr_weight_gradient_) {
+      LAUNCH_WEIGHT_GRAD(true);
+    } else {
+      LAUNCH_WEIGHT_GRAD(false);
+    }
+#undef LAUNCH_WEIGHT_GRAD
   }
 
  private:
@@ -2781,12 +2917,22 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   int64_t n_edges_;
   int64_t n_pairs_;
   bool use_packed_sm120_backward_;
+  bool write_csr_weight_gradient_;
+  bool uint8_types_ = false;
 };
 
-template <typename T, typename Index>
+// Inside namespace tensorflow; its standard headers are included above.
+#include "adaptive_routing.cuh"
+
+template <typename T, typename Index, bool Canonical = false>
 class DpointnetCombinedSweepOp : public OpKernel {
  public:
   explicit DpointnetCombinedSweepOp(OpKernelConstruction* context) : OpKernel(context) {
+    if constexpr (Canonical) {
+      OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+      OP_REQUIRES_OK(context, context->GetAttr("adaptive_routing", &adaptive_));
+      OP_REQUIRES_OK(context, context->GetAttr("adaptive_traversal", &traversal_));
+    }
     OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &edges_));
@@ -2808,10 +2954,32 @@ class DpointnetCombinedSweepOp : public OpKernel {
     OP_REQUIRES(context, sources_ <= kCombinedSources &&
                     edges_.size() == sources_ && pairs_.size() == sources_,
                 errors::InvalidArgument("Combined sweep requires two to eight matching sources."));
+    if (adaptive_) {
+      OP_REQUIRES(context, uint8_types_,
+                  errors::InvalidArgument("Adaptive routing requires uint8 CSR type metadata."));
+      OP_REQUIRES(context, traversal_.size() == static_cast<size_t>(sources_),
+                  errors::InvalidArgument("adaptive_traversal must name one traversal per source."));
+      for (int code : traversal_) {
+        OP_REQUIRES(context, code == kAdaptiveWarpBatches || code == kAdaptiveBlockRounds ||
+                        code == kAdaptiveGather,
+                    errors::InvalidArgument("adaptive_traversal codes must be 1, 2 or 3."));
+      }
+    } else {
+      OP_REQUIRES(context, traversal_.empty(),
+                  errors::InvalidArgument("adaptive_traversal requires adaptive_routing=true."));
+    }
   }
+
+  ~DpointnetCombinedSweepOp() override { DpointnetRoutingLedger::Get().EraseOwner(this); }
 
   void Compute(OpKernelContext* context) override {
     mutex_lock cache_lock(cache_mu_);
+    if constexpr (Canonical) {
+      if (adaptive_) {
+        ComputeAdaptive(context);
+        return;
+      }
+    }
     const Tensor& basis = context->input(3 * sources_);
     RequireMatrix(context, basis, "basis");
     if (!context->status().ok()) return;
@@ -2824,7 +2992,8 @@ class DpointnetCombinedSweepOp : public OpKernel {
     OP_REQUIRES(context, batch > 0 && batch <= 65535,
                 errors::InvalidArgument("Combined sweep batch must be in 1..65535."));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
-    CombinedSources<T, Index> views{};
+    using W = ProjectionWeights<T, Index, Canonical>;
+    CombinedSources<T, Index, W> views{};
     Tensor queues[kCombinedSources];
     Tensor counts[kCombinedSources];
     core::RefCountPtr<Var> resources[kCombinedSources];
@@ -2842,10 +3011,9 @@ class DpointnetCombinedSweepOp : public OpKernel {
       if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
       const Tensor& metadata = *resources[source]->tensor();
       const int width = spikes.dim_size(1);
-      OP_REQUIRES(context, metadata.NumElements() ==
-                      3 * edges_[source] + width + 1 +
-                          (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0),
-                  errors::InvalidArgument("Combined sweep metadata shape mismatch."));
+      CsrMetadataView<Index> view{};
+      OP_REQUIRES_OK(context, ReadCsrMetadata(
+          metadata, edges_[source], width, pairs_[source], Canonical, uint8_types_, &view));
       OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch, width}), &queues[source]));
       OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch}), &counts[source]));
       OP_REQUIRES_OK(context, GpuLaunchKernel(
@@ -2856,14 +3024,14 @@ class DpointnetCombinedSweepOp : public OpKernel {
             256, 0, device.stream(), width, spikes.flat<T>().data(),
             queues[source].flat<int32>().data(), counts[source].flat<int32>().data()));
       }
-      const Index* data = metadata.flat<Index>().data();
+      const Index* data = view.posts;
       const bool gather = !gather_sources_.empty() && gather_sources_[source];
       if (!cached_metadata_[source].IsInitialized() ||
           cached_metadata_[source].tensor_data().data() != metadata.tensor_data().data() ||
           cached_width_[source] != width) {
         if (gather) {
           OP_REQUIRES_OK(context, BuildCscTables(
-              context, edges_[source], width, data, data + 2 * edges_[source],
+              context, edges_[source], width, data, view.splits,
               &csc_splits_[source], &csc_targets_[source], &csc_edges_[source],
               &csc_sources_[source]));
         }
@@ -2876,15 +3044,43 @@ class DpointnetCombinedSweepOp : public OpKernel {
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               CombinedTileStartsKernel<Index>,
               std::min<int64_t>((entries + 255) / 256, 65535), 256, 0, device.stream(),
-              entries, boundaries, tile_targets_, data, data + 2 * edges_[source],
+              entries, boundaries, tile_targets_, data, view.splits,
               tile_starts_[source].flat<Index>().data()));
         }
         cached_metadata_[source] = metadata;
         cached_width_[source] = width;
+        const void* key = metadata.tensor_data().data();
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingDenseTiles,
+            {key, kRoutingDenseTiles, static_cast<int64_t>(tile_starts_[source].TotalBytes()), 1, 0});
+        if (gather) {
+          DpointnetRoutingLedger::Get().Set(
+              this, source * 8 + kRoutingCsc,
+              {key, kRoutingCsc,
+               static_cast<int64_t>(csc_splits_[source].TotalBytes() + csc_targets_[source].TotalBytes() +
+                                    csc_edges_[source].TotalBytes() + csc_sources_[source].TotalBytes()),
+               1, 0});
+        } else {
+          DpointnetRoutingLedger::Get().Erase(this, source * 8 + kRoutingCsc);
+        }
+        const int code = gather ? 14
+            : (use_cooperative_ || use_fanout_) && !cooperative_rows_.empty() && cooperative_rows_[source] ? 12
+            : width > 0 && edges_[source] / width >= 512 ? (use_fanout_ ? 13 : 11) : 10;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingSelection, {key, kRoutingSelection, tile_targets_, 0, code});
+      }
+      const int64_t queue_bytes = static_cast<int64_t>(queues[source].TotalBytes() + counts[source].TotalBytes());
+      if (recorded_queue_bytes_[source] != queue_bytes ||
+          recorded_queue_key_[source] != metadata.tensor_data().data()) {
+        recorded_queue_bytes_[source] = queue_bytes;
+        recorded_queue_key_[source] = metadata.tensor_data().data();
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingQueue,
+            {metadata.tensor_data().data(), kRoutingQueue, queue_bytes, 1, 0});
       }
       views.source[source] = {
-          spikes.flat<T>().data(), weights.flat<T>().data(), data, data + edges_[source],
-          data + 2 * edges_[source], tile_starts_[source].flat<Index>().data(),
+          spikes.flat<T>().data(), ProjectionWeightView<T, Index, Canonical>(weights, view.splits + width + 1),
+          data, view.types, view.splits, tile_starts_[source].flat<Index>().data(),
           queues[source].flat<int32>().data(),
           counts[source].flat<int32>().data(), width,
           width > 0 && edges_[source] / width >= 512,
@@ -2907,19 +3103,16 @@ class DpointnetCombinedSweepOp : public OpKernel {
            where the 32-bit row tables still fit beside the tile. */        \
         constexpr int threads = Targets > 2048 && sizeof(Index) == 4 ? 1024 : 512; \
         auto kernel = use_fanout_                                        \
-            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, true>  \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, true, W>  \
             : use_cooperative_                                           \
-            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true>        \
-            : DpointnetCombinedSweepKernel<T, Index, Targets, threads, false>;      \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, false, W>        \
+            : DpointnetCombinedSweepKernel<T, Index, Targets, threads, false, false, W>;      \
         constexpr int shared_bytes = Targets > 2048 ? Targets * 4 * sizeof(float) : 0; \
         if constexpr (shared_bytes > 0) {                                 \
           if (!shared_memory_configured_) {                               \
-            const cudaError_t error = cudaFuncSetAttribute(               \
-                kernel,                                                  \
-                cudaFuncAttributeMaxDynamicSharedMemorySize, shared_bytes); \
-            OP_REQUIRES(context, error == cudaSuccess,                    \
-                        errors::InvalidArgument("Requested combined tile shared memory unavailable: ", \
-                                                cudaGetErrorString(error))); \
+            OP_REQUIRES_OK(context, ConfigureDynamicSharedMemory(         \
+                reinterpret_cast<const void*>(kernel), shared_bytes,      \
+                "combined tile"));                                       \
             shared_memory_configured_ = true;                            \
           }                                                              \
         }                                                                \
@@ -2940,6 +3133,179 @@ class DpointnetCombinedSweepOp : public OpKernel {
   }
 
  private:
+  // Adaptive routing (schema adaptive_segment_ticket_v1); see adaptive_routing.cuh.
+  void ComputeAdaptive(OpKernelContext* context) {
+    const Tensor& basis = context->input(3 * sources_);
+    RequireMatrix(context, basis, "basis");
+    if (!context->status().ok()) return;
+    OP_REQUIRES(context, basis.dim_size(0) > 0 && basis.dim_size(1) == 4,
+                errors::InvalidArgument("Combined sweep requires four basis columns."));
+    const Tensor& first = context->input(0);
+    RequireMatrix(context, first, "spikes");
+    if (!context->status().ok()) return;
+    const int64_t batch = first.dim_size(0);
+    OP_REQUIRES(context, batch > 0 && batch <= 65535,
+                errors::InvalidArgument("Combined sweep batch must be in 1..65535."));
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    const int wide = tile_targets_;
+    const int narrow = AdaptiveNarrowTile(wide);
+    int selected = wide;
+    if (narrow != wide) {
+      if (wide_blocks_per_sm_ < 0) {
+        OP_REQUIRES_OK(context, WithAdaptiveTile(wide, [&](auto shape) -> Status {
+          constexpr int tile = decltype(shape)::value;
+          using Shape = AdaptiveSweepShape<T, Index, tile>;
+          TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+          int blocks = 0;
+          const cudaError_t error = cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+              &blocks, Shape::Kernel(), Shape::kThreads, Shape::kSharedBytes);
+          if (error != cudaSuccess || blocks < 1) {
+            cudaGetLastError();
+            return errors::Internal("Adaptive routing occupancy query failed: ",
+                                    cudaGetErrorString(error));
+          }
+          wide_blocks_per_sm_ = blocks;
+          return OkStatus();
+        }));
+      }
+      const int64_t wide_blocks = batch * ((n_post_ + wide - 1) / wide);
+      const int64_t slots = static_cast<int64_t>(device.getNumGpuMultiProcessors()) * wide_blocks_per_sm_;
+      if (2 * wide_blocks <= slots) selected = narrow;
+    }
+    const int shape_slot = selected == wide ? 0 : 1;
+    AdaptiveSources<T, Index> views{};
+    core::RefCountPtr<Var> resources[kCombinedSources];
+    Tensor queues[kCombinedSources];
+    Tensor scratch[kCombinedSources];
+    for (int source = 0; source < sources_; ++source) {
+      const Tensor& spikes = context->input(source);
+      const Tensor& weights = context->input(sources_ + source);
+      RequireMatrix(context, spikes, "spikes");
+      RequireVector(context, weights, "weights");
+      if (!context->status().ok()) return;
+      OP_REQUIRES(context, spikes.dim_size(0) == batch &&
+                      spikes.dim_size(1) <= std::numeric_limits<int>::max() &&
+                      weights.NumElements() == edges_[source] &&
+                      edges_[source] >= 0 && pairs_[source] >= 0,
+                  errors::InvalidArgument("Combined sweep source shape or edge count mismatch."));
+      if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
+      const Tensor& metadata = *resources[source]->tensor();
+      const int width = spikes.dim_size(1);
+      CsrMetadataView<Index> view{};
+      OP_REQUIRES_OK(context, ReadCsrMetadata(
+          metadata, edges_[source], width, pairs_[source], Canonical, uint8_types_, &view));
+      const void* key = metadata.tensor_data().data();
+      if (held_vars_[source] && held_vars_[source].get() == resources[source].get()) {
+        // Holding the variable keeps its address, and holding the tables keeps
+        // the old allocation alive, so any assignment yields a new address.
+        OP_REQUIRES(context, held_buffers_[source] == key,
+                    errors::InvalidArgument(
+                        "Adaptive routing requires immutable connectivity metadata; rebuild the "
+                        "connectivity instead of assigning a new topology."));
+      } else {
+        resources[source]->Ref();
+        held_vars_[source].reset(resources[source].get());
+        held_buffers_[source] = key;
+        held_segments_[source][0].reset();
+        held_segments_[source][1].reset();
+        held_csc_[source].reset();
+        recorded_tile_[source] = 0;
+        recorded_queue_bytes_[source] = -1;
+      }
+      const int traversal = traversal_[source];
+      AdaptiveSource<T, Index> item{};
+      item.spikes = spikes.flat<T>().data();
+      item.weights = ProjectionWeightView<T, Index, Canonical>(weights, view.splits + width + 1);
+      item.posts = view.posts;
+      item.types = view.types;
+      item.width = width;
+      item.traversal = traversal;
+      int64_t transient = 0;
+      if (traversal == kAdaptiveGather) {
+        OP_REQUIRES_OK(context, EnsureAdaptiveCsc<Index>(
+            context, metadata, view.posts, view.splits, width, edges_[source], n_post_,
+            uint8_types_, &held_csc_[source]));
+        const auto& table = *held_csc_[source];
+        item.csc_splits = table.splits.template flat<Index>().data();
+        item.csc_edges = table.edge_positions.template flat<Index>().data();
+        item.csc_sources = table.sources.template flat<Index>().data();
+      } else if (edges_[source] > 0 && width > 0) {
+        OP_REQUIRES(context, batch * width <= std::numeric_limits<int>::max(),
+                    errors::InvalidArgument(
+                        "Adaptive routing active-row queues require batch * source width < 2^31."));
+        OP_REQUIRES_OK(context, EnsureAdaptiveSegments<Index>(
+            context, metadata, view.posts, view.splits, width, edges_[source], n_post_, selected,
+            uint8_types_, &held_segments_[source][shape_slot]));
+        const auto& table = *held_segments_[source][shape_slot];
+        item.segment_splits = table.splits.template flat<Index>().data();
+        item.segment_starts = table.starts.template flat<Index>().data();
+        item.segment_tiles = table.tiles.NumElements() > 0
+            ? reinterpret_cast<const unsigned int*>(table.tiles.template flat<int32>().data()) : nullptr;
+        item.masks = table.masks.NumElements() > 0
+            ? reinterpret_cast<const unsigned long long*>(table.masks.template flat<int64>().data()) : nullptr;
+        OP_REQUIRES_OK(context, context->allocate_temp(
+            DT_INT32, TensorShape({batch * width + batch + 2}), &queues[source]));
+        unsigned int* words = reinterpret_cast<unsigned int*>(queues[source].flat<int32>().data());
+        int64_t scratch_bytes = 0;
+        OP_REQUIRES_OK(context, BuildAdaptiveQueue<T>(
+            context, item.spikes, static_cast<int>(batch), width, words, words + batch * width,
+            words + batch * width + 1, &scratch[source], &scratch_bytes));
+        item.queue = words;
+        item.sample_starts = words + batch * width + 1;
+        transient = static_cast<int64_t>(queues[source].TotalBytes()) + scratch_bytes;
+      }
+      views.source[source] = item;
+      if (recorded_tile_[source] != selected) {
+        recorded_tile_[source] = selected;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingSelection, {key, kRoutingSelection, selected, 0, traversal});
+      }
+      if (recorded_queue_bytes_[source] != transient) {
+        recorded_queue_bytes_[source] = transient;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingQueue, {key, kRoutingQueue, transient, 1, 0});
+      }
+    }
+    Tensor* output = nullptr;
+    OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({batch * n_post_, 4}), &output));
+    const int tiles = (n_post_ + selected - 1) / selected;
+    const bool batch_fast = tiles <= 65535;
+    const dim3 grid = batch_fast ? dim3(batch, tiles) : dim3(tiles, batch);
+    OP_REQUIRES_OK(context, WithAdaptiveTile(selected, [&](auto shape) -> Status {
+      constexpr int tile = decltype(shape)::value;
+      using Shape = AdaptiveSweepShape<T, Index, tile>;
+      TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+      return GpuLaunchKernel(
+          adaptive_routing::DpointnetCombinedSweepKernel<T, Index, tile, Shape::kThreads>, grid, Shape::kThreads,
+          Shape::kSharedBytes, device.stream(), views, sources_, n_post_, basis.flat<T>().data(),
+          batch_fast, output->flat<T>().data());
+    }));
+  }
+
+  template <int kTile>
+  Status ConfigureAdaptiveTile() {
+    using Shape = AdaptiveSweepShape<T, Index, kTile>;
+    const int bit = AdaptiveTileBit(kTile);
+    if ((adaptive_configured_ & bit) != 0) return OkStatus();
+    if (Shape::kSharedBytes > 0) {
+      TF_RETURN_IF_ERROR(ConfigureDynamicSharedMemory(
+          reinterpret_cast<const void*>(Shape::Kernel()), Shape::kSharedBytes, "adaptive tile"));
+    }
+    adaptive_configured_ |= bit;
+    return OkStatus();
+  }
+
+  bool adaptive_ = false;
+  std::vector<int> traversal_;
+  int wide_blocks_per_sm_ = -1;
+  int adaptive_configured_ = 0;
+  core::RefCountPtr<Var> held_vars_[kCombinedSources];
+  const void* held_buffers_[kCombinedSources] = {};
+  std::shared_ptr<AdaptiveSegmentTable<Index>> held_segments_[kCombinedSources][2];
+  std::shared_ptr<AdaptiveCscTable<Index>> held_csc_[kCombinedSources];
+  int recorded_tile_[kCombinedSources] = {};
+  int64_t recorded_queue_bytes_[kCombinedSources] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  const void* recorded_queue_key_[kCombinedSources] = {};
   // Stable target sort of the edge positions, then per-target ranges and
   // per-entry source rows. Runs once per cached metadata identity.
   Status BuildCscTables(OpKernelContext* context, int64_t edges, int width, const Index* posts,
@@ -3001,9 +3367,41 @@ class DpointnetCombinedSweepOp : public OpKernel {
   std::vector<bool> gather_sources_;
   bool use_cooperative_;
   bool use_fanout_;
+  bool uint8_types_ = false;
   std::vector<int64_t> edges_;
   std::vector<int64_t> pairs_;
 };
+
+// Noncopying census of live routing allocations keyed by each metadata
+// resource's current allocation; see DpointnetRoutingLedger::Census.
+class DpointnetRoutingCensusOp : public OpKernel {
+ public:
+  explicit DpointnetRoutingCensusOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    Tensor* census = nullptr;
+    OP_REQUIRES_OK(context, context->allocate_output(
+        0, TensorShape({sources_, kRoutingCensusFields}), &census));
+    int64_t* values = census->flat<int64_t>().data();
+    for (int source = 0; source < sources_; ++source) {
+      core::RefCountPtr<Var> variable;
+      OP_REQUIRES_OK(context, LookupResource(context, HandleFromInput(context, source), &variable));
+      const void* key = variable->tensor()->tensor_data().data();
+      DpointnetRoutingLedger::Get().Census(key, values + source * kRoutingCensusFields);
+    }
+  }
+
+ private:
+  int sources_;
+};
+
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetRoutingCensus").Device(DEVICE_GPU).HostMemory("census"),
+    DpointnetRoutingCensusOp);
+REGISTER_KERNEL_BUILDER(Name("DpointnetRoutingCensus").Device(DEVICE_CPU),
+                        DpointnetRoutingCensusOp);
 
 #define REGISTER_GPU_KERNELS(T, Index)                                    \
   REGISTER_KERNEL_BUILDER(                                               \
@@ -3058,6 +3456,31 @@ REGISTER_KERNEL_BUILDER(
         .Device(DEVICE_GPU).TypeConstraint<Eigen::half>("T")
         .TypeConstraint<uint32>("Tindex"),
     DpointnetCsrSpikeGradOp<Eigen::half, uint32, true>);
+
+
+#define REGISTER_MASTER_MATCHED(T, Index) \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCombinedSweepCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCombinedSweepOp<T, Index, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCsrSpikeGradCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCsrSpikeGradOp<T, Index, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCsrSpikeForwardCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCsrSpikeForwardOp<T, Index, true>);
+REGISTER_MASTER_MATCHED(Eigen::half, uint32)
+REGISTER_MASTER_MATCHED(Eigen::half, int64_t)
+REGISTER_MASTER_MATCHED(float, uint32)
+REGISTER_MASTER_MATCHED(float, int64_t)
+#undef REGISTER_MASTER_MATCHED
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<Eigen::half>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<float, uint32, true, true>);
 
 #undef REGISTER_GPU_KERNELS_FOR_TYPE
 #undef REGISTER_GPU_KERNELS

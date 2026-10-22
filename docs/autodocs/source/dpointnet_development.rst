@@ -6,6 +6,12 @@ first-run configuration recipe.
 Current user guidance lives in :doc:`dpointnet_guide`,
 :doc:`dpointnet_training_standards` and :doc:`dpointnet_performance`.
 
+.. toctree::
+   :maxdepth: 1
+
+   dpointnet_csr_masters
+   dpointnet_adaptive_routing
+
 Running tests efficiently
 -------------------------
 
@@ -265,8 +271,11 @@ assignment and restore affect the next rollout without retracing. This is not
 the static immutable-coefficient promise.
 
 All six device-dispatch entry points must be available before selecting this
-route. Older compatible libraries retain the existing TensorFlow conditional
-and its full-coefficient fallback. Custom cells, distribution and explicit
+route. Older compatible libraries, other GPUs and TensorFlow versions retain the
+existing TensorFlow conditional and its full-coefficient fallback. Its forward and
+backward branches are opaque to automatic differentiation (the state transition's
+custom gradient owns the VJP), so differentiating an enclosing while loop or
+recomputation segment never reaches the forward-only native operators. Custom cells, distribution and explicit
 static dispatch retain their existing selection boundaries. Rebuild both native
 operators after changing the native ABI; old entry-point signatures are retained.
 

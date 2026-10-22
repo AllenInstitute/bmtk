@@ -7,6 +7,7 @@ from numbers import Integral
 import numpy as np
 import pickle as pkl
 from pathlib import Path
+from types import SimpleNamespace
 from .._options import UNSET, resolve_renamed_option, validate_bool_option
 from .nest_dynamics import (
     integration_coefficients,
@@ -42,6 +43,7 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _gpu_compute_architecture,
     _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
+    ADAPTIVE_ROUTING_SCHEMA,
     fused_recurrent_accumulation_available,
     fused_recurrent_weight_carry,
     combined_sweep_available,
@@ -51,6 +53,7 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
 from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
     fused_pascal_nest_launch_available,
 )
+from bmtk.simulator.dpointnet.csr_master import CSR_MASTER_SCHEMA
 
 
 def _prepare_host_index_variables(network, inputs):
@@ -66,6 +69,21 @@ def _prepare_host_index_variables(network, inputs):
                 for name, item in inputs.items()
             },
         }
+
+
+def _synapse_type_range(glif_network, inputs):
+    """(min, max) integer synapse type ID over recurrent and input edges, else None."""
+    try:
+        arrays = [np.asarray(glif_network["synapses"]["syn_ids"])]
+        arrays += [
+            np.asarray(item["syn_ids"]) for item in (inputs or {}).values() if "syn_ids" in item
+        ]
+    except (KeyError, TypeError, AttributeError):
+        return None
+    arrays = [array for array in arrays if array.size]
+    if not arrays or not all(np.issubdtype(array.dtype, np.integer) for array in arrays):
+        return None
+    return int(min(array.min() for array in arrays)), int(max(array.max() for array in arrays))
 
 
 def _canonical_index_variable(indices, prepared=None):
@@ -755,6 +773,251 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
     noise_state_index = 6
 
+    def weight_loss_values(self, name="<recurrent>"):
+        """Live optimizer variable; external loss metadata must use this row order."""
+        return (
+            self.recurrent_weight_values if name == "<recurrent>"
+            else self.inputs[name]["input_weight_values"]
+        )
+
+    def weight_loss_indices(self, canonical_indices, name="<recurrent>"):
+        """Compose canonical loss indices into live order once before loss tracing."""
+        if not self._csr_master_weights:
+            return tf.convert_to_tensor(canonical_indices)
+        layout = (
+            self.recurrent_master_layout if name == "<recurrent>"
+            else self.inputs[name]["master_layout"]
+        )
+        return layout.canonical_indices_to_live(canonical_indices)
+
+    def weight_loss_reference(self, canonical_reference, name="<recurrent>"):
+        """Prepare canonical per-edge reference/group metadata in live loss order."""
+        if not self._csr_master_weights:
+            return tf.convert_to_tensor(canonical_reference)
+        layout = (
+            self.recurrent_master_layout if name == "<recurrent>"
+            else self.inputs[name]["master_layout"]
+        )
+        if self._csr_host_lifecycle:
+            if not tf.executing_eagerly():
+                raise ValueError("Prepare per-edge loss references before tracing.")
+            with tf.device("/CPU:0"):
+                return tf.convert_to_tensor(layout.host_to_live(np.asarray(canonical_reference)))
+        return layout.to_live(canonical_reference)
+
+    def canonical_weight_values(self, name="<recurrent>"):
+        master = (
+            self.recurrent_weight_values if name == "<recurrent>"
+            else self.inputs[name]["input_weight_values"]
+        )
+        if not self._csr_master_weights:
+            return tf.convert_to_tensor(master)
+        layout = (
+            self.recurrent_master_layout if name == "<recurrent>"
+            else self.inputs[name]["master_layout"]
+        )
+        if self._csr_host_lifecycle:
+            if not tf.executing_eagerly():
+                raise ValueError("Canonical export is a host boundary, not a live loss operation.")
+            with tf.device("/CPU:0"):
+                return tf.convert_to_tensor(layout.host_to_canonical(master.numpy()))
+        return layout.to_canonical(master)
+
+    def assign_canonical_weights(self, values, name="<recurrent>"):
+        master = (
+            self.recurrent_weight_values if name == "<recurrent>"
+            else self.inputs[name]["input_weight_values"]
+        )
+        if self._csr_master_weights:
+            layout = (
+                self.recurrent_master_layout if name == "<recurrent>"
+                else self.inputs[name]["master_layout"]
+            )
+            layout.assign_canonical(master, values)
+        else:
+            master.assign(values)
+        self.refresh_recurrent_weight_shadow()
+
+    def bind_optimizer_checkpoint_slots(self, optimizer, *, after_update=False):
+        """Serialize optimizer slots of CSR-ordered masters in canonical order.
+
+        ``RNN.train`` and ``TrainingEngine`` call this after building the optimizer and
+        before its first update. Custom training loops that apply the optimizer
+        themselves must call it after ``optimizer.build`` and before the first update;
+        a ``tf.train.Checkpoint`` restore may come before or after it. No-op with
+        canonical-order masters. See ``csr_master.bind_optimizer_checkpoint_slots``.
+        """
+        from ..csr_master import bind_optimizer_checkpoint_slots
+
+        return bind_optimizer_checkpoint_slots(self, optimizer, after_update=after_update)
+
+    def _trackable_children(self, save_type="checkpoint", **kwargs):
+        children = super()._trackable_children(save_type, **kwargs)
+        view = getattr(self, "_canonical_shadow_view", None)
+        if view is not None and getattr(save_type, "value", save_type) == "checkpoint":
+            children = dict(children)
+            children.update(view.children)
+            if "inputs" in children:
+                children["inputs"] = self._canonical_inputs_checkpoint_view(children["inputs"])
+        return children
+
+    def _lookup_dependency(self, name, *args, **kwargs):
+        view = getattr(self, "_canonical_shadow_view", None)
+        if view is not None:
+            if name in view.children:
+                return view.children[name]
+            if name == "inputs":
+                tracked = super()._lookup_dependency(name, *args, **kwargs)
+                return None if tracked is None else self._canonical_inputs_checkpoint_view(tracked)
+        return super()._lookup_dependency(name, *args, **kwargs)
+
+    def _canonical_inputs_checkpoint_view(self, tracked_inputs):
+        """Per-input stand-ins when the inputs dict is tracked (TF-Keras 2)."""
+        view = self._canonical_shadow_view
+        if getattr(view, "inputs", None) is not None:
+            return view.inputs
+        from ..csr_master import CanonicalShadowCheckpoint, CheckpointChildrenView
+
+        per_input = {}
+        for name, item in tracked_inputs._trackable_children().items():
+            net = self.inputs.get(name)
+            children = dict(item._trackable_children())
+            if net is not None and "master_layout" in net:
+                master, layout = net["input_weight_values"], net["master_layout"]
+                if self.variable_dtype != self.compute_dtype or master.trainable:
+                    children["input_weight_values_compute"] = CanonicalShadowCheckpoint(
+                        master, layout, self.compute_dtype, canonical_order=True,
+                    )
+                if self._use_fused_cuda and net.get("fused_connectivity") is not None:
+                    children["csr_weight_values_compute"] = CanonicalShadowCheckpoint(
+                        master, layout, self.compute_dtype, canonical_order=False,
+                    )
+            per_input[name] = CheckpointChildrenView(children)
+        view.inputs = CheckpointChildrenView(per_input)
+        return view.inputs
+
+    def _register_canonical_shadow_checkpoints(self, individual_training):
+        """Checkpoint stand-ins for the shadows a canonical-order cell would track."""
+        from ..csr_master import CanonicalShadowCheckpoint
+
+        children = {}
+        master, layout = self.recurrent_weight_values, self.recurrent_master_layout
+        if self.variable_dtype != self.compute_dtype or individual_training:
+            children["recurrent_weight_values_compute"] = CanonicalShadowCheckpoint(
+                master, layout, self.compute_dtype, canonical_order=True,
+            )
+        if self._use_fused_cuda:
+            children["recurrent_csr_weight_values_compute"] = CanonicalShadowCheckpoint(
+                master, layout, self.compute_dtype, canonical_order=False,
+            )
+        # SimpleNamespace keeps the stand-ins out of automatic attribute tracking.
+        self._canonical_shadow_view = SimpleNamespace(children=children)
+
+    def _own_store_variables(self):
+        if hasattr(self, "_trainable_variables") and hasattr(self, "_non_trainable_variables"):
+            return list(self._trainable_variables) + list(self._non_trainable_variables)
+        # TF-Keras 2 lists attribute-tracked variables only after updating trackables,
+        # as its load_own_variables does.
+        update = getattr(self, "_update_trackables", None)
+        if update is not None:
+            update()
+        return list(self._trainable_weights) + list(self._non_trainable_weights)
+
+    @staticmethod
+    def _canonical_store_layout(variable):
+        from ..csr_master import _raw_variable
+
+        return getattr(_raw_variable(variable), "_dpointnet_canonical_layout", None)
+
+    def save_own_variables(self, store):
+        """Keras weights files store CSR-ordered edge variables in canonical order."""
+        if not getattr(self, "_csr_master_weights", False):
+            return super().save_own_variables(store)
+        for index, variable in enumerate(self._own_store_variables()):
+            layout = self._canonical_store_layout(variable)
+            value = np.asarray(variable.numpy())
+            store[f"{index}"] = value if layout is None else layout.host_to_canonical(value)
+
+    def load_own_variables(self, store):
+        if not getattr(self, "_csr_master_weights", False):
+            return super().load_own_variables(store)
+        converted = {key: store[key] for key in store.keys()}
+        for index, variable in enumerate(self._own_store_variables()):
+            layout = self._canonical_store_layout(variable)
+            key = f"{index}"
+            if layout is not None and key in converted:
+                converted[key] = layout.host_to_live(np.asarray(converted[key]))
+        return super().load_own_variables(converted)
+
+    def csr_host_lifecycle_metadata(self):
+        """Exact owned payload bytes; not allocator, cache or driver measurements."""
+        if not self._csr_master_weights:
+            raise ValueError("CSR metadata accounting requires CSR masters.")
+        surfaces = [
+            ("<recurrent>", self.recurrent_master_layout, self._master_recurrent_connectivity,
+             self.recurrent_indices, self.syn_ids, self._recurrent_export_factor),
+            *[
+                (name, net["master_layout"], net["master_connectivity"],
+                 net["input_indices"], net["input_syn_ids"], net["export_factor"])
+                for name, net in self.inputs.items()
+            ],
+        ]
+        report = {}
+        for name, layout, connectivity, indices, types, factor in surfaces:
+            def payload(value):
+                dtype = tf.as_dtype(value.dtype)
+                return int(np.prod(value.shape)) * dtype.size
+            host_bytes = payload(layout.csr_to_canonical)
+            if not layout.host_lifecycle:
+                host_bytes += payload(layout.canonical_to_csr)
+            metadata_bytes = connectivity.get("metadata_bytes")
+            if metadata_bytes is None:
+                n, width, pairs = (
+                    connectivity["n_edges"], connectivity["n_sources"], connectivity.get("n_pairs", 0)
+                )
+                metadata_bytes = (3 * n + width + 1 + (n + 2 * pairs if pairs else 0)) * (
+                    tf.as_dtype(connectivity.get("index_dtype", "int64")).size
+                )
+            report[name] = {
+                "edges": connectivity["n_edges"],
+                "mapping_host_bytes": host_bytes,
+                "persistent_inverse": not layout.host_lifecycle,
+                "mapping_storage": str(layout.csr_to_canonical.dtype),
+                "native_metadata_bytes": metadata_bytes,
+                **({
+                    "metadata_shape": connectivity["metadata_shape"],
+                    "metadata_schema": connectivity["metadata_schema"],
+                    **{key: connectivity[key] for key in (
+                        "metadata_dtype", "type_dtype", "type_byte_offset",
+                        "type_payload_bytes", "metadata_padding_bytes", "metadata_payload_bytes",
+                        "type_logical_min", "type_logical_max",
+                    )},
+                    "canonical_edge_id_offset": connectivity["canonical_edge_id_offset"],
+                    "canonical_edge_ids_present": connectivity["device_edge_ids"],
+                    "metadata_resource_ids": [
+                        id(handle) for handle in connectivity.metadata_resource_handles
+                    ],
+                    "metadata_resource_devices": [
+                        handle.device for handle in connectivity.metadata_resource_handles
+                    ],
+                } if self._use_fused_cuda else {}),
+                "native_incoming_bytes": sum(
+                    payload(connectivity[key]) for key in (
+                        "incoming_pre_ids", "incoming_edge_ids", "incoming_types"
+                    ) if key in connectivity
+                ),
+                "native_canonical_edge_id_bytes": (
+                    0 if layout.host_lifecycle and self._use_fused_cuda else
+                    connectivity["n_edges"] * tf.as_dtype(connectivity.get("index_dtype", "int64")).size
+                ),
+                "endpoint_host_bytes": payload(indices) if "CPU:" in indices.device else 0,
+                "endpoint_device_bytes": payload(indices) if "GPU:" in indices.device else 0,
+                "type_host_bytes": payload(types) if "CPU:" in types.device else 0,
+                "type_device_bytes": payload(types) if "GPU:" in types.device else 0,
+                "export_factor_host_bytes": int(factor.nbytes),
+            }
+        return report
+
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
         initial_value = np.asarray(initial_value)
         kwargs = {
@@ -880,6 +1143,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_cooperative_row_projection=UNSET,
         use_fanout_row_projection=UNSET,
         use_target_gather_projection=UNSET,
+        use_csr_master_weights=UNSET,
+        use_uint8_synapse_types=UNSET,
+        use_adaptive_routing=UNSET,
         spike_surrogate=UNSET,
         spike_surrogate_width=UNSET,
         spike_surrogate_gain=UNSET,
@@ -978,7 +1244,24 @@ class GLIF3Cell(tf.keras.layers.Layer):
             train_recurrent_per_type=train_recurrent_per_type,
             canonical_gradient_boundary=_canonical_gradient_boundary,
             performance_context=_performance_auto_context,
+            synapse_type_range=_synapse_type_range(glif_network, inputs),
         )
+        for name in ("use_csr_master_weights", "use_uint8_synapse_types", "use_adaptive_routing"):
+            validate_bool_option(execution.get(name, False), name)
+        self._csr_master_weights = execution.get("use_csr_master_weights", False)
+        # The host-prepared lifecycle is the only CSR-master lifecycle.
+        self._csr_host_lifecycle = self._csr_master_weights
+        self._uint8_synapse_types = execution.get("use_uint8_synapse_types", False)
+        self._adaptive_routing = execution.get("use_adaptive_routing", False)
+        if self._uint8_synapse_types and not self._csr_master_weights:
+            raise ValueError(
+                "use_uint8_synapse_types=True requires use_csr_master_weights=True."
+            )
+        if self._adaptive_routing and not self._uint8_synapse_types:
+            raise ValueError(
+                "use_adaptive_routing=True requires use_uint8_synapse_types=True "
+                "(and therefore use_csr_master_weights=True)."
+            )
         use_fused_cuda = execution.get("use_fused_cuda", False)
         use_fused_state = execution.get("use_fused_state", False)
         use_fused_nest_event_vjp = execution.get("use_fused_nest_event_vjp", False)
@@ -998,6 +1281,79 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_device_active_queue_forward = execution.get("use_device_active_queue_forward", False)
         use_fused_recurrent_accumulation = execution.get("use_fused_recurrent_accumulation", False)
         use_javier_recurrent_vjp = execution.get("use_javier_recurrent_vjp", False)
+        if self._csr_master_weights:
+            unsupported = [
+                requirement for requirement, ok in (
+                    ("NEST dynamics", dynamics_mode == "nest"),
+                    ("compute temporal gradients", temporal_gradient_precision == "compute"),
+                    ("per-edge recurrent weights", not train_recurrent_per_type),
+                    ("one replica", tf.distribute.get_strategy().num_replicas_in_sync == 1),
+                    ("FP32 master variables", tf.as_dtype(self.variable_dtype) == tf.float32),
+                ) if not ok
+            ]
+            if unsupported:
+                raise ValueError(
+                    "use_csr_master_weights=True requires " + ", ".join(unsupported)
+                    + "; set use_csr_master_weights=False to keep canonical-order masters."
+                )
+            if use_fused_cuda and not use_combined_current_sweep:
+                raise ValueError(
+                    "use_csr_master_weights=True with native CUDA requires the combined current "
+                    "sweep (use_combined_current_sweep); set use_csr_master_weights=False."
+                )
+            if self._uint8_synapse_types and not use_fused_cuda:
+                raise ValueError(
+                    "use_uint8_synapse_types=True requires native fused CUDA and the combined sweep."
+                )
+            if self._adaptive_routing:
+                if not (use_fused_cuda and use_combined_current_sweep):
+                    raise ValueError(
+                        "use_adaptive_routing=True requires native fused CUDA and the combined sweep."
+                    )
+                from ..custom_ops.csr_spike_ops import require_adaptive_routing
+
+                require_adaptive_routing()
+            if not use_fused_cuda and tf.config.get_visible_devices("GPU"):
+                raise ValueError(
+                    "use_csr_master_weights=True without native fused CUDA selects the CPU "
+                    "reference implementation, which is only available with no visible GPU. "
+                    "Enable the native combined sweep or set use_csr_master_weights=False."
+                )
+            if not use_fused_cuda:
+                from ..custom_ops.master_projection import reference_available
+
+                if not reference_available():
+                    raise RuntimeError(
+                        "use_csr_master_weights=True without native fused CUDA uses the CPU "
+                        "reference kernels in _csr_spike_ops.so, which could not be loaded for "
+                        "this TensorFlow or lack the dpointnet_master_projection/"
+                        "dpointnet_master_projection_grad reference ops; rebuild the operators "
+                        "or set use_csr_master_weights=False."
+                    )
+                use_direct_csr_recurrent_gradient = False
+                use_fused_recurrent_accumulation = False
+                use_javier_recurrent_vjp = False
+                if self.acceleration_report is not None:
+                    for name in (
+                        "use_direct_csr_recurrent_gradient",
+                        "use_fused_recurrent_accumulation", "use_javier_recurrent_vjp",
+                    ):
+                        self.acceleration_report["selected"][name] = False
+        if self.acceleration_report is not None:
+            self.acceleration_report["csr_master_weights"] = (
+                CSR_MASTER_SCHEMA if self._csr_master_weights else "disabled"
+            )
+            self.acceleration_report["csr_master_projection"] = (
+                "disabled" if not self._csr_master_weights
+                else "optimized_combined_csr_fp32_master" if use_fused_cuda
+                else "cpu_reference_csr_fp32_master"
+            )
+            self.acceleration_report["csr_uint8_types"] = (
+                "csr_live_uint8_type_tail_v1" if self._uint8_synapse_types else "disabled"
+            )
+            self.acceleration_report["adaptive_routing"] = (
+                ADAPTIVE_ROUTING_SCHEMA if self._adaptive_routing else "disabled"
+            )
         use_prepacked_nest_coefficients = execution.get("use_prepacked_nest_coefficients", False)
         use_type_indexed_nest_coefficients = execution.get("use_type_indexed_nest_coefficients", False)
         use_static_type_indexed_nest_dispatch = execution.get("use_static_type_indexed_nest_dispatch", False)
@@ -1638,10 +1994,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Define the Tensorflow variables
         if _host_index_variables is not None and not self._use_combined_current_sweep:
             raise ValueError("Prepared host index variables require the explicit combined sweep.")
-        self.recurrent_indices = _canonical_index_variable(
-            indices,
-            None if _host_index_variables is None else _host_index_variables["recurrent"],
-        )
+        if not self._csr_host_lifecycle:
+            self.recurrent_indices = _canonical_index_variable(
+                indices,
+                None if _host_index_variables is None else _host_index_variables["recurrent"],
+            )
         self._recurrent_projection_basis_reference = self.synaptic_basis_weights
         self._unshared_recurrent_fused_connectivity = None
         if self._use_fused_cuda:
@@ -1662,6 +2019,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     and self.temporal_gradient_precision != "float32"
                     else None
                 ),
+                host_lifecycle=self._csr_host_lifecycle,
+                uint8_types=self._uint8_synapse_types,
             )
             self.pre_ind_table = None
         else:
@@ -1670,6 +2029,32 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 indices, n_source_neurons=self.recurrent_dense_shape[1]
             )
 
+        if self._csr_master_weights:
+            from ..csr_master import CsrMasterLayout, canonical_checkpoint
+            from ..custom_ops.master_projection import cpu_connectivity
+            self._master_recurrent_connectivity = (
+                self.recurrent_fused_connectivity if self._use_fused_cuda
+                else cpu_connectivity(
+                    indices, syn_ids, self.recurrent_dense_shape[1], self._n_neurons,
+                    host_lifecycle=self._csr_host_lifecycle,
+                )
+            )
+            self.recurrent_master_layout = CsrMasterLayout(
+                self._master_recurrent_connectivity,
+                host_lifecycle=self._csr_host_lifecycle,
+            )
+            weights = self.recurrent_master_layout.to_live(weights).numpy()
+            if self._csr_host_lifecycle:
+                layout = self.recurrent_master_layout
+                indices = layout.host_to_live(indices)
+                syn_ids = layout.host_to_live(syn_ids)
+                self._recurrent_export_factor = layout.host_to_live(self._recurrent_export_factor)
+                with tf.device("/CPU:0"):
+                    self.recurrent_indices = _canonical_index_variable(
+                        indices,
+                        None if _host_index_variables is None else _host_index_variables["recurrent"],
+                    )
+                canonical_checkpoint(self.recurrent_indices, layout, verify_unchanged=True)
         recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
         if use_fused_recurrent_accumulation and (
             not self._use_fused_cuda
@@ -1721,7 +2106,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
             dtype=self.variable_dtype,
         )  # shape = (n_synapses,)
 
-        if self.variable_dtype != self.compute_dtype or individual_training:
+        if self._csr_master_weights:
+            canonical_checkpoint(self.recurrent_weight_values, self.recurrent_master_layout)
+            if tf.as_dtype(self.variable_dtype) != tf.float32:
+                raise ValueError("use_csr_master_weights=True requires FP32 master variables.")
+            self.recurrent_weight_values_compute = self.recurrent_weight_values
+            self._register_canonical_shadow_checkpoints(individual_training)
+        elif self.variable_dtype != self.compute_dtype or individual_training:
             # Keep a non-trainable compute-lane shadow. Two reasons:
             #  (1) mixed precision: avoids casting the full weight table every timestep;
             #  (2) the recurrent @tf.custom_gradient reads these weights inside the RNN
@@ -1741,7 +2132,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
         else:
             self.recurrent_weight_values_compute = self.recurrent_weight_values
-        if self._use_fused_cuda:
+        if self._use_fused_cuda and not self._csr_master_weights:
             recurrent_csr_weights = tf.Variable(
                 reorder_csr_values(
                     self.recurrent_weight_values_compute,
@@ -1756,8 +2147,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
         else:
             self.recurrent_csr_weight_values_compute = None
-
-        with tf.device("/CPU:0") if self._use_combined_current_sweep else nullcontext():
+        with tf.device("/CPU:0") if self._use_combined_current_sweep or self._csr_host_lifecycle else nullcontext():
             self.syn_ids = tf.constant(syn_ids, dtype=tf.int64)
         # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
         io.log_debug(
@@ -1810,10 +2200,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = (
                 input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             )
-            input_props["input_indices"] = _canonical_index_variable(
-                input_indices,
-                None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
-            )
+            if not self._csr_host_lifecycle:
+                input_props["input_indices"] = _canonical_index_variable(
+                    input_indices,
+                    None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
+                )
 
             input_options = input_network.get("options", {})
             input_type = input_options.get("input_type", input_network["input_type"])
@@ -1824,8 +2215,46 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 * lr_scale
                 / input_options.get("weight_scale", 1.0)
             ).astype(np.float32)
-            input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
             input_trainable = input_options.get("trainable", False)
+            if self._csr_master_weights:
+                if input_type == "current":
+                    raise ValueError("use_csr_master_weights=True requires spike or count inputs; set use_csr_master_weights=False for current inputs.")
+                from ..csr_master import CsrMasterLayout, canonical_checkpoint
+                from ..custom_ops.master_projection import cpu_connectivity
+                input_props["master_connectivity"] = (
+                    build_csr_connectivity(
+                        input_indices, input_syn_ids, input_dense_shape[1],
+                        self._n_neurons, self.synaptic_basis_weights.shape[0],
+                        build_compact_pairs=(
+                            self._use_packed_sm120_external_backward is not False
+                            and input_trainable
+                        ),
+                        build_fixed4_incoming=self._use_fixed4_input_forward,
+                        sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
+                        host_lifecycle=self._csr_host_lifecycle,
+                        uint8_types=self._uint8_synapse_types,
+                    ) if self._use_fused_cuda else cpu_connectivity(
+                        input_indices, input_syn_ids, input_dense_shape[1], self._n_neurons,
+                        host_lifecycle=self._csr_host_lifecycle,
+                    )
+                )
+                input_props["master_layout"] = CsrMasterLayout(
+                    input_props["master_connectivity"],
+                    host_lifecycle=self._csr_host_lifecycle,
+                )
+                input_weights = input_props["master_layout"].to_live(input_weights).numpy()
+                if self._csr_host_lifecycle:
+                    layout = input_props["master_layout"]
+                    input_indices = layout.host_to_live(input_indices)
+                    input_syn_ids = layout.host_to_live(input_syn_ids)
+                    input_props["export_factor"] = layout.host_to_live(input_props["export_factor"])
+                    with tf.device("/CPU:0"):
+                        input_props["input_indices"] = _canonical_index_variable(
+                            input_indices,
+                            None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
+                        )
+                    canonical_checkpoint(input_props["input_indices"], layout, verify_unchanged=True)
+            input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
 
             input_props["input_weight_values"] = self._tracked_weight(
                 input_weights * input_options.get("weight_scale", 1.0) / lr_scale,
@@ -1838,7 +2267,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
             # @tf.custom_gradient reads this in the forward (avoids casting in fp16 and avoids reading
             # a trainable MirroredVariable inside the RNN while_loop), while the gradient targets the
             # master above. Kept in sync via refresh_recurrent_weight_shadow() after each step.
-            if self.variable_dtype != self.compute_dtype or input_trainable:
+            if self._csr_master_weights:
+                canonical_checkpoint(input_props["input_weight_values"], input_props["master_layout"])
+                if input_type == "current":
+                    raise ValueError("use_csr_master_weights=True requires spike or count inputs.")
+                input_props["input_weight_values_compute"] = input_props["input_weight_values"]
+            elif self.variable_dtype != self.compute_dtype or input_trainable:
                 _input_weight_compute = tf.Variable(
                     tf.cast(input_props["input_weight_values"], self.compute_dtype),
                     name=f"{input_name}_input_weights_compute",
@@ -1852,7 +2286,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 input_props["input_weight_values_compute"] = input_props[
                     "input_weight_values"
                 ]
-            host_types = self._use_combined_current_sweep and input_type != "current"
+            host_types = (self._use_combined_current_sweep or self._csr_host_lifecycle) and input_type != "current"
             with tf.device("/CPU:0") if host_types else nullcontext():
                 input_props["input_syn_ids"] = tf.constant(input_syn_ids, dtype=tf.int64)
             input_props["input_type"] = input_type
@@ -1890,7 +2324,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 raise ValueError(f"Unknown input type {input_type}")
             if input_type in ("spikes", "poisson_spikes_internal", "noisy_current"):
                 if self._use_fused_cuda:
-                    input_props["fused_connectivity"] = build_csr_connectivity(
+                    input_props["fused_connectivity"] = input_props["master_connectivity"] if self._csr_master_weights else build_csr_connectivity(
                         input_indices,
                         input_syn_ids,
                         input_dense_shape[1],
@@ -1912,7 +2346,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         else False
                     )
                     input_props["pre_input_ind_table"] = None
-                    input_csr_weights = tf.Variable(
+                    input_csr_weights = None if self._csr_master_weights else tf.Variable(
                         reorder_csr_values(
                             input_props["input_weight_values_compute"],
                             input_props["fused_connectivity"],
@@ -1931,7 +2365,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         input_indices,
                         n_source_neurons=input_dense_shape[1],
                     )
-
             io.log_debug(
                 f' > Added "{input_name}" input synapses: indices = {len(input_indices)}, trainble = {input_trainable}'
             )
@@ -1947,6 +2380,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 for net in self.inputs.values()
             ):
                 raise ValueError("Combined current sweep requires four bases and native spike-input connectivity.")
+            if self.acceleration_report is not None:
+                if self._adaptive_routing:
+                    self.acceleration_report["adaptive_routing_plan"] = (
+                        self.adaptive_routing_plan()
+                    )
+                self.acceleration_report["routing_geometry"] = self.combined_routing_geometry()
 
         """
         lgn_inputs = inputs[0]
@@ -2021,6 +2460,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         forward keeps using stale weights and recurrent-weight training has no effect.
         Matches the reference V1_GLIF_model.
         """
+        if getattr(self, "_csr_master_weights", False):
+            return
         if (
             self.recurrent_weight_values_compute is not self.recurrent_weight_values
             and self.recurrent_weight_values.trainable
@@ -2055,6 +2496,77 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         input_net["fused_connectivity"],
                     )
                 )
+
+    def _combined_routing_sources(self):
+        """Named connectivities in combined-sweep source order."""
+        sources = {"recurrent": self._recurrent_projection_connectivity()}
+        for name, input_net in self.inputs.items():
+            if input_net.get("input_type") != "current" and input_net.get("fused_connectivity") is not None:
+                sources[name] = input_net["fused_connectivity"]
+        return sources
+
+    def adaptive_routing_plan(self):
+        """Static per-source adaptive routing selection; None when the sweep is not combined."""
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return None
+        from ..custom_ops.csr_spike_ops import adaptive_routing_plan
+
+        sources = self._combined_routing_sources()
+        plan = adaptive_routing_plan(
+            list(sources.values()), target_tile_size=self.combined_current_target_tile_size,
+            gather_sources=self._use_target_gather_projection,
+        )
+        return {
+            "schema": plan["schema"], "wide_tile": plan["wide_tile"],
+            "narrow_tile": plan["narrow_tile"],
+            "traversals": dict(zip(sources, plan["traversals"])),
+        }
+
+    def combined_routing_geometry(self):
+        """Static per-source routing geometry of the combined sweep in the active schema."""
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return None
+        from ..custom_ops.csr_spike_ops import combined_routing_geometry
+
+        sources = self._combined_routing_sources()
+        geometry = combined_routing_geometry(
+            list(sources.values()), target_tile_size=self.combined_current_target_tile_size,
+            cooperative_rows=self._use_cooperative_row_projection,
+            fanout_rows=self._use_fanout_row_projection,
+            gather_sources=self._use_target_gather_projection,
+            adaptive_routing=self._adaptive_routing,
+        )
+        return dict(zip(sources, geometry))
+
+    def adaptive_routing_report(self):
+        """Per-source routing mode, static policy and exact native routing-table census.
+
+        ``routing_table_bytes`` sums live persistent routing tables keyed by the source's
+        metadata allocation (dense per-operator tile tables, shared compressed segments,
+        masks and gather tables), over every live operator instance; transient per-launch
+        queue bytes are reported separately. Native tables are built on first execution.
+        """
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return {}
+        from ..custom_ops.csr_spike_ops import ADAPTIVE_ROUTING_SCHEMA as schema
+        from ..custom_ops.csr_spike_ops import combined_routing_census
+
+        sources = self._combined_routing_sources()
+        plan = self.adaptive_routing_plan()
+        census = combined_routing_census(list(sources.values()))
+        adaptive = self._adaptive_routing
+        geometry = self.combined_routing_geometry()
+        report = {}
+        for name, item in zip(sources, census):
+            report[name] = {
+                "adaptive": adaptive,
+                "schema": schema if adaptive else "dense_tile_starts",
+                "policy_traversal": geometry[name]["traversal"],
+                "wide_tile": plan["wide_tile"],
+                "narrow_tile": plan["narrow_tile"] if adaptive else plan["wide_tile"],
+                **item,
+            }
+        return report
 
     def close_fused_cuda(self):
         connectivity = getattr(self, "recurrent_fused_connectivity", None)
@@ -2099,7 +2611,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
     ):
         basis, weight = (
             (_rollout_constant(self, "synaptic_basis_weights"),
-             self.recurrent_csr_weight_values_compute if self._use_fused_cuda
+             (self.recurrent_weight_values if self._csr_master_weights else
+              self.recurrent_csr_weight_values_compute) if self._use_fused_cuda
              else self.recurrent_weight_values_compute)
             if projection_values is None else projection_values
         )
@@ -2122,6 +2635,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     self._n_neurons,
                     _rollout_constant(self, "_recurrent_dampening"),
                     vjp_only=vjp_only,
+                    **({'csr_master_weights': True} if self._csr_master_weights else {}),
                     use_javier_batch32_backward=self.use_javier_recurrent_vjp,
                     use_active_row_forward=(
                         rec_z_buf.shape[0] != 32 and self._use_active_row_forward
@@ -2160,6 +2674,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 ),
                 use_device_active_queue_forward=self._use_device_active_queue_forward,
                 vjp_only=vjp_only,
+                    **({'csr_master_weights': True} if self._csr_master_weights else {}),
             )
         return calculate_synaptic_currents(
             rec_z_buf,
@@ -2174,6 +2689,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
 
     def restore_segmented_variable_gradients(self, variables, gradients):
+        if getattr(self, "_csr_master_weights", False):
+            return gradients
         master = self.recurrent_weight_values
         master_value = master.value
         master_candidates = (master, master_value)
@@ -2237,7 +2754,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
     ):
         basis, weight = (
             (_rollout_constant(self, "synaptic_basis_weights"),
-             input_net["csr_weight_values_compute"] if self._use_fused_cuda
+             (input_net["input_weight_values"] if self._csr_master_weights else
+              input_net["csr_weight_values_compute"]) if self._use_fused_cuda
              else input_net["input_weight_values_compute"])
             if projection_values is None else projection_values
         )
@@ -2265,6 +2783,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     "use_packed_sm120_backward", False
                 ),
                 vjp_only=vjp_only,
+                **({'csr_master_weights': True} if self._csr_master_weights else {}),
             )
         # Memory-efficient input current via the @tf.custom_gradient module function: the forward
         # reads the compute-dtype shadow and the backward recomputes the cheap basis gather (instead
@@ -2880,17 +3399,24 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
         z_buf, noise_step = states[0], states[6]
         new_input_history = []
-        combined = self._use_combined_current_sweep
+        direct_master = self._csr_master_weights and not self._use_fused_cuda
+        optimized_master = self._csr_master_weights and self._use_fused_cuda
+        if optimized_master and projection_values is not None:
+            raise ValueError("CSR master weights do not support alternate saved projection values.")
+        if direct_master and (projection_values is not None or recurrent_weight_carrier is not None):
+            raise ValueError("The CPU CSR-master reference does not support alternate values or CSR carriers.")
+        combined = self._use_combined_current_sweep or direct_master
         if combined:
             combined_spikes = [tf.cast(z_buf, self.compute_dtype)]
             combined_weights = [
+                self.recurrent_weight_values if optimized_master else
                 self.recurrent_csr_weight_values_compute if projection_values is None
                 else projection_values[1][0]
             ]
             combined_connections = [self._recurrent_projection_connectivity(
                 alternate_basis=projection_values is not None
             )]
-        i_rec = self.calculate_i_rec_with_custom_grad(
+        i_rec = None if direct_master else self.calculate_i_rec_with_custom_grad(
             tf.cast(z_buf, self.compute_dtype),
             recurrent_weight_carrier=recurrent_weight_carrier,
             vjp_only=combined,
@@ -2968,11 +3494,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 if combined:
                     combined_spikes.append(tf.cast(input_spikes, self.compute_dtype))
                     combined_weights.append(
+                        input_net["input_weight_values"] if optimized_master else
                         input_net["csr_weight_values_compute"] if projection_values is None
                         else projection_values[1][idx + 1]
                     )
                     combined_connections.append(input_net["fused_connectivity"])
-                    extern_currents.append(self.calculate_input_current_from_spikes(
+                    extern_currents.append(None if direct_master else self.calculate_input_current_from_spikes(
                         input_spikes, input_net, vjp_only=True, **frame(idx + 1)
                     ))
                 elif self._use_fused_current_accumulation:
@@ -2989,7 +3516,24 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         )
                     )
 
-        if combined:
+        if direct_master:
+            from ..custom_ops.master_projection import connected_project
+            basis = _rollout_constant(self, "synaptic_basis_weights")
+            rec_inputs = tf.cast(tf.add_n([
+                connected_project(
+                    combined_spikes[0], self.recurrent_master_layout.to_canonical(self.recurrent_weight_values),
+                    self._master_recurrent_connectivity, basis,
+                    _rollout_constant(self, "_recurrent_dampening"),
+                ),
+                *[
+                    connected_project(
+                        z, net["master_layout"].to_canonical(net["input_weight_values"]),
+                        net["master_connectivity"], basis
+                    )
+                    for z, net in zip(combined_spikes[1:], self.inputs.values())
+                ],
+            ]), self.compute_dtype)
+        elif combined:
             rec_inputs = fused_combined_currents(
                 combined_spikes, combined_weights, combined_connections,
                 _rollout_constant(self, "synaptic_basis_weights") if projection_values is None
@@ -2999,6 +3543,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 cooperative_rows=self._use_cooperative_row_projection,
                 fanout_rows=self._use_fanout_row_projection,
                 gather_sources=self._use_target_gather_projection,
+                **({"csr_master_weights": True} if optimized_master else {}),
+                **({"adaptive_routing": True} if self._adaptive_routing else {}),
             )
         elif extern_currents:
             rec_inputs = rec_inputs + tf.add_n(extern_currents)

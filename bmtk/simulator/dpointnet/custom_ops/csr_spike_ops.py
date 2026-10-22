@@ -136,6 +136,16 @@ class CsrConnectivity(Mapping):
         for finalizer in self._finalizers:
             finalizer()
 
+    @property
+    def metadata_resource_handles(self):
+        """Owned resident resource handles, without reading or copying their values."""
+        return self._handles
+
+    @property
+    def metadata_resource_specs(self):
+        """Creation-time census of owned resources; no tensor reads or copies."""
+        return self._values["metadata_resource_specs"]
+
 
 def _environment_flag(name):
     value = os.environ.get(name, "").strip().lower()
@@ -160,7 +170,12 @@ def _gpu_compute_architecture():
 
 
 def _auto_native_architecture(architecture):
-    return architecture is not None and (architecture == 75 or architecture >= 86)
+    """Automatic packed-backward/accumulator policy: every SM70+ fat-binary target.
+
+    SM70 and SM80 were excluded before the joint sweep was admitted on them; the
+    kernels carry native SASS for every target and FP64-oracle tests qualify them.
+    """
+    return architecture is not None and architecture >= 70
 
 
 def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
@@ -304,6 +319,18 @@ def _projection_type_representatives(basis, n_synapse_types):
     return representatives
 
 
+def _uint8_type_options(connectivity):
+    if not connectivity.get("uint8_types", False):
+        return {}
+    for name in _UINT8_TYPE_OPERATORS:
+        if not _operator_accepts(name, ("uint8_types",)):
+            raise RuntimeError(
+                "use_uint8_synapse_types=True requires rebuilt CUDA operators; the loaded "
+                "library lacks uint8_types on " + name
+            )
+    return {"uint8_types": True}
+
+
 def build_csr_connectivity(
     indices,
     synapse_types,
@@ -314,6 +341,8 @@ def build_csr_connectivity(
     build_fixed4_incoming=False,
     sort_by_target=False,
     projection_basis=None,
+    host_lifecycle=False,
+    uint8_types=False,
 ):
     """Build canonical CSR routing and optional immutable-basis projection sharing.
 
@@ -323,6 +352,16 @@ def build_csr_connectivity(
     """
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
+    if type(uint8_types) is not bool:
+        raise TypeError("uint8_types must be an explicit boolean.")
+    if uint8_types:
+        if host_lifecycle is not True:
+            raise ValueError("uint8 CSR types require the host lifecycle.")
+        if not np.issubdtype(synapse_types.dtype, np.integer):
+            raise TypeError("uint8 synapse_types must have an integer dtype.")
+        if np.any(synapse_types < 0) or np.any(synapse_types > 255):
+            raise ValueError("uint8 synapse_types must be in [0, 255]; no narrowing fallback.")
+        _uint8_type_options({"uint8_types": True})
     for dimension, name in (
         (n_source_neurons, "n_source_neurons"),
         (n_target_neurons, "n_target_neurons"),
@@ -420,7 +459,7 @@ def build_csr_connectivity(
         incoming_pre_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_edge_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_types = np.empty(0, dtype=numpy_index_dtype)
-        if build_fixed4_incoming and post_ids.size == 4 * n_target_neurons:
+        if build_fixed4_incoming and not host_lifecycle and post_ids.size == 4 * n_target_neurons:
             post_counts = np.bincount(post_ids, minlength=n_target_neurons)
             if np.all(post_counts == 4):
                 incoming_order = np.argsort(post_ids, kind="stable").astype(
@@ -437,8 +476,9 @@ def build_csr_connectivity(
             post_ids,
             sorted_synapse_types,
             row_splits,
-            edge_ids,
         ]
+        if not host_lifecycle:
+            metadata_parts.append(edge_ids)
         n_pairs = 0
         if build_compact_pairs and post_ids.size:
             pair_types = (
@@ -470,7 +510,30 @@ def build_csr_connectivity(
                 )
             )
             n_pairs = int(pairs.shape[0])
-        metadata = np.concatenate(metadata_parts)
+        type_byte_offset = None
+        padding_bytes = 0
+        if uint8_types:
+            # All index sections precede the byte tail, so no index is unaligned.
+            index_parts = [metadata_parts[0], *metadata_parts[2:]]
+            wide = np.concatenate(index_parts)
+            type_byte_offset = int(wide.nbytes)
+            padding_bytes = (-int(sorted_synapse_types.size)) % index_dtype.size
+            packed = np.concatenate((
+                wide.view(np.uint8),
+                sorted_synapse_types.astype(np.uint8),
+                np.zeros(padding_bytes, np.uint8),
+            ))
+            metadata = packed.view(numpy_index_dtype)
+        else:
+            metadata = np.concatenate(metadata_parts)
+        metadata_schema = (
+            "csr_live_uint8_type_tail_v1" if uint8_types else
+            "csr_live_without_edge_ids_v1" if host_lifecycle else "canonical_edge_ids_v1"
+        )
+        type_dtype = "uint8" if uint8_types else index_dtype.name
+        type_payload_bytes = int(indices.shape[0]) * (1 if uint8_types else index_dtype.size)
+        type_logical_min = int(synapse_types.min()) if synapse_types.size else None
+        type_logical_max = int(synapse_types.max()) if synapse_types.size else None
         from ..distribution import data_parallel_worker_devices
         devices = data_parallel_worker_devices() or (device,)
         handles = []
@@ -498,6 +561,42 @@ def build_csr_connectivity(
                 "n_post": int(n_target_neurons),
                 "n_synapse_types": int(n_synapse_types),
                 "n_pairs": n_pairs,
+                "metadata_shape": tuple(metadata.shape),
+                "metadata_bytes": int(metadata.nbytes),
+                "metadata_schema": metadata_schema,
+                "metadata_resource_specs": tuple({
+                    "handle": handle,
+                    "dtype": index_dtype.name,
+                    "shape": tuple(metadata.shape),
+                    "payload_bytes": int(metadata.nbytes),
+                    "logical_payload_bytes": int(metadata.nbytes) - padding_bytes,
+                    "alignment_bytes": padding_bytes,
+                    "role": "csr_metadata",
+                    "schema": metadata_schema,
+                    "type_dtype": type_dtype,
+                    "type_payload_bytes": type_payload_bytes,
+                    "type_logical_min": type_logical_min,
+                    "type_logical_max": type_logical_max,
+                } for handle in handles),
+                "uint8_types": bool(uint8_types),
+                "metadata_dtype": index_dtype.name,
+                "type_dtype": type_dtype,
+                "type_byte_offset": type_byte_offset,
+                "type_payload_bytes": type_payload_bytes,
+                "type_logical_min": type_logical_min,
+                "type_logical_max": type_logical_max,
+                "metadata_padding_bytes": padding_bytes,
+                "metadata_payload_bytes": int(metadata.nbytes) - padding_bytes,
+                "canonical_edge_id_offset": (
+                    None if host_lifecycle else 2 * int(indices.shape[0]) + int(n_source_neurons) + 1
+                ),
+                "device_edge_ids": not host_lifecycle,
+                **({
+                    "host_edge_order": edge_ids.astype(
+                        np.uint32 if indices.shape[0] <= np.iinfo(np.uint32).max else np.uint64,
+                        copy=False,
+                    ),
+                } if host_lifecycle else {}),
                 "projection_basis_shared": (
                     projection_types is not None
                     and bool(np.any(projection_types != np.arange(n_synapse_types)))
@@ -513,6 +612,8 @@ def build_csr_connectivity(
 
 
 def reorder_csr_values(values, connectivity):
+    if connectivity.get("uint8_types"):
+        raise ValueError("Typed host-lifecycle metadata has no device canonical edge IDs.")
     if _OPS is None:
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
@@ -528,6 +629,8 @@ def reorder_csr_values(values, connectivity):
 
 
 def restore_csr_values(values, connectivity):
+    if connectivity.get("uint8_types"):
+        raise ValueError("Typed host-lifecycle metadata has no device canonical edge IDs.")
     if _OPS is None:
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
@@ -542,14 +645,41 @@ def restore_csr_values(values, connectivity):
     )
 
 
+# Op type of the VJP-only producer over CSR-ordered FP32 masters. The develop
+# DpointnetCsrSpikeForward schema is unchanged, so GraphDefs serialized before
+# CSR masters existed import and differentiate as before.
+CSR_MASTER_FORWARD_OP = "DpointnetCsrSpikeForwardCsrMaster"
+
+
+def _optional_bool_attr(op, name):
+    """``op``'s boolean attribute, False when its (older) schema lacks it."""
+    try:
+        return bool(op.get_attr(name))
+    except (ValueError, TypeError):
+        return False
+
+
 @ops.RegisterGradient("DpointnetCsrSpikeForward")
+@ops.RegisterGradient(CSR_MASTER_FORWARD_OP)
 def _fused_spike_currents_gradient(op, current_grad):
+    # Resolved once from the op type: only the CSR-master proxy carries FP32
+    # masters and the uint8 type tail, so develop-schema nodes and libraries
+    # without these attributes take the canonical gradient operators.
+    csr_master_weights = op.type == CSR_MASTER_FORWARD_OP
+    type_options = (
+        {"uint8_types": True}
+        if csr_master_weights and _optional_bool_attr(op, "uint8_types") else {}
+    )
     compute_spike_gradient = op.get_attr("compute_spike_gradient")
     compute_weight_gradient = op.get_attr("compute_weight_gradient")
     n_post = op.get_attr("n_post")
     index_dtype = op.get_attr("Tindex")
     if compute_spike_gradient:
-        spike_grad, weight_grad = _OPS.dpointnet_csr_spike_grad(
+        gradient_operator = (
+            _OPS.dpointnet_csr_spike_grad_csr_master
+            if csr_master_weights else _OPS.dpointnet_csr_spike_grad
+        )
+        spike_grad, weight_grad = gradient_operator(
             op.inputs[0],
             current_grad,
             op.inputs[2],
@@ -561,9 +691,12 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
-            write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
+            write_csr_weight_gradient=(
+                op.get_attr("write_csr_weight_gradient") or csr_master_weights
+            ),
             use_small_batch_backward=op.get_attr("use_small_batch_backward"),
             use_javier_batch32_backward=False,
+            **type_options,
         )
         if not compute_weight_gradient:
             weight_grad = None
@@ -574,11 +707,13 @@ def _fused_spike_currents_gradient(op, current_grad):
             current_grad,
             op.inputs[2],
             op.inputs[4],
+            **type_options,
             Tindex=index_dtype,
             n_post=n_post,
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+            **({"write_csr_weight_gradient": True} if csr_master_weights else {}),
         )
     else:
         spike_grad = None
@@ -631,6 +766,7 @@ def fused_recurrent_weight_carry(
     use_forward_run_aggregation=False,
     use_device_active_queue_forward=False,
     compute_spike_gradient=True,
+    csr_master_weights=False,
 ):
     """Currents with a differentiable identity weight carrier.
 
@@ -660,7 +796,8 @@ def fused_recurrent_weight_carry(
             "Rebuild CUDA operators for compute_spike_gradient=False; "
             "the loaded accumulator does not support weight-only gradients."
         )
-    if any(value.dtype != spikes.dtype for value in (csr_weights, basis)):
+    weight_dtype = tf.float32 if csr_master_weights else spikes.dtype
+    if csr_weights.dtype != weight_dtype or basis.dtype != spikes.dtype:
         raise ValueError(
             "Fused recurrent accumulation requires matching compute operands."
         )
@@ -681,6 +818,7 @@ def fused_recurrent_weight_carry(
             use_active_row_forward=use_active_row_forward,
             use_forward_run_aggregation=use_forward_run_aggregation,
             use_device_active_queue_forward=use_device_active_queue_forward,
+            **({"csr_master_weights": True} if csr_master_weights else {}),
         )
         # Reuse this FuncGraph's capture; recapturing the eager handle in grad
         # breaks TensorFlow's nested while-gradient resource mapping.
@@ -696,7 +834,11 @@ def fused_recurrent_weight_carry(
             if dcurrents is None:
                 dcurrents = tf.zeros_like(currents)
             spike_options = {} if compute_spike_gradient else {"compute_spike_gradient": False}
-            dz, accumulated = _OPS.dpointnet_csr_spike_grad_accumulate(
+            gradient_operator = (
+                _OPS.dpointnet_csr_spike_grad_accumulate_csr_master
+                if csr_master_weights else _OPS.dpointnet_csr_spike_grad_accumulate
+            )
+            dz, accumulated = gradient_operator(
                 z,
                 dcurrents,
                 metadata,
@@ -710,6 +852,7 @@ def fused_recurrent_weight_carry(
                 n_pairs=connectivity["n_pairs"],
                 use_javier_batch32_backward=use_javier_batch32_backward,
                 **spike_options,
+                **_uint8_type_options(connectivity),
             )
             return (
                 dz if compute_spike_gradient else None,
@@ -746,6 +889,7 @@ def fused_spike_currents(
     use_forward_run_aggregation=False,
     use_device_active_queue_forward=False,
     vjp_only=False,
+    csr_master_weights=False,
 ):
     """Project currents, or supply only their registered VJP for recorded replay.
 
@@ -768,13 +912,19 @@ def fused_spike_currents(
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
         )
+    type_options = _uint8_type_options(connectivity)
+    if type_options and not csr_master_weights:
+        raise ValueError("uint8 CSR metadata requires direct CSR FP32 masters.")
     if spikes.dtype not in (tf.float16, tf.float32):
         raise TypeError(
             f"Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}."
         )
     if vjp_only and initial_currents is not None:
         raise ValueError("VJP-only projection requires no initial currents.")
-    if csr_weights.dtype != spikes.dtype or basis.dtype != spikes.dtype:
+    weight_dtype = tf.float32 if csr_master_weights else spikes.dtype
+    if csr_master_weights and not vjp_only:
+        raise ValueError("Canonical master weights require joint VJP-only projection.")
+    if csr_weights.dtype != weight_dtype or basis.dtype != spikes.dtype:
         raise TypeError("spikes, csr_weights, and basis must have the same dtype.")
     if master_weights.shape.rank != 1 or csr_weights.shape.rank != 1:
         raise ValueError("master_weights and csr_weights must be rank 1.")
@@ -858,7 +1008,11 @@ def fused_spike_currents(
     elif initial_currents.shape.num_elements() == 0:
         raise ValueError("A rank-two initial_currents tensor must be nonempty.")
 
-    return _OPS.dpointnet_csr_spike_forward(
+    forward = (
+        _OPS.dpointnet_csr_spike_forward_csr_master
+        if csr_master_weights else _OPS.dpointnet_csr_spike_forward
+    )
+    return forward(
         spikes,
         master_weights,
         connectivity["metadata_handle"],
@@ -883,6 +1037,7 @@ def fused_spike_currents(
         write_csr_weight_gradient=write_csr_weight_gradient,
         use_small_batch_backward=use_small_batch_backward,
         vjp_only=vjp_only,
+        **type_options,
     )
 
 
@@ -914,6 +1069,209 @@ def fanout_combined_sweep_available():
 
 def gather_combined_sweep_available():
     return _combined_sweep_accepts("gather_sources")
+
+
+ADAPTIVE_ROUTING_SCHEMA = "adaptive_segment_ticket_v1"
+ADAPTIVE_TRAVERSAL_CODES = {"warp_batches": 1, "block_rounds": 2, "gather": 3}
+_ADAPTIVE_TRAVERSAL_NAMES = {code: name for name, code in ADAPTIVE_TRAVERSAL_CODES.items()}
+_BASELINE_TRAVERSAL_NAMES = {
+    10: "scatter_rows", 11: "balanced_rounds", 12: "cooperative_rows", 13: "fanout_rounds",
+    14: "gather",
+}
+_ROUTING_CENSUS_FIELDS = (
+    "dense_tile_bytes", "dense_tile_tables", "segment_bytes", "segment_tables", "mask_bytes",
+    "gather_table_bytes", "gather_tables", "transient_queue_bytes", "queue_operators",
+    "last_selected_tile", "traversal_code", "segments", "built_tile_bits", "operators",
+)
+_ADAPTIVE_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
+
+
+def _operator_accepts(name, attributes):
+    operator = getattr(_OPS, name, None)
+    if operator is None:
+        return False
+    parameters = inspect.signature(operator).parameters
+    return all(attribute in parameters for attribute in attributes)
+
+
+# Native operators that read CSR-ordered FP32 master weights directly.
+_CSR_MASTER_OPERATORS = (
+    ("dpointnet_combined_sweep_csr_master", ()),
+    ("dpointnet_csr_spike_grad_csr_master", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_spike_grad_accumulate_csr_master", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_weight_grad", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_spike_forward_csr_master", ()),
+)
+# Every native consumer of per-edge synapse types must read the uint8 tail.
+_UINT8_TYPE_OPERATORS = (
+    "dpointnet_csr_spike_forward_csr_master", "dpointnet_csr_weight_grad",
+    "dpointnet_csr_spike_grad_csr_master",
+    "dpointnet_csr_spike_grad_accumulate_csr_master",
+    "dpointnet_combined_sweep_csr_master",
+)
+
+
+def csr_master_weights_available():
+    """Whether the loaded library reads CSR-ordered FP32 master weights natively."""
+    return combined_sweep_available() and all(
+        _operator_accepts(name, attributes) for name, attributes in _CSR_MASTER_OPERATORS
+    )
+
+
+def uint8_synapse_types_available():
+    """Whether every native per-edge type consumer accepts the uint8 type tail."""
+    return csr_master_weights_available() and all(
+        _operator_accepts(name, ("uint8_types",)) for name in _UINT8_TYPE_OPERATORS
+    )
+
+
+def adaptive_routing_available():
+    """Whether the loaded library has the adaptive routing attributes and census op."""
+    return (
+        _combined_sweep_accepts("cooperative_rows")
+        and hasattr(_OPS, "dpointnet_routing_census")
+        and _operator_accepts(
+            "dpointnet_combined_sweep_csr_master",
+            ("adaptive_routing", "adaptive_traversal", "uint8_types"),
+        )
+    )
+
+
+def require_adaptive_routing():
+    if not adaptive_routing_available():
+        raise RuntimeError(
+            "use_adaptive_routing=True requires rebuilt CUDA operators: the loaded library "
+            "lacks dpointnet_routing_census or the adaptive_routing/adaptive_traversal attributes. "
+            "Rebuild both operators or set use_adaptive_routing=False."
+        )
+
+
+def adaptive_narrow_tile(wide):
+    """Narrow tile paired with ``wide``; equal to ``wide`` when none is narrower."""
+    quarter = int(wide) // 4
+    return 1024 if quarter >= 1024 else 512 if quarter >= 512 else 256
+
+
+def adaptive_selected_tile(batch, n_post, wide_tile, multiprocessors, wide_blocks_per_sm):
+    """Per-launch adaptive tile, mirroring the native rule for given device properties.
+
+    The narrow tile is chosen when the wide grid fills at most half of the device's
+    resident wide-kernel block slots (``multiprocessors * wide_blocks_per_sm``, the
+    latter measured natively by an occupancy query); otherwise the wide tile is kept.
+    """
+    wide = validate_combined_target_tile_size(wide_tile)
+    narrow = adaptive_narrow_tile(wide)
+    if narrow == wide:
+        return wide
+    wide_blocks = int(batch) * (-(-int(n_post) // wide))
+    return narrow if 2 * wide_blocks <= int(multiprocessors) * int(wide_blocks_per_sm) else wide
+
+
+def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sources=False):
+    """Deterministic per-source traversal policy of the adaptive routing schema.
+
+    gather: low in-degree source (``combined_gather_eligible``) when target gather is
+    enabled; warp_batches: rows never repeat a target and mean fanout is below 512;
+    block_rounds: every other source (repeated targets, unknown repetition or high fanout).
+    The tile width is chosen per launch on the device: ``wide`` unless the wide grid
+    fills at most half of the resident block slots, then ``narrow``.
+    """
+    wide = validate_combined_target_tile_size(target_tile_size)
+    traversals = []
+    for conn in connectivities:
+        if gather_sources and combined_gather_eligible(conn):
+            traversals.append("gather")
+        elif (
+            conn.get("has_repeated_targets") is False
+            and conn["n_sources"] > 0
+            and conn["n_edges"] // conn["n_sources"] < 512
+        ):
+            traversals.append("warp_batches")
+        else:
+            traversals.append("block_rounds")
+    return {
+        "schema": ADAPTIVE_ROUTING_SCHEMA,
+        "wide_tile": wide,
+        "narrow_tile": adaptive_narrow_tile(wide),
+        "traversals": traversals,
+        "codes": [ADAPTIVE_TRAVERSAL_CODES[name] for name in traversals],
+    }
+
+
+def combined_routing_geometry(
+    connectivities, *, target_tile_size=2048, cooperative_rows=False, fanout_rows=False,
+    gather_sources=False, adaptive_routing=False,
+):
+    """Static per-source routing geometry for either schema, as the native op dispatches it.
+
+    Disabled schema: one fixed tile and the existing traversal per source (gather,
+    cooperative_rows, fanout_rounds, balanced_rounds or scatter_rows). Adaptive schema:
+    the adaptive plan's traversal plus wide/narrow tiles chosen per launch. Traversal
+    names match ``combined_routing_census(...)[i]["traversal"]`` after execution.
+    """
+    tile = validate_combined_target_tile_size(target_tile_size)
+    if adaptive_routing:
+        plan = adaptive_routing_plan(
+            connectivities, target_tile_size=tile, gather_sources=gather_sources,
+        )
+        rule = (
+            "narrow iff 2*batch*ceil(n_post/wide_tile) <= multiprocessors*resident wide blocks "
+            "per multiprocessor; else wide"
+        )
+        return [
+            {"schema": ADAPTIVE_ROUTING_SCHEMA, "traversal": name, "wide_tile": plan["wide_tile"],
+             "narrow_tile": plan["narrow_tile"], "tile_rule": rule}
+            for name in plan["traversals"]
+        ]
+    result = []
+    for conn in connectivities:
+        cooperative = (
+            cooperative_rows and conn.get("has_repeated_targets") is False
+            and conn["n_sources"] > 0 and conn["n_edges"] // conn["n_sources"] < 512
+        )
+        high_fanout = conn["n_sources"] > 0 and conn["n_edges"] // conn["n_sources"] >= 512
+        if gather_sources and combined_gather_eligible(conn):
+            name = "gather"
+        elif cooperative:
+            name = "cooperative_rows"
+        elif high_fanout:
+            name = "fanout_rounds" if fanout_rows else "balanced_rounds"
+        else:
+            name = "scatter_rows"
+        result.append({"schema": "dense_tile_starts", "traversal": name, "tile": tile})
+    return result
+
+
+def combined_routing_census(connectivities):
+    """Exact native census of live routing allocations per connectivity.
+
+    Reads only allocation sizes recorded by the native operators and shared tables
+    keyed by each metadata resource's current allocation; no routing data is read or
+    copied. Tables are built on first execution, so call after a warm execution.
+    Totals include every live operator instance (for example several compiled graphs).
+    """
+    if not hasattr(_OPS, "dpointnet_routing_census"):
+        raise RuntimeError("Rebuild both CUDA operators for the native routing census.")
+    handles = [conn["metadata_handle"] for conn in connectivities]
+    with tf.device(handles[0].device or None):
+        values = _OPS.dpointnet_routing_census(handles).numpy()
+    result = []
+    for row in values:
+        item = dict(zip(_ROUTING_CENSUS_FIELDS, (int(value) for value in row)))
+        code = item["traversal_code"]
+        item["traversal"] = (
+            _ADAPTIVE_TRAVERSAL_NAMES.get(code) or _BASELINE_TRAVERSAL_NAMES.get(code)
+            or ("unexecuted" if code == 0 else f"unknown_{code}")
+        )
+        item["built_tiles"] = [
+            tile for bit, tile in enumerate(_ADAPTIVE_TILES) if item["built_tile_bits"] & (1 << bit)
+        ]
+        item["routing_table_bytes"] = (
+            item["dense_tile_bytes"] + item["segment_bytes"] + item["mask_bytes"]
+            + item["gather_table_bytes"]
+        )
+        result.append(item)
+    return result
 
 
 # Average incoming edges per target at or below which a source is projected by a
@@ -950,9 +1308,22 @@ def validate_combined_target_tile_size(target_tile_size):
 def fused_combined_currents(
     spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
     cooperative_rows=False, fanout_rows=False, gather_sources=False,
+    csr_master_weights=False, adaptive_routing=False,
 ):
-    """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs."""
+    """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs.
+
+    ``adaptive_routing=True`` selects the adaptive_segment_ticket_v1 forward
+    schedule (CSR FP32 masters and uint8 type metadata required); per-source VJPs keep
+    their existing routing. The cooperative/fanout requests are superseded by the
+    adaptive per-source traversal; gather_sources still admits eligible gather sources.
+    """
     target_tile_size = validate_combined_target_tile_size(target_tile_size)
+    if type(adaptive_routing) is not bool:
+        raise ValueError("adaptive_routing must be true or false.")
+    if adaptive_routing:
+        if not csr_master_weights:
+            raise ValueError("Adaptive routing requires direct CSR FP32 master weights.")
+        require_adaptive_routing()
     if type(cooperative_rows) is not bool:
         raise ValueError("cooperative_rows must be true or false.")
     if type(fanout_rows) is not bool:
@@ -973,10 +1344,18 @@ def fused_combined_currents(
         raise ValueError("Combined sweep requires two to eight matching sources and VJP proxies.")
     dtype = spikes[0].dtype
     index = connectivities[0]["index_dtype"]
+    type_options = _uint8_type_options(connectivities[0])
+    if type_options and not csr_master_weights:
+        raise ValueError("uint8 CSR metadata requires direct CSR FP32 masters.")
+    if adaptive_routing and not type_options:
+        raise ValueError("Adaptive routing requires uint8 CSR type metadata (host lifecycle).")
     if dtype not in (tf.float16, tf.float32) or basis.dtype != dtype or basis.shape[1] != 4:
         raise ValueError("Combined sweep requires matching FP16/FP32 operands and four bases.")
     for z, weight, connectivity in zip(spikes, weights, connectivities):
-        if z.dtype != dtype or weight.dtype != dtype or z.shape.rank != 2:
+        if bool(connectivity.get("uint8_types")) != bool(type_options):
+            raise ValueError("Combined sweep requires matching type metadata schemas.")
+        weight_dtype = tf.float32 if csr_master_weights else dtype
+        if z.dtype != dtype or weight.dtype != weight_dtype or z.shape.rank != 2:
             raise ValueError("Combined sweep spike/weight dtypes and spike ranks must match.")
         if not connectivity.get("sorted_by_target", False) or connectivity["index_dtype"] != index:
             raise ValueError("Combined sweep requires target-sorted CSR with matching index dtypes.")
@@ -1000,15 +1379,27 @@ def fused_combined_currents(
             and conn["n_edges"] // conn["n_sources"] < 512
             for conn in connectivities
         ]
-    primal = _OPS.dpointnet_combined_sweep(
+    if adaptive_routing:
+        plan = adaptive_routing_plan(
+            connectivities, target_tile_size=target_tile_size, gather_sources=gather_sources,
+        )
+        schedule["adaptive_routing"] = True
+        schedule["adaptive_traversal"] = plan["codes"]
+    operator = (
+        _OPS.dpointnet_combined_sweep_csr_master if csr_master_weights
+        else _OPS.dpointnet_combined_sweep
+    )
+    primal = operator(
         spikes, weights, [conn["metadata_handle"] for conn in connectivities], basis,
         Tindex=tf.as_dtype(index), n_post=connectivities[0]["n_post"],
         n_edges=[conn["n_edges"] for conn in connectivities],
         n_pairs=[conn["n_pairs"] for conn in connectivities],
         target_tile_size=target_tile_size,
         **schedule,
+        **type_options,
     )
     return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
 
 
 ops.NotDifferentiable("DpointnetCombinedSweep")
+ops.NotDifferentiable("DpointnetCombinedSweepCsrMaster")

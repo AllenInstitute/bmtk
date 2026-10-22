@@ -63,11 +63,16 @@ def _sort_initial_values_by_group(initial_values, order, row_splits):
 class _CheckpointCompatibleGroupOrder(tf.Module):
     """GPU-resident unsigned indices with the original signed checkpoint value."""
 
-    def __init__(self, values):
+    def __init__(self, values, layout=None):
         super().__init__(name="emd_group_order")
         self._value = self._no_dependency(tf.Variable(
             values, dtype=tf.uint32, trainable=False, name="emd_group_order",
         ))
+        # CSR-ordered masters: entries are the live rows of the canonical group sequence
+        # (canonical rows ascending within each group, as canonical-order models store).
+        # Checkpoints map rows elementwise and keep that sequence, which fixes the EMD
+        # tie-break to canonical edge order in both layouts.
+        self._layout = self._no_dependency(layout)
 
     @property
     def dtype(self):
@@ -98,11 +103,26 @@ class _CheckpointCompatibleGroupOrder(tf.Module):
     def assign(self, value, **kwargs):
         return self._value.assign(value, **kwargs)
 
+    def _remap(self, value, mapping):
+        if not tf.executing_eagerly():
+            raise NotImplementedError(
+                "Save or restore CSR-ordered EMD group orders eagerly (host conversion)."
+            )
+        rows = np.asarray(mapping)[np.asarray(value.numpy(), dtype=np.int64)]
+        with tf.device("/CPU:0"):
+            return tf.constant(rows.astype(np.uint32))
+
     def _serialize_to_tensors(self):
-        return {"VARIABLE_VALUE": tf.bitcast(self.read_value(), tf.int32)}
+        value = self.read_value()
+        if self._layout is not None:
+            value = self._remap(value, self._layout.csr_to_canonical)
+        return {"VARIABLE_VALUE": tf.bitcast(value, tf.int32)}
 
     def _restore_from_tensors(self, restored_tensors):
-        return self.assign(tf.bitcast(restored_tensors["VARIABLE_VALUE"], tf.uint32))
+        value = tf.bitcast(restored_tensors["VARIABLE_VALUE"], tf.uint32)
+        if self._layout is not None:
+            value = self._remap(value, self._layout.canonical_to_csr)
+        return self.assign(value)
 
 
 def _group_order_to_tensor(value, dtype=None, name=None, as_ref=False):
@@ -203,6 +223,9 @@ class EMDWeightRegularization:
         group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(
             np.int64, copy=False
         )
+        layout = None
+        if getattr(rnn.cell, "_csr_master_weights", False):
+            layout = rnn.cell.recurrent_master_layout
         n_groups = int(np.max(group_ids) + 1) if group_ids.size else 0
 
         # Presort the initial values per group so the call only needs to sort the current weights.
@@ -211,7 +234,11 @@ class EMDWeightRegularization:
             row_splits_np = np.zeros((1,), dtype=np.int64)
             sorted_initial_np = np.empty((0,), dtype=np.float32)
         else:
+            # Group in canonical edge order, then address live rows: the grouped
+            # sequence (and so the EMD tie-break among equal weights) is layout-free.
             order_np, row_splits_np = _build_group_order(group_ids, n_groups)
+            if layout is not None:
+                order_np = np.asarray(layout.canonical_to_csr, dtype=np.int64)[order_np]
             sorted_initial_np = _sort_initial_values_by_group(
                 initial_value_np, order_np, row_splits_np
             )
@@ -219,7 +246,7 @@ class EMDWeightRegularization:
         self._n_groups = n_groups
         self.num_unique = tf.constant(n_groups, dtype=tf.int32)
         self._group_order = (
-            _CheckpointCompatibleGroupOrder(order_np)
+            _CheckpointCompatibleGroupOrder(order_np, layout)
             if order_np.size <= np.iinfo(np.int32).max else tf.Variable(
                 order_np, dtype=tf.int64, trainable=False, name="emd_group_order",
             )
@@ -242,6 +269,18 @@ class EMDWeightRegularization:
     @staticmethod
     def module():
         return "EMDWeightRegularization"
+
+    def canonical_group_order(self):
+        """Host int64 canonical edge rows in grouped order, identical in both layouts.
+
+        ``_group_order`` already addresses the live weight rows (CSR-ordered masters
+        included); do not map it again with ``cell.weight_loss_indices``.
+        """
+        rows = np.asarray(self._group_order.numpy(), dtype=np.int64)
+        layout = getattr(self._group_order, "_layout", None)
+        if layout is None:
+            return rows
+        return np.asarray(layout.csr_to_canonical, dtype=np.int64)[rows]
 
     @tf.function(jit_compile=False)  # jit_compile=True uses a lot of memory.
     def _compute(self, x):
