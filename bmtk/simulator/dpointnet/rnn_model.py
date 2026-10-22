@@ -932,11 +932,13 @@ class RNN:
         with self.strategy.scope():
             optimizer = training_engine.optimizer
             training_engine.learning_rule.build(self)
-            if self.dtype == tf.float16 and not optimizers.optimizer_supports_loss_scaling(optimizer):
-                # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
-                # must be built and applied as the active optimizer, especially under Keras 3.
-                from tensorflow.keras import mixed_precision as mixed_precision_module
-                optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
+            # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
+            # must be built and applied as the active optimizer, especially under Keras 3.
+            # A wrapper prepared earlier (TrainingEngine.build_optimizer before a
+            # checkpoint restore) is reused, never replaced or rebuilt.
+            wrapped = optimizers.loss_scale_optimizer_for(optimizer, self.dtype)
+            if wrapped is not optimizer:
+                optimizer = wrapped
                 training_engine.set_optimizer(optimizer)
                 io.log_info(
                     'Mixed-precision optimizer loss scaling enabled with '
@@ -949,7 +951,9 @@ class RNN:
                     surface.variable
                     for surface in training_engine.learning_rule.weight_surfaces
                 ]
-            optimizer.build(optimizer_variables)
+            if not optimizers.optimizer_is_built(optimizer):
+                # Keras 3 LossScaleOptimizer.build recreates its loss-scale variables.
+                optimizers.build_optimizer(optimizer, optimizer_variables)
             bind_slots = getattr(self._cell, "bind_optimizer_checkpoint_slots", None)
             if bind_slots is not None:
                 # CSR-ordered masters: optimizer slots join the canonical checkpoint format.

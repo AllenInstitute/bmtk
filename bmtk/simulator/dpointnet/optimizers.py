@@ -49,8 +49,15 @@ def build_learning_rate(lr_schedule, **lr_params):
 
 
 def optimizer_is_built(optimizer):
-    """Whether ``optimizer`` (or its loss-scale inner optimizer) has created its slots."""
+    """Whether ``optimizer`` has created its slots.
+
+    A loss-scale wrapper counts as built only when its inner optimizer is built and
+    the wrapper itself is not explicitly unbuilt (Keras 3 wrappers own the loss-scale
+    variables and are not rebuilt idempotently).
+    """
     while getattr(optimizer, 'inner_optimizer', None) is not None:
+        if getattr(optimizer, 'built', None) is False:
+            return False
         optimizer = optimizer.inner_optimizer
     return bool(
         getattr(optimizer, 'built', False) is True
@@ -66,6 +73,19 @@ def build_optimizer(optimizer, variables):
         build(variables)
     else:
         optimizer._create_all_weights(variables)
+
+
+def loss_scale_optimizer_for(optimizer, dtype):
+    """``optimizer`` wrapped in ``LossScaleOptimizer`` for float16 training.
+
+    Returns ``optimizer`` itself when ``dtype`` is not float16 or it already scales
+    losses, so repeated calls keep one wrapper object.
+    """
+    if optimizer is None or dtype is None or tf.as_dtype(dtype) != tf.float16:
+        return optimizer
+    if optimizer_supports_loss_scaling(optimizer):
+        return optimizer
+    return tf.keras.mixed_precision.LossScaleOptimizer(optimizer)
 
 
 def optimizer_supports_loss_scaling(optimizer):

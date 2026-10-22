@@ -306,18 +306,43 @@ class TrainingEngine:
             optimizers.build_optimizer(self.optimizer, variables)
         return True
 
+    def prepare_optimizer(self):
+        """Return the optimizer that training applies, wrapping it once for float16.
+
+        Mixed-float16 models (``rnn.dtype`` float16) train through a
+        ``LossScaleOptimizer``; the wrapper replaces ``self.optimizer`` here, and
+        ``RNN.train`` reuses it instead of creating another one.
+        """
+        optimizer = self.optimizer
+        strategy = getattr(self.rnn, "strategy", None)
+        with strategy.scope() if strategy is not None else contextlib.nullcontext():
+            wrapped = optimizers.loss_scale_optimizer_for(
+                optimizer, getattr(self.rnn, "dtype", None)
+            )
+        if wrapped is not optimizer:
+            self.set_optimizer(wrapped)
+            io.log_info(
+                'Mixed-precision optimizer loss scaling enabled with LossScaleOptimizer.'
+            )
+        return wrapped
+
     def build_optimizer(self):
-        """Build the optimizer for this engine's update variables and bind CSR-master slots.
+        """Build the optimizer that ``train`` will apply and bind CSR-master slots.
 
         Resume flow: build the RNN, call this, restore ``tf.train.Checkpoint(model=...,
-        optimizer=...)``, then train. Restoring after the build also restores weights
-        that Keras 3 checkpoints only through the optimizer's variable list (trainable
-        named-input weights), which ``optimizer.build`` replaces. The update variables
-        are the model's trainable variables for BPTT, else the built learning rule's
-        weight surfaces. Returns False when they are not known yet.
+        optimizer=engine.optimizer)``, then train. For a float16 model the optimizer is
+        first wrapped in the ``LossScaleOptimizer`` that ``RNN.train`` uses, so read
+        ``engine.optimizer`` after this call; restoring into that exact object restores
+        the loss scale and the slots, and training continues with it. Restoring after
+        the build also restores weights that Keras 3 checkpoints only through the
+        optimizer's variable list (trainable named-input weights), which
+        ``optimizer.build`` replaces. The update variables are the model's trainable
+        variables for BPTT, else the built learning rule's weight surfaces. Returns
+        False when they are not known yet.
         """
         if self.optimizer is None:
             raise ValueError("Set an optimizer before building it.")
+        self.prepare_optimizer()
         if not self._build_optimizer_state():
             return False
         return self.bind_optimizer_checkpoint_slots()

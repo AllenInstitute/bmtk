@@ -246,6 +246,13 @@ order. To resume a run in either layout:
    tf.train.Checkpoint(model=rnn.model, optimizer=rnn.training_engine.optimizer).restore(path)
    rnn.train()
 
+``build_optimizer()`` prepares the exact optimizer object that ``rnn.train()``
+applies: for a mixed-float16 model it first wraps the configured optimizer in the
+``LossScaleOptimizer`` that training uses and stores it as
+``rnn.training_engine.optimizer``, so read that attribute after the call (as above)
+and save checkpoints from it as well. Restoring into it restores the loss scale with
+the slots, and ``rnn.train()`` reuses it without re-wrapping or rebuilding it.
+
 Build the optimizer before restoring: under Keras 3, trainable named-input weights
 are checkpointed only through the optimizer's variable list, which building the
 optimizer replaces, so a restore issued earlier does not restore them in either

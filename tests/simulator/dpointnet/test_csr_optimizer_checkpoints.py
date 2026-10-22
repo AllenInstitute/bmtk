@@ -274,6 +274,102 @@ def test_engine_bind_before_restore_resumes_trainable_named_inputs(
     assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
 
 
+def _checkpoint_tensors(path):
+    reader = tf.train.load_checkpoint(path)
+    return {
+        key: reader.get_tensor(key)
+        for key in reader.get_variable_to_shape_map()
+        if not key.startswith(("save_counter", "_CHECKPOINTABLE_OBJECT_GRAPH"))
+    }
+
+
+def _assert_same_checkpoint(first, second):
+    first, second = _checkpoint_tensors(first), _checkpoint_tensors(second)
+    assert first.keys() == second.keys()
+    for key in first:
+        np.testing.assert_array_equal(first[key], second[key], err_msg=key)
+
+
+def _engine(rnn, optimizer, monkeypatch):
+    engine = training.TrainingEngine(rnn, n_epochs=1, steps_per_epoch=1)
+    engine.set_optimizer(optimizer)
+    trained = []
+    monkeypatch.setattr(engine, "train", lambda: trained.append(engine.optimizer))
+    return engine, trained
+
+
+@pytest.mark.parametrize("source_masters,target_masters", [(False, True), (True, False), (True, True)])
+@pytest.mark.parametrize("dtype", [tf.float32, tf.float16])
+def test_build_optimizer_prepares_the_optimizer_that_train_applies(
+    forward_free, tmp_path, monkeypatch, source_masters, target_masters, dtype,
+):
+    """Mixed-precision checkpoint saved after RNN.train, resumed by
+    build -> TrainingEngine.build_optimizer -> restore -> RNN.train."""
+    factory = FACTORIES["adam"]
+    source, source_inner, surfaces, trainable = model(
+        source_masters, factory, build_and_bind=False,
+    )
+    source_engine, _ = _engine(_resume_rnn(source, trainable, dtype), source_inner, monkeypatch)
+    _resume_rnn(source, trainable, dtype).train(source_engine)
+    source_optimizer = source_engine.optimizer
+    wrapper = tf.keras.mixed_precision.LossScaleOptimizer
+    assert isinstance(source_optimizer, wrapper) is (dtype == tf.float16)
+    for seed in (1, 2, 3):
+        step(source, source_optimizer, surfaces, seed)
+    path = checkpoint(source, source_optimizer).save(str(tmp_path / "source"))
+
+    target, target_inner, _, target_trainable = model(
+        target_masters, factory, build_and_bind=False,
+    )
+    rnn = _resume_rnn(target, target_trainable, dtype)
+    engine, trained = _engine(rnn, target_inner, monkeypatch)
+    assert engine.build_optimizer() is True
+    prepared = engine.optimizer
+    assert isinstance(prepared, wrapper) is (dtype == tf.float16)
+    if dtype == tf.float16:
+        assert prepared.inner_optimizer is target_inner
+    assert optimizers.optimizer_is_built(prepared)
+    checkpoint(target, prepared).restore(path).assert_consumed()
+    rnn.train(engine)
+    # train() applies the very optimizer that was restored; it is neither
+    # re-wrapped nor rebuilt (Keras 3 would reset the restored loss scale).
+    assert trained == [prepared] and engine.optimizer is prepared
+    assert_same_state(source, source_optimizer, target, prepared, surfaces)
+    _assert_same_checkpoint(path, checkpoint(target, prepared).save(str(tmp_path / "restored")))
+    step(source, source_optimizer, surfaces, 4)
+    step(target, prepared, surfaces, 4)
+    assert_same_state(source, source_optimizer, target, prepared, surfaces)
+    _assert_same_checkpoint(
+        checkpoint(source, source_optimizer).save(str(tmp_path / "source_next")),
+        checkpoint(target, prepared).save(str(tmp_path / "target_next")),
+    )
+
+
+def test_prepared_loss_scale_wrapper_is_not_rebuilt_by_train(forward_free, monkeypatch):
+    cell, inner, _, trainable = model(True, FACTORIES["adam"], build_and_bind=False)
+    rnn = _resume_rnn(cell, trainable, tf.float16)
+    engine, _ = _engine(rnn, inner, monkeypatch)
+    assert engine.build_optimizer() is True
+    prepared = engine.optimizer
+    before = [id(variable) for variable in prepared.variables]
+    rnn.train(engine)
+    assert engine.optimizer is prepared
+    assert [id(variable) for variable in prepared.variables] == before
+
+
+def test_loss_scale_wrapper_around_a_built_optimizer_is_not_reported_built():
+    variable = tf.Variable([1.0, 2.0])
+    inner = tf.keras.optimizers.Adam(0.01)
+    optimizers.build_optimizer(inner, [variable])
+    wrapped = optimizers.loss_scale_optimizer_for(inner, tf.float16)
+    assert optimizers.loss_scale_optimizer_for(wrapped, tf.float16) is wrapped
+    assert optimizers.loss_scale_optimizer_for(inner, tf.float32) is inner
+    if getattr(wrapped, "built", None) is False:  # Keras 3 wrappers own their state.
+        assert not optimizers.optimizer_is_built(wrapped)
+    optimizers.build_optimizer(wrapped, [variable])
+    assert optimizers.optimizer_is_built(wrapped)
+
+
 def test_restore_before_build_of_trainable_named_inputs(forward_free, tmp_path):
     """Keras 3 cannot restore optimizer-only named-input masters before the build:
     CSR masters raise instead of resuming from unrestored weights."""
