@@ -48,6 +48,26 @@ def build_learning_rate(lr_schedule, **lr_params):
         raise ValueError(f'Invalid lr_schedule "{lr_schedule}". Supported values: "none", "warmup_cosine".')
 
 
+def optimizer_is_built(optimizer):
+    """Whether ``optimizer`` (or its loss-scale inner optimizer) has created its slots."""
+    while getattr(optimizer, 'inner_optimizer', None) is not None:
+        optimizer = optimizer.inner_optimizer
+    return bool(
+        getattr(optimizer, 'built', False) is True
+        or getattr(optimizer, '_built', False) is True
+        or getattr(optimizer, '_slots_built', False) is True
+    )
+
+
+def build_optimizer(optimizer, variables):
+    """Create optimizer state for ``variables`` (Keras 3, TF-Keras 2 and legacy)."""
+    build = getattr(optimizer, 'build', None)
+    if build is not None:
+        build(variables)
+    else:
+        optimizer._create_all_weights(variables)
+
+
 def optimizer_supports_loss_scaling(optimizer):
     if hasattr(optimizer, 'get_scaled_loss') and hasattr(optimizer, 'get_unscaled_gradients'):
         return True

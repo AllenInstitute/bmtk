@@ -838,16 +838,18 @@ class GLIF3Cell(tf.keras.layers.Layer):
             master.assign(values)
         self.refresh_recurrent_weight_shadow()
 
-    def bind_optimizer_checkpoint_slots(self, optimizer):
+    def bind_optimizer_checkpoint_slots(self, optimizer, *, after_update=False):
         """Serialize optimizer slots of CSR-ordered masters in canonical order.
 
-        ``RNN.train`` calls this after building its optimizer. Custom training loops
-        that build their own optimizer must call it before saving checkpoints that
-        include the optimizer. No-op with canonical-order masters.
+        ``RNN.train`` and ``TrainingEngine`` call this after building the optimizer and
+        before its first update. Custom training loops that apply the optimizer
+        themselves must call it after ``optimizer.build`` and before the first update;
+        a ``tf.train.Checkpoint`` restore may come before or after it. No-op with
+        canonical-order masters. See ``csr_master.bind_optimizer_checkpoint_slots``.
         """
         from ..csr_master import bind_optimizer_checkpoint_slots
 
-        return bind_optimizer_checkpoint_slots(self, optimizer)
+        return bind_optimizer_checkpoint_slots(self, optimizer, after_update=after_update)
 
     def _trackable_children(self, save_type="checkpoint", **kwargs):
         children = super()._trackable_children(save_type, **kwargs)

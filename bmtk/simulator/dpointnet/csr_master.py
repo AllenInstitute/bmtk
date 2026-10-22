@@ -155,15 +155,54 @@ def _convert(layout, value, *, to_live):
         return layout.to_live(value) if to_live else layout.to_canonical(value)
 
 
-def canonical_checkpoint(variable, layout, *, verify_unchanged=False):
+def _restore_uid(variable):
+    candidates = [variable, _raw_variable(variable)]
+    container = getattr(variable, "_distributed_container", None)
+    if callable(container):
+        candidates.append(container())
+    uids = [getattr(candidate, "_self_update_uid", None) for candidate in candidates]
+    return max([uid for uid in uids if uid is not None] or [-1])
+
+
+def _restored_before_binding(variable):
+    """True when a checkpoint already restored ``variable`` (TensorFlow restore uid).
+
+    A ``tf.train.Checkpoint.restore`` issued before an object exists is applied
+    when the object is created and tracked (for example optimizer slots created
+    by ``optimizer.build``); those restored values are canonical rows.
+    """
+    return _restore_uid(variable) > -1
+
+
+def canonical_checkpoint(variable, layout, *, verify_unchanged=False, restored="convert"):
     """Serialize a CSR-ordered edge variable in canonical order under ``VARIABLE_VALUE``.
 
     Saving converts a host copy (the live variable is never reordered); restoring
     converts the canonical rows back to the live layout. ``verify_unchanged`` is
     for immutable topology (endpoint indices): restoring different canonical rows
     raises instead of silently disagreeing with the native connectivity.
+
+    A variable that a checkpoint restored before this call holds canonical rows:
+    ``restored="convert"`` converts them to the live layout once, ``"raise"``
+    raises (used when the value may have changed since the restore).
     """
+    if restored not in ("convert", "raise"):
+        raise ValueError('restored must be "convert" or "raise".')
     resource = _raw_variable(variable)
+    if getattr(resource, "_dpointnet_canonical_layout", None) is layout:
+        return variable
+    first_binding = getattr(resource, "_dpointnet_canonical_layout", None) is None
+    if first_binding and _restored_before_binding(variable):
+        if verify_unchanged or restored == "raise":
+            raise ValueError(
+                "A checkpoint was restored into a CSR-ordered variable before its canonical "
+                "checkpoint format was bound, and its canonical rows cannot be converted "
+                "safely. Build the model and call cell.bind_optimizer_checkpoint_slots("
+                "optimizer) (RNN.train and TrainingEngine do this) before the first "
+                "optimizer update, then restore."
+            )
+        with tf.init_scope():
+            resource.assign(_convert(layout, resource.read_value(), to_live=True))
 
     def serialize(var):
         return {"VARIABLE_VALUE": _convert(layout, var.read_value(), to_live=False)}
@@ -231,9 +270,68 @@ class CheckpointChildrenView(tf.Module):
         return self._view.children.get(name)
 
 
-# Per-variable optimizer slot lists, paired with their variable by the optimizer's
-# own variable index (Keras 3 and TF-Keras optimizers, including ExponentiatedAdam).
-_INDEXED_SLOT_ATTRIBUTES = ("_momentums", "_velocities", "_velocity_hats", "momentums")
+# Complete per-variable optimizer state, by optimizer class (Keras 3 and TF-Keras 2
+# "new" optimizers share class names). Each attribute is a list aligned with the
+# optimizer's variable index; conditional lists (amsgrad, momentum, centered) are
+# empty or absent when unused. Paired with their variable through the optimizer's
+# own variable index, never by shape.
+OPTIMIZER_SLOT_ATTRIBUTES = {
+    "Adam": ("_momentums", "_velocities", "_velocity_hats"),
+    "AdamW": ("_momentums", "_velocities", "_velocity_hats"),
+    "ExponentiatedAdam": ("_momentums", "_velocities", "_velocity_hats"),
+    "Nadam": ("_momentums", "_velocities"),
+    "Adamax": ("_m", "_u"),
+    "SGD": ("momentums",),
+    "RMSprop": ("_velocities", "_momentums", "_average_gradients"),
+    "Adagrad": ("_accumulators",),
+    "Adadelta": ("_accumulated_grads", "_accumulated_delta_vars"),
+    "Ftrl": ("_accumulators", "_linears"),
+    "Lion": ("_momentums", "momentums"),
+    "Lamb": ("_momentums", "_velocities"),
+}
+# Per-variable state of the optimizer base classes: exponential moving averages
+# (use_ema) and Keras 3 gradient accumulation.
+_BASE_SLOT_ATTRIBUTES = ("_model_variables_moving_average", "_accumulated_gradients")
+_LEGACY = "legacy"
+
+
+def _optimizer_classes():
+    modules = [tf.keras.optimizers, getattr(tf.keras.optimizers, "experimental", None)]
+    try:
+        import keras
+        modules.append(keras.optimizers)
+    except ImportError:
+        pass
+    from .optimizers import ExponentiatedAdam
+    classes = {ExponentiatedAdam: OPTIMIZER_SLOT_ATTRIBUTES["ExponentiatedAdam"]}
+    for module in modules:
+        for name, attributes in OPTIMIZER_SLOT_ATTRIBUTES.items():
+            cls = getattr(module, name, None) if module is not None else None
+            if isinstance(cls, type):
+                classes.setdefault(cls, attributes)
+    return classes
+
+
+def _inner_optimizer(optimizer):
+    while getattr(optimizer, "inner_optimizer", None) is not None:
+        optimizer = optimizer.inner_optimizer
+    return optimizer
+
+
+def optimizer_slot_attributes(optimizer):
+    """Complete per-variable slot attributes of a supported optimizer, else None.
+
+    Loss-scale wrappers are unwrapped. Returns ``"legacy"`` for TF-Keras 2 legacy
+    optimizers, whose ``get_slot_names``/``get_slot`` enumerate every slot.
+    """
+    inner = _inner_optimizer(optimizer)
+    classes = _optimizer_classes()
+    for cls in type(inner).__mro__:
+        if cls in classes:
+            return classes[cls] + _BASE_SLOT_ATTRIBUTES
+    if hasattr(inner, "get_slot_names") and hasattr(inner, "get_slot") and hasattr(inner, "_slots"):
+        return _LEGACY
+    return None
 
 
 def _optimizer_variable_index(optimizer, variable):
@@ -250,38 +348,111 @@ def _optimizer_variable_index(optimizer, variable):
     return None
 
 
-def paired_optimizer_slots(optimizer, variable):
-    """Explicit per-edge optimizer slots of ``variable``, by optimizer variable identity.
-
-    Uses the optimizer's variable index for Keras 3/TF-Keras ``_momentums``,
-    ``_velocities``, ``_velocity_hats`` and SGD ``momentums`` lists, or legacy
-    ``get_slot``; never infers ownership from slot shapes. Returns None when the
-    optimizer's slot structure is not recognized.
-    """
-    optimizer = getattr(optimizer, "inner_optimizer", None) or optimizer
-    if hasattr(optimizer, "get_slot_names") and hasattr(optimizer, "get_slot"):
-        return [
-            slot for slot in (optimizer.get_slot(variable, name) for name in optimizer.get_slot_names())
-            if slot is not None
-        ]
-    index = _optimizer_variable_index(optimizer, variable)
-    if index is None:
-        return None
+def _indexed_slots(inner, attributes, index):
     slots = []
-    for attribute in _INDEXED_SLOT_ATTRIBUTES:
-        values = getattr(optimizer, attribute, None)
-        if isinstance(values, (list, tuple)) and len(values) > index and values[index] is not None:
-            slots.append(values[index])
+    for attribute in attributes:
+        values = getattr(inner, attribute, None)
+        if values is None:
+            continue
+        values = list(values)
+        if not values:
+            continue
+        if index >= len(values) or values[index] is None:
+            raise ValueError(
+                f"{type(inner).__name__}.{attribute} does not hold a slot for every "
+                "optimizer variable; its per-variable state cannot be paired."
+            )
+        slots.append(values[index])
     return slots
 
 
-def bind_optimizer_checkpoint_slots(cell, optimizer):
+def _legacy_slots(inner, variable):
+    try:
+        return [
+            slot for slot in (inner.get_slot(variable, name) for name in inner.get_slot_names())
+            if slot is not None
+        ]
+    except KeyError:
+        return []
+
+
+def paired_optimizer_slots(optimizer, variable):
+    """Complete per-variable optimizer state of ``variable``, by optimizer variable identity.
+
+    Uses the explicit ``OPTIMIZER_SLOT_ATTRIBUTES`` allow-list (plus base-class EMA
+    and gradient-accumulation lists) through the optimizer's variable index, or
+    legacy ``get_slot``; never infers ownership from slot shapes. Returns [] when
+    the optimizer does not track ``variable`` and None when the optimizer class is
+    not supported.
+    """
+    inner = _inner_optimizer(optimizer)
+    attributes = optimizer_slot_attributes(inner)
+    if attributes is None:
+        return None
+    if attributes == _LEGACY:
+        return _legacy_slots(inner, variable)
+    index = _optimizer_variable_index(inner, variable)
+    return [] if index is None else _indexed_slots(inner, attributes, index)
+
+
+def _optimizer_state_variables(optimizer):
+    """Every variable a checkpoint would save under ``optimizer`` (and its wrappers)."""
+    found = {}
+
+    def add(value):
+        raw = _raw_variable(value)
+        if isinstance(raw, tf.Variable):
+            found.setdefault(id(raw), value)
+
+    current = optimizer
+    while current is not None:
+        for value in tf.train.TrackableView(current).descendants():
+            add(value)
+        variables = getattr(current, "variables", None)
+        try:
+            variables = variables() if callable(variables) else variables
+        except (TypeError, ValueError, AttributeError):
+            variables = None
+        for value in variables or ():
+            add(value)
+        legacy_slots = getattr(current, "_slots", None)
+        if isinstance(legacy_slots, dict):
+            for slots in legacy_slots.values():
+                for value in slots.values():
+                    add(value)
+        current = getattr(current, "inner_optimizer", None)
+    return list(found.values())
+
+
+def _all_paired_slot_ids(inner, attributes):
+    ids = set()
+    if attributes == _LEGACY:
+        for slots in inner._slots.values():
+            ids.update(id(_raw_variable(slot)) for slot in slots.values())
+        return ids
+    for attribute in attributes:
+        for value in getattr(inner, attribute, None) or ():
+            if value is not None:
+                ids.add(id(_raw_variable(value)))
+    return ids
+
+
+def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
     """Give every per-edge optimizer slot of a CSR-ordered master the canonical format.
 
-    Call after the optimizer has created its slots (``optimizer.build``). Idempotent.
-    Returns ``{surface: number_of_slots}``; raises when a trainable CSR master's
-    slots cannot be paired explicitly, because their checkpoints would otherwise
-    hold live CSR rows under canonical keys.
+    Call after the optimizer has created its slots (``optimizer.build``) and before
+    the first optimizer update; ``RNN.train`` and ``TrainingEngine`` do this. The
+    order relative to ``tf.train.Checkpoint.restore`` does not matter: slots that a
+    checkpoint restored before binding hold canonical rows and are converted to the
+    live layout once. ``after_update=True`` declares that updates may have run
+    since such a restore; restored-but-unbound slots then raise instead.
+    Idempotent. Returns ``{surface: number_of_slots}``.
+
+    Raises ValueError for optimizers outside ``OPTIMIZER_SLOT_ATTRIBUTES`` (and
+    legacy TF-Keras 2 optimizers) that track a CSR master, and for any variable
+    saved under the optimizer that is shaped like a CSR master but is not paired
+    with a variable, because its checkpoint would hold live CSR rows under
+    canonical keys.
     """
     if not getattr(cell, "_csr_master_weights", False):
         return {}
@@ -289,26 +460,61 @@ def bind_optimizer_checkpoint_slots(cell, optimizer):
     surfaces += [
         (name, net["input_weight_values"], net["master_layout"]) for name, net in cell.inputs.items()
     ]
-    inner = getattr(optimizer, "inner_optimizer", None) or optimizer
+    inner = _inner_optimizer(optimizer)
+    attributes = optimizer_slot_attributes(inner)
+    unsupported = (
+        f"Cannot pair the optimizer state of CSR-ordered masters for {type(inner).__name__}; "
+        f"supported: {', '.join(sorted(OPTIMIZER_SLOT_ATTRIBUTES))} (Keras 3 or TF-Keras 2, "
+        "optionally LossScaleOptimizer-wrapped) and TF-Keras 2 legacy optimizers. "
+        "Use a supported optimizer or set use_csr_master_weights=False."
+    )
+    edge_shapes = {tuple(master.shape) for _, master, _ in surfaces}
+    master_ids = {id(_raw_variable(master)) for _, master, _ in surfaces}
     bound = {}
     for name, master, layout in surfaces:
-        if _optimizer_variable_index(inner, master) is None and not (
-            hasattr(inner, "get_slot_names") and master.trainable
-        ):
+        if attributes is None:
+            if _optimizer_variable_index(inner, master) is not None:
+                raise ValueError(unsupported)
             continue
-        slots = paired_optimizer_slots(optimizer, master)
-        if slots is None:
-            raise ValueError(
-                f"Cannot pair optimizer slots of CSR-ordered master {name!r} for "
-                f"{type(inner).__name__}; use Adam/SGD/ExponentiatedAdam or set "
-                "use_csr_master_weights=False."
-            )
+        slots = paired_optimizer_slots(inner, master)
+        if not slots and (attributes == _LEGACY or _optimizer_variable_index(inner, master) is None):
+            continue
         for slot in slots:
             if tuple(slot.shape) != tuple(master.shape):
                 raise ValueError(f"Optimizer slot of {name!r} is not a per-edge slot.")
-            if getattr(_raw_variable(slot), "_dpointnet_canonical_layout", None) is not layout:
-                canonical_checkpoint(slot, layout)
+        restored = [
+            _restore_uid(slot) for slot in slots
+            if getattr(_raw_variable(slot), "_dpointnet_canonical_layout", None) is None
+        ]
+        if restored and max(restored) > _restore_uid(master):
+            # Keras 3 checkpoints named-input masters only through the optimizer's
+            # variable list, which optimizer.build replaces: a restore issued before
+            # the build restores their slots but not the weights themselves.
+            raise ValueError(
+                f"A checkpoint restored the optimizer slots of CSR-ordered master {name!r} "
+                "before the optimizer was built, but not the master itself. Build the "
+                "optimizer before restoring (TrainingEngine.build_optimizer()), then "
+                "restore again."
+            )
+        for slot in slots:
+            canonical_checkpoint(slot, layout, restored="raise" if after_update else "convert")
         bound[name] = len(slots)
+    # Safety net: everything shaped like a CSR master that the optimizer checkpoints
+    # must be a bound slot or a slot paired with another (canonical-order) variable.
+    paired = set() if attributes is None else _all_paired_slot_ids(inner, attributes)
+    for value in _optimizer_state_variables(optimizer):
+        raw = _raw_variable(value)
+        if tuple(value.shape) not in edge_shapes or id(raw) in master_ids:
+            continue
+        if getattr(raw, "_dpointnet_canonical_layout", None) is not None:
+            continue
+        if id(raw) not in paired:
+            raise ValueError(
+                unsupported if attributes is None else
+                f"{type(inner).__name__} saves per-edge state {getattr(value, 'name', value)!r} "
+                "that is not paired with an optimizer variable; its checkpoint would hold "
+                "live CSR rows. Use a supported optimizer or set use_csr_master_weights=False."
+            )
     return bound
 
 

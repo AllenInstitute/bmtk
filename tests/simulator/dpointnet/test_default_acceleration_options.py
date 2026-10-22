@@ -476,7 +476,7 @@ def forward_free(monkeypatch):
     monkeypatch.setattr(master_projection, "reference_available", lambda: True)
 
 
-def build_model(masters):
+def build_model(masters, trainable_drive=True):
     """Small spike-input NEST cell with a trainable and a frozen named input plus Adam."""
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
@@ -491,6 +491,8 @@ def build_model(masters):
     for props in inputs.values():
         props["input_type"] = "spikes"
     inputs["background"]["options"]["trainable"] = False
+    if not trainable_drive:
+        inputs["drive"]["options"]["trainable"] = False
     if gpu:
         arguments["_performance_auto_context"] = acceleration.performance_projection_context(
             network, inputs, dt=1.0, max_delay=5.0, standard_cell=True, single_replica=True,
@@ -503,7 +505,7 @@ def build_model(masters):
     optimizer.build(trainable)
     bound = cell.bind_optimizer_checkpoint_slots(optimizer)
     if masters:
-        assert bound == {"<recurrent>": 2, "drive": 2}
+        assert bound == ({"<recurrent>": 2, "drive": 2} if trainable_drive else {"<recurrent>": 2})
     return cell, optimizer, surfaces
 
 
@@ -617,10 +619,18 @@ def test_unbound_optimizer_slots_are_reported_by_binding_errors(forward_free):
     class Opaque:
         def _get_variable_index(self, variable):
             return 0
-    with pytest.raises(ValueError, match="not a per-edge slot"):
-        opaque = Opaque()
-        opaque._momentums = [tf.Variable(np.zeros(1, np.float32))]
+    opaque = Opaque()
+    opaque._momentums = [tf.Variable(np.zeros(1, np.float32))]
+    with pytest.raises(ValueError, match="Cannot pair the optimizer state"):
         bind_optimizer_checkpoint_slots(cell, opaque)
+
+    class MisshapenAdam(tf.keras.optimizers.Adam):
+        pass
+    adam = MisshapenAdam(0.01)
+    adam.build([cell.recurrent_weight_values])
+    adam._momentums = [tf.Variable(np.zeros(1, np.float32))]
+    with pytest.raises(ValueError, match="not a per-edge slot"):
+        bind_optimizer_checkpoint_slots(cell, adam)
 
 
 def test_keras_weight_store_round_trips_canonical_rows(forward_free):

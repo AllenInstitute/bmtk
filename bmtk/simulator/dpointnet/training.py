@@ -1,3 +1,5 @@
+import contextlib
+
 import tensorflow as tf
 import numpy as np
 import pandas as pd
@@ -284,6 +286,65 @@ class TrainingEngine:
 
     def set_optimizer(self, optimizer):
         self._optimizer = optimizer
+        self._checkpoint_slots_optimizer = None
+
+    def _optimizer_update_variables(self):
+        if self.learning_rule.uses_bptt:
+            model = getattr(self.rnn, "model", None)
+            return None if model is None else list(model.trainable_variables)
+        surfaces = getattr(self.learning_rule, "weight_surfaces", None)
+        return [surface.variable for surface in surfaces] if surfaces else None
+
+    def _build_optimizer_state(self):
+        if optimizers.optimizer_is_built(self.optimizer):
+            return True
+        variables = self._optimizer_update_variables()
+        if not variables:
+            return False
+        strategy = getattr(self.rnn, "strategy", None)
+        with tf.init_scope(), (strategy.scope() if strategy is not None else contextlib.nullcontext()):
+            optimizers.build_optimizer(self.optimizer, variables)
+        return True
+
+    def build_optimizer(self):
+        """Build the optimizer for this engine's update variables and bind CSR-master slots.
+
+        Resume flow: build the RNN, call this, restore ``tf.train.Checkpoint(model=...,
+        optimizer=...)``, then train. Restoring after the build also restores weights
+        that Keras 3 checkpoints only through the optimizer's variable list (trainable
+        named-input weights), which ``optimizer.build`` replaces. The update variables
+        are the model's trainable variables for BPTT, else the built learning rule's
+        weight surfaces. Returns False when they are not known yet.
+        """
+        if self.optimizer is None:
+            raise ValueError("Set an optimizer before building it.")
+        if not self._build_optimizer_state():
+            return False
+        return self.bind_optimizer_checkpoint_slots()
+
+    def bind_optimizer_checkpoint_slots(self, *, after_update=False):
+        """Bind CSR-master optimizer slots to the canonical checkpoint format.
+
+        ``train`` and ``train_step`` call this before the first update, building an
+        unbuilt optimizer first, so CSR-ordered slots restored by a
+        ``tf.train.Checkpoint`` before or after the build are converted correctly.
+        Returns False when the optimizer could not be built yet. No-op without
+        CSR-ordered masters.
+        """
+        cell = getattr(self.rnn, "_cell", None)
+        if not getattr(cell, "_csr_master_weights", False):
+            return True
+        optimizer = self.optimizer
+        if optimizer is None:
+            return True
+        if getattr(self, "_checkpoint_slots_optimizer", None) is optimizer:
+            return True
+        if not after_update and not self._build_optimizer_state():
+            return False
+        with tf.init_scope():
+            cell.bind_optimizer_checkpoint_slots(optimizer, after_update=after_update)
+        self._checkpoint_slots_optimizer = optimizer
+        return True
 
     @property
     def learning_rule(self):
@@ -1055,6 +1116,14 @@ class TrainingEngine:
 
     def train_step(self, x, y, init_state):
         """Apply one update; process collectives run outside TensorFlow graphs."""
+        ready = self.bind_optimizer_checkpoint_slots()
+        metrics = self._train_step_unbound(x, y, init_state)
+        if not ready:
+            # The update built the optimizer; restored-but-unbound CSR slots now raise.
+            self.bind_optimizer_checkpoint_slots(after_update=True)
+        return metrics
+
+    def _train_step_unbound(self, x, y, init_state):
         parallel = getattr(self.rnn, "data_parallel", None)
         if not getattr(parallel, "process_based", False):
             return self._distributed_train_step(x, y, init_state)
@@ -1280,9 +1349,12 @@ class TrainingEngine:
                     else:
                         spikes, ys = values
                     if self.training_approach == "series_accumulate":
+                        ready = self.bind_optimizer_checkpoint_slots()
                         step_loss_vals = self._distributed_train_step_series_accumulate(
                             spikes, ys, init_state=init_state
                         )
+                        if not ready:
+                            self.bind_optimizer_checkpoint_slots(after_update=True)
                     else:
                         step_loss_vals = self.train_step(
                             spikes, ys, init_state=init_state
