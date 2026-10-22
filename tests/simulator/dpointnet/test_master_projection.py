@@ -365,3 +365,68 @@ def test_cell_recurrent_and_each_named_input_against_fp64(monkeypatch, mixed):
         reference = layout.to_live(reference)
         np.testing.assert_allclose(got, reference, rtol=6e-6, atol=6e-6)
     assert np.any(gradients[0].numpy()[:, 0] != 0)
+
+
+# One edge from source 0 to target 0 with type 0: [posts | types | splits | canonical IDs].
+VALID_ONE_EDGE = (0, 0, 0, 1, 0)
+INVALID_ONE_EDGE = {
+    "negative_post": (-1, 0, 0, 1, 0),
+    "post_beyond_targets": (1, 0, 0, 1, 0),
+    "negative_type": (0, -1, 0, 1, 0),
+    "type_beyond_basis_rows": (0, 1, 0, 1, 0),
+    "negative_first_split": (0, 0, -1, 1, 0),
+    "decreasing_splits": (0, 0, 1, 0, 0),
+    "split_beyond_edges": (0, 0, 0, 2, 0),
+    "negative_edge_id": (0, 0, 0, 1, -1),
+    "edge_id_beyond_edges": (0, 0, 0, 1, 1),
+}
+
+
+def _devices():
+    return ["/CPU:0"] + (["/GPU:0"] if tf.config.get_visible_devices("GPU") else [])
+
+
+@pytest.mark.parametrize("device", _devices())
+@pytest.mark.parametrize("index_dtype", [tf.uint32, tf.int64])
+@pytest.mark.parametrize("case", sorted(INVALID_ONE_EDGE))
+@pytest.mark.parametrize("gradient", [False, True])
+def test_out_of_range_metadata_raises_before_indexing(device, index_dtype, case, gradient):
+    from bmtk.simulator.dpointnet.custom_ops.master_projection import library
+    native = library()
+    spikes = tf.ones((2, 1), tf.float32)
+    weights = tf.constant([0.75], tf.float32)
+    basis = tf.constant([[1.0, 2.0, 3.0, 4.0]], tf.float32)
+    dy = tf.ones((2, 4), tf.float32)
+
+    def run(values):
+        # Negative IDs wrap to huge uint32 values, which the same bounds reject.
+        metadata = tf.cast(tf.constant(values, tf.int64), index_dtype)
+        if gradient:
+            return native.dpointnet_master_projection_grad(
+                spikes, weights, metadata, basis, dy, n_post=1, n_edges=1,
+            )
+        return native.dpointnet_master_projection(
+            spikes, weights, metadata, basis, n_post=1, n_edges=1,
+        )
+
+    with tf.device(device):
+        with pytest.raises(tf.errors.InvalidArgumentError, match="Invalid master projection metadata"):
+            run(INVALID_ONE_EDGE[case])
+        # The device remains usable: valid metadata still matches the oracle.
+        result = run(VALID_ONE_EDGE)
+    if gradient:
+        np.testing.assert_allclose(result[0], np.full((2, 1), 0.75 * 10.0))
+        np.testing.assert_allclose(result[1], [2 * 10.0])
+    else:
+        np.testing.assert_allclose(result, np.tile([[0.75, 1.5, 2.25, 3.0]], (2, 1)))
+
+
+@pytest.mark.parametrize("device", _devices())
+def test_connectivity_type_beyond_the_basis_rows_is_rejected(device):
+    conn = cpu_connectivity([[0, 0]], [1], 1, 1)
+    with tf.device(device):
+        with pytest.raises(tf.errors.InvalidArgumentError, match="synapse type|Invalid master"):
+            project(
+                tf.ones((1, 1), tf.float32), tf.ones((1,), tf.float32),
+                conn["master_metadata"], tf.ones((1, 4), tf.float32), 1, 1,
+            )

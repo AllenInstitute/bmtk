@@ -63,6 +63,40 @@ inline absl::Status ValidateMasterProjection(
   return absl::OkStatus();
 }
 
+// Every index-valued metadata field is checked against the operand dimensions
+// before any is used as an offset; int64 metadata may also hold negatives.
+template <typename I>
+inline absl::Status ValidateMasterMetadata(
+    const I* meta, int64_t width, int64_t posts, int64_t types, int64_t edges) {
+  const I* splits = meta + 2 * edges;
+  const I* canonical = splits + width + 1;
+  for (int64_t row = 0; row <= width; ++row) {
+    const int64_t split = static_cast<int64_t>(splits[row]);
+    if (split < 0 || split > edges ||
+        (row > 0 && split < static_cast<int64_t>(splits[row - 1])))
+      return errors::InvalidArgument(
+          "Invalid master projection metadata: row splits must be nondecreasing in [0, ",
+          edges, "]");
+  }
+  for (int64_t e = 0; e < edges; ++e) {
+    const int64_t post = static_cast<int64_t>(meta[e]);
+    const int64_t type = static_cast<int64_t>(meta[edges + e]);
+    const int64_t edge = static_cast<int64_t>(canonical[e]);
+    if (post < 0 || post >= posts)
+      return errors::InvalidArgument(
+          "Invalid master projection metadata: post index ", post, " outside [0, ", posts, ")");
+    if (type < 0 || type >= types)
+      return errors::InvalidArgument(
+          "Invalid master projection metadata: synapse type ", type, " outside [0, ", types,
+          ") basis rows");
+    if (edge < 0 || edge >= edges)
+      return errors::InvalidArgument(
+          "Invalid master projection metadata: canonical edge ID ", edge, " outside [0, ",
+          edges, ")");
+  }
+  return absl::OkStatus();
+}
+
 template <typename T, typename I, bool Gradient>
 class MasterProjectionCpu : public OpKernel {
  public:
@@ -77,6 +111,8 @@ class MasterProjectionCpu : public OpKernel {
     const auto* meta = c->input(2).flat<I>().data();
     const auto* basis = c->input(3).flat<T>().data();
     const int64_t width = z.dim_size(1), batch = z.dim_size(0);
+    OP_REQUIRES_OK(c, ValidateMasterMetadata(
+        meta, width, posts_, c->input(3).dim_size(0), edges_));
     const I* splits = meta + 2 * edges_;
     const I* canonical = splits + width + 1;
     Tensor *out, *dw = nullptr;
@@ -89,15 +125,11 @@ class MasterProjectionCpu : public OpKernel {
       out->flat<float>().setZero();
     }
     for (int64_t row = 0; row < width; ++row) {
-      OP_REQUIRES(c, splits[row] <= splits[row + 1] && splits[row + 1] <= edges_,
-                  errors::InvalidArgument("Invalid master projection row splits"));
       for (int64_t sample = 0; sample < batch; ++sample) {
         float dz = 0;
         const float spike = static_cast<float>(z.flat<T>()(sample * width + row));
         for (int64_t e = splits[row]; e < splits[row + 1]; ++e) {
           const int64_t post = meta[e], type = meta[edges_ + e], edge = canonical[e];
-          OP_REQUIRES(c, post < posts_ && type < c->input(3).dim_size(0) && edge < edges_,
-                      errors::InvalidArgument("Invalid master projection metadata"));
           float projected = 0;
           for (int k = 0; k < 4; ++k) {
             const float coefficient = static_cast<float>(basis[type * 4 + k]);
