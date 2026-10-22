@@ -332,9 +332,12 @@ canonical rows and are converted to the live layout once. With
 raise instead, because the update may already have used them. Binding also raises
 when a checkpoint restored the optimizer's state (slots, iterations or other
 optimizer variables, so also for slotless optimizers such as SGD without
-momentum) but not a master the optimizer updates: Keras 3 checkpoints trainable
-named-input masters only through the optimizer's variable list, which
-``optimizer.build`` replaces, so restore after ``TrainingEngine.build_optimizer()``.
+momentum) but not a master that only the optimizer checkpoints: Keras 3
+checkpoints trainable named-input masters only through the optimizer's variable
+list, which ``optimizer.build`` replaces, so restore after
+``TrainingEngine.build_optimizer()``. Masters that the model's own checkpoint
+graph saves (the recurrent master, and every master under TF-Keras 2) may be
+restored from separate model-only and optimizer-only checkpoints in either order.
 Endpoint restores verify that the stored canonical connectivity equals the
 model's, in eager and graph mode, and never assign the endpoint variable: a
 mismatch raises ``ValueError`` eagerly and ``InvalidArgumentError`` from a

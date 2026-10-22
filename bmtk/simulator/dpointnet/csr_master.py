@@ -487,13 +487,25 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
     )
     edge_shapes = {tuple(master.shape) for _, master, _ in surfaces}
     master_ids = {id(_raw_variable(master)) for _, master, _ in surfaces}
+    state = [] if attributes is None else [
+        value for value in _optimizer_state_variables(optimizer)
+        if id(_raw_variable(value)) not in master_ids
+        # Keras 3 optimizers also track the model variables they update.
+        and _optimizer_variable_index(inner, value) is None
+    ]
     # Latest restore that reached the optimizer's own unbound state (iterations,
     # learning rate, loss scale, slots), independent of whether it has per-edge slots.
-    optimizer_restore_uid = -1 if attributes is None else max([
-        _restore_uid(value) for value in _optimizer_state_variables(optimizer)
-        if id(_raw_variable(value)) not in master_ids
-        and getattr(_raw_variable(value), "_dpointnet_canonical_layout", None) is None
+    optimizer_restore_uid = max([
+        _restore_uid(value) for value in state
+        if getattr(_raw_variable(value), "_dpointnet_canonical_layout", None) is None
     ] or [-1])
+    # Masters the cell's own checkpoint graph saves are restored independently of the
+    # optimizer (model-only and optimizer-only roots may be restored in any order).
+    # Only masters checkpointed solely through the optimizer's variable list (Keras 3
+    # trainable named inputs) can be lost by restoring the optimizer before its build.
+    cell_checkpointed = {
+        id(_raw_variable(value)) for value in tf.train.TrackableView(cell).descendants()
+    } & master_ids if attributes is not None else set()
     bound = {}
     for name, master, layout in surfaces:
         if attributes is None:
@@ -513,7 +525,10 @@ def bind_optimizer_checkpoint_slots(cell, optimizer, *, after_update=False):
         ]
         if updated:
             restored.append(optimizer_restore_uid)
-        if restored and max(restored) > _restore_uid(master):
+        if (
+            id(_raw_variable(master)) not in cell_checkpointed
+            and restored and max(restored) > _restore_uid(master)
+        ):
             # Keras 3 checkpoints named-input masters only through the optimizer's
             # variable list, which optimizer.build replaces: a restore issued before
             # the build restores the optimizer (and its slots, if any) but not the

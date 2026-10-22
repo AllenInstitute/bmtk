@@ -408,6 +408,68 @@ def test_separate_model_then_optimizer_restores_resume(forward_free, tmp_path, n
     assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
 
 
+def _split_root_checkpoints(tmp_path, factory, source_masters, trainable_drive):
+    source, source_optimizer, surfaces, _ = trained_checkpoint(
+        source_masters, factory, tmp_path / "combined", trainable_drive=trainable_drive,
+    )
+    paths = {
+        "model": tf.train.Checkpoint(cell=source).save(str(tmp_path / "model")),
+        "optimizer": tf.train.Checkpoint(optimizer=source_optimizer).save(str(tmp_path / "optimizer")),
+    }
+    return source, source_optimizer, surfaces, paths
+
+
+def _restore_split_roots(target, optimizer, paths, order):
+    roots = {"model": tf.train.Checkpoint(cell=target),
+             "optimizer": tf.train.Checkpoint(optimizer=optimizer)}
+    for root in order.split("_then_"):
+        roots[root].restore(paths[root])
+
+
+@pytest.mark.parametrize("name", ["adam", "sgd"])
+@pytest.mark.parametrize("order", ["model_then_optimizer", "optimizer_then_model"])
+@pytest.mark.parametrize("source_masters", [False, True])
+def test_separate_model_and_optimizer_checkpoint_roots_resume(
+    forward_free, tmp_path, name, order, source_masters,
+):
+    """Successful independent restores from model-only and optimizer-only roots, in
+    either order and before the optimizer is built, are not an incomplete restore."""
+    factory = SLOTLESS.get(name) or FACTORIES[name]
+    # Keras 3 saves trainable named-input masters only under the optimizer's variable
+    # list, which a pre-build restore cannot fill (covered by the test below).
+    drive = not KERAS3
+    source, source_optimizer, surfaces, paths = _split_root_checkpoints(
+        tmp_path, factory, source_masters, drive,
+    )
+    target, target_optimizer, _, trainable = model(
+        True, factory, build_and_bind=False, trainable_drive=drive,
+    )
+    _restore_split_roots(target, target_optimizer, paths, order)
+    _resume_rnn(target, trainable).train(_RecordingEngine(target_optimizer))
+    assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
+    step(source, source_optimizer, surfaces, 4)
+    step(target, target_optimizer, surfaces, 4)
+    assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
+
+
+@pytest.mark.parametrize("name", ["adam", "sgd"])
+@pytest.mark.parametrize("order", ["model_then_optimizer", "optimizer_then_model"])
+def test_separate_roots_still_detect_missing_named_input_masters(
+    forward_free, tmp_path, name, order,
+):
+    factory = SLOTLESS.get(name) or FACTORIES[name]
+    source, source_optimizer, surfaces, paths = _split_root_checkpoints(tmp_path, factory, False, True)
+    target, target_optimizer, _, trainable = model(True, factory, build_and_bind=False)
+    _restore_split_roots(target, target_optimizer, paths, order)
+    if KERAS3:
+        with pytest.raises(ValueError, match="master 'drive' before the optimizer was built, but not the master"):
+            _resume_rnn(target, trainable).train(_RecordingEngine(target_optimizer))
+    else:
+        # TF-Keras 2 checkpoints named-input masters in the cell: nothing is missing.
+        _resume_rnn(target, trainable).train(_RecordingEngine(target_optimizer))
+        assert_same_state(source, source_optimizer, target, target_optimizer, surfaces)
+
+
 def test_update_before_binding_a_restored_slot_raises(forward_free, tmp_path):
     factory = FACTORIES["adam"]
     _, _, surfaces, path = trained_checkpoint(False, factory, tmp_path / "source")
