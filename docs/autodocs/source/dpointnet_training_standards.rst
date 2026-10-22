@@ -95,11 +95,14 @@ optimizer, Poisson inputs or canonical exports; see :doc:`dpointnet_performance`
 To reproduce the previous route exactly, set the three cell options to ``false``
 (``use_csr_master_weights=false`` alone also disables the dependent two),
 ``training.pack_spike_checkpoints=false`` and, on GPUs other than SM86 or batches
-other than 1, 16 and 32, ``use_combined_current_sweep=false``. On SM70 and SM80
+other than 1, 16 and 32, ``use_combined_current_sweep=false``. Without adaptive
+routing the automatic combined target tile is the previous route's: 256 at batch 1
+when its routing table fits the 512 MiB budget, otherwise 2048. On SM70 and SM80
 also set ``use_fused_recurrent_accumulation=false`` and
 ``use_packed_sm120_backward=false`` (with ``use_javier_recurrent_vjp=false`` and
 ``use_packed_sm120_external_backward=false``), which the automatic policy now
-selects there. Checkpoints written by either layout restore into the other.
+selects there. Checkpoints written by either layout restore into the other; build
+the optimizer before restoring (see :doc:`dpointnet_training`).
 
 ``dynamics_mode="nest"`` selects DPointNet's NEST-compatible implementation,
 not the NEST simulator. It is the default for new training and simulation.

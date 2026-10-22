@@ -264,12 +264,60 @@ holding the cast master values and are ignored on restore. Checkpoint object
 graphs and values are therefore identical to those of a canonical-order model with
 the same configuration, so ``tf.train.Checkpoint`` files restore in both
 directions (including checkpoints written before this option existed) and
-``assert_consumed()`` holds. Optimizer slots are paired explicitly through the
-optimizer's own variable index (Adam/AMSGrad, SGD momentum, ``exp_adam``) or legacy
-``get_slot``, never by shape; ``RNN.train`` calls
-``cell.bind_optimizer_checkpoint_slots(optimizer)`` after building the optimizer,
-and custom loops must call it before saving. An unrecognized optimizer with
-per-edge state raises at binding time. Endpoint restores verify that the stored
+``assert_consumed()`` holds. Optimizer state is paired explicitly, never by shape,
+through the optimizer's own variable index and the complete per-variable slot lists
+of an allow-list (``csr_master.OPTIMIZER_SLOT_ATTRIBUTES``; Keras 3 and TF-Keras 2
+share the class names):
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - Optimizer
+     - Per-variable slot lists
+   * - Adam, AdamW, ``exp_adam`` (``ExponentiatedAdam``), with or without AMSGrad
+     - ``_momentums``, ``_velocities``, ``_velocity_hats``
+   * - SGD (``sgd``; momentum, Nesterov)
+     - ``momentums`` (empty without momentum)
+   * - RMSprop (momentum, centered)
+     - ``_velocities``, ``_momentums``, ``_average_gradients``
+   * - Adagrad
+     - ``_accumulators``
+   * - Adamax
+     - ``_m``, ``_u``
+   * - Nadam
+     - ``_momentums``, ``_velocities``
+   * - Adadelta
+     - ``_accumulated_grads``, ``_accumulated_delta_vars``
+   * - Ftrl
+     - ``_accumulators``, ``_linears``
+   * - Lion
+     - ``_momentums`` (Keras 3) or ``momentums`` (TF-Keras 2)
+   * - Lamb (Keras 3)
+     - ``_momentums``, ``_velocities``
+   * - Every class above
+     - ``_model_variables_moving_average`` (``use_ema``),
+       ``_accumulated_gradients`` (Keras 3 ``gradient_accumulation_steps``)
+
+Subclasses inherit their base's entry. ``LossScaleOptimizer`` wrappers (Keras 3 and
+TF-Keras 2) are paired through their inner optimizer, and TF-Keras 2 legacy
+optimizers through ``get_slot_names``/``get_slot``. Binding raises for any other
+optimizer class that tracks a CSR master, and for any variable saved under the
+optimizer that is shaped like a CSR master but is not paired (for example extra
+state added by a subclass); use ``use_csr_master_weights=false`` with such
+optimizers. ``RNN.train`` and ``TrainingEngine`` (``train``, ``train_step``) build
+the optimizer and call ``cell.bind_optimizer_checkpoint_slots(optimizer)`` before
+the first update; custom loops must call it after building the optimizer and
+before its first update. The restore order does not matter: slots that a
+checkpoint restored before binding (TensorFlow applies a pending restore when
+``optimizer.build`` creates them, and records the restore on the slot) hold
+canonical rows and are converted to the live layout once. With
+``after_update=True`` (used after an update that built the optimizer) such slots
+raise instead, because the update may already have used them. Binding also raises
+when a checkpoint restored a master's slots but not the master itself: Keras 3
+checkpoints trainable named-input masters only through the optimizer's variable
+list, which ``optimizer.build`` replaces, so restore after
+``TrainingEngine.build_optimizer()``. Endpoint restores verify that the stored
 canonical connectivity equals the model's and raise otherwise. Keras weight files
 (``save_own_variables``/``load_own_variables``) and the EMD regularizer's group
 order store canonical rows as well. Keras 3 weight files are interchangeable

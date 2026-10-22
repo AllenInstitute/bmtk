@@ -173,7 +173,8 @@ raises when unsupported and explicit ``false`` restores the previous path.
   training arms on an RTX 3090 (20-sample medians), adaptive routing was 5.4% slower
   at batch 1 (0.4304 vs 0.4085 s per update, also with a 256 wide tile) and 1.6%,
   2.3% and 2.3% faster at batches 8, 16 and 32. Batches 2 to 7 were not measured
-  and keep the dense route (256-target tiles at batch 1, otherwise 2048); explicit
+  and keep the dense route (256-target tiles at batch 1 within the routing budget,
+  otherwise 2048); explicit
   ``true`` is honored at any admitted batch. With adaptive routing the wide tile
   is 2048. Per-edge arithmetic and the single FP32 tile rounding are unchanged;
   atomic order is not bitwise reproducible. Backward kernels keep their existing
@@ -222,8 +223,8 @@ Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
 ``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
 are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
 device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
-routing; the automatic choice remains 256 (batch 1 without adaptive routing) or
-2048. On the V1 reference
+routing; the automatic choice remains 256 (batch 1 without adaptive routing, when
+its routing table fits 512 MiB) or 2048; it never undercuts the routing budget. On the V1 reference
 workload a 5120 tile is faster for the LGN alone but slower for the full
 update, because the background source costs more per block there.
 Explicit choices retain validation and are not

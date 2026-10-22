@@ -231,10 +231,37 @@ master values. Consequently ``tf.train.Checkpoint(model=..., optimizer=...)``
 checkpoints restore in both directions between models built with and without
 CSR masters, including checkpoints written before this option existed, and
 ``assert_consumed()`` holds when the remaining configuration matches. Saving never
-reorders live variables. ``RNN.train`` pairs optimizer slots with their masters
-after building the optimizer; custom loops that build their own optimizer call
-``rnn.cell.bind_optimizer_checkpoint_slots(optimizer)`` before saving. Restoring
-endpoint indices that differ from the model's connectivity raises. Keras weight
+reorders live variables. Restoring endpoint indices that differ from the model's
+connectivity raises.
+
+``RNN.train`` and ``TrainingEngine`` (``train``/``train_step``) build the optimizer
+and pair its slots with the CSR masters before the first update, so a checkpoint
+restored before or after the optimizer is built restores the slots in the right
+order. To resume a run in either layout:
+
+.. code-block:: python
+
+   rnn.build(training=True)
+   rnn.training_engine.build_optimizer()   # build before restoring
+   tf.train.Checkpoint(model=rnn.model, optimizer=rnn.training_engine.optimizer).restore(path)
+   rnn.train()
+
+Build the optimizer before restoring: under Keras 3, trainable named-input weights
+are checkpointed only through the optimizer's variable list, which building the
+optimizer replaces, so a restore issued earlier does not restore them in either
+layout. A CSR-master model then raises when binding instead of continuing from
+unrestored weights; a canonical-order model keeps its unrestored values, as before
+this option existed. Custom loops that apply the optimizer themselves call
+``rnn.cell.bind_optimizer_checkpoint_slots(optimizer)`` after building it and before
+its first update. With CSR masters the supported optimizers are the training
+config's ``adam``, ``exp_adam`` and ``sgd`` and the Keras/TF-Keras Adam, AdamW,
+SGD (momentum, Nesterov), RMSprop (momentum, centered), Adagrad, Adamax, Nadam,
+Adadelta, Ftrl, Lion and Lamb, also with ``use_ema``, Keras 3 gradient
+accumulation or a ``LossScaleOptimizer`` wrapper, and TF-Keras 2 legacy optimizers;
+any other optimizer that tracks a CSR master raises when binding (set
+``use_csr_master_weights=false`` to use it). See :doc:`dpointnet_csr_masters`.
+
+Keras weight
 files (``save_weights``/``load_weights``) store the canonical rows as well; with
 Keras 3 they are interchangeable between layouts, while TF-Keras 2 weight files also
 list canonical models' compute shadows positionally, so a cross-layout load is
