@@ -278,6 +278,10 @@ def test_model_weights_exports_canonical_rows_and_live_assignments(deep_copy):
     )
     rnn = SimpleNamespace(inputs_populations=list(cell.inputs), get_network=lambda name: adapter)
     exported = ModelWeights(rnn, cell, deep_copy=deep_copy)
+    if not deep_copy:
+        # Live exports keep the CSR-ordered masters, not a canonical copy.
+        for name, master in zip(("<recurrent>", *cell.inputs), masters):
+            assert exported._network_weights[name] is master
     initial = cell.canonical_weight_values().numpy()
     for master in masters:
         master.assign(master * 1.25)

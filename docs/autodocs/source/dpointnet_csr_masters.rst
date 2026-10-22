@@ -258,8 +258,10 @@ Use ``cell.canonical_weight_values(name="<recurrent>")`` for an on-demand
 canonical tensor and ``cell.assign_canonical_weights(values, name=...)``
 for canonical assignment. Native projection never calls these adapters.
 ``ModelWeights`` uses canonical values before applying canonical physical
-export factors and SONATA edge ordering. A live, non-deep-copy export rereads
-masters each time. Direct ``master.assign`` explicitly means CSR order.
+export factors and SONATA edge ordering. A deep copy snapshots canonical host
+rows at construction; a live, non-deep-copy export keeps only references to the
+CSR-ordered masters and converts them on each ``to_dataframe()``. Direct
+``master.assign`` explicitly means CSR order.
 
 Checkpoints use the canonical format. Each CSR-ordered master and endpoint index
 variable, and every optimizer slot paired with a master, serializes a

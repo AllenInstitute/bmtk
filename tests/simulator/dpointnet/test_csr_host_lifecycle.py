@@ -268,7 +268,21 @@ def test_runtime_metadata_and_canonical_export(monkeypatch, deep_copy):
             connection_table=pd.DataFrame({"row": np.arange(2)}), canonical_edge_order=None,
         ),
     )
+    conversions = []
+    canonical = cell.canonical_weight_values
+    monkeypatch.setattr(
+        cell, "canonical_weight_values",
+        lambda name="<recurrent>": conversions.append(name) or canonical(name),
+    )
     export = ModelWeights(rnn, cell, deep_copy=deep_copy)
+    if deep_copy:
+        assert conversions == names
+        assert all(isinstance(export._network_weights[name], np.ndarray) for name in names)
+    else:
+        # Live exports retain only the CSR-ordered masters, not a canonical copy.
+        assert conversions == []
+        for name in names:
+            assert export._network_weights[name] is cell.weight_loss_values(name)
     for name in names:
         cell.weight_loss_values(name).assign(cell.weight_loss_values(name) * 1.25)
     frame = export.to_dataframe()

@@ -22,11 +22,15 @@ class ModelWeights:
             self._networks = ['<recurrent>'] + self.rnn.inputs_populations
 
         self._network_weights = {}
+        csr_masters = getattr(cell, '_csr_master_weights', False)
         for name in self._networks:
+            if deep_copy and csr_masters:
+                # Deep copies snapshot canonical rows; live exports keep the CSR-ordered
+                # master and to_dataframe() converts it when exporting.
+                self._network_weights[name] = self._copy_to_host(cell.canonical_weight_values(name))
+                continue
             model_vals = (
-                cell.canonical_weight_values(name)
-                if getattr(cell, '_csr_master_weights', False)
-                else cell.recurrent_weight_values if name == '<recurrent>'
+                cell.recurrent_weight_values if name == '<recurrent>'
                 else self.cell.inputs[name]['input_weight_values']
             )
             model_vals = self._copy_to_host(model_vals) if deep_copy else model_vals
