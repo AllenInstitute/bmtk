@@ -11,6 +11,12 @@ from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops as ops
 from bmtk.simulator.dpointnet.csr_master import CsrMasterLayout
 
 
+def checkpoint_target(variable):
+    """Keras 3 exposes the backing variable as a ``value`` property; TF-Keras 2 has a method."""
+    value = getattr(variable, "value", variable)
+    return variable if callable(value) else value
+
+
 NAMES = (
     "dpointnet_csr_spike_forward_csr_master", "dpointnet_csr_weight_grad",
     "dpointnet_csr_spike_grad_csr_master",
@@ -424,7 +430,7 @@ def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(tmp_path
         runs = [tf.function(lambda runner=r: evaluate(runner)) for r in runners]
         checkpoint = tf.train.Checkpoint(
             optimizer=optimizer, noise_seed=cell.noise_seed, noise_stream=cell.noise_stream,
-            **{f"master_{i}": w.value for i, w in enumerate(masters)},
+            **{f"master_{i}": checkpoint_target(w) for i, w in enumerate(masters)},
         )
         return cell, masters, trainable, optimizer, runs, checkpoint
 

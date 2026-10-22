@@ -11,6 +11,12 @@ from bmtk.simulator.dpointnet.custom_ops.master_projection import (
 )
 
 
+def checkpoint_target(variable):
+    """Keras 3 exposes the backing variable as a ``value`` property; TF-Keras 2 has a method."""
+    value = getattr(variable, "value", variable)
+    return variable if callable(value) else value
+
+
 DEVICE = os.environ.get("_MASTER_TEST_DEVICE", "/CPU:0")
 
 
@@ -219,7 +225,7 @@ def test_named_input_segmented_remainder_and_master_lifecycle(monkeypatch, tmp_p
     optimizer = tf.keras.optimizers.Adam(0.001)
     optimizer.build(masters)
     checkpoint = tf.train.Checkpoint(
-        optimizer=optimizer, **{f"master_{i}": getattr(w, "value", w) for i, w in enumerate(masters)}
+        optimizer=optimizer, **{f"master_{i}": checkpoint_target(w) for i, w in enumerate(masters)}
     )
     saved = checkpoint.save(str(tmp_path / "all_masters"))
     optimizer.apply_gradients(zip(first[1][1:], masters))
