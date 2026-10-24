@@ -178,7 +178,7 @@ def _auto_native_architecture(architecture):
     return architecture is not None and architecture >= 70
 
 
-def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
+def _resolve_packed_sm120_backward(option, spikes, connectivity, basis, *, diagnostics=None):
     option = _validate_packed_sm120_option(option)
     incompatibilities = []
     if spikes.dtype != tf.float16:
@@ -203,6 +203,11 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
         raise ValueError(
             "use_packed_sm120_backward=True is incompatible: "
             + "; ".join(incompatibilities)
+        )
+    if diagnostics is not None:
+        diagnostics.update({message: False for message in incompatibilities})
+        diagnostics["explicit True or automatically admitted SM70+"] = (
+            option is True or _auto_native_architecture(architecture)
         )
     return (
         option is not False and not incompatibilities

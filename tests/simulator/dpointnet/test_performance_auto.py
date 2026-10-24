@@ -218,7 +218,7 @@ def test_high_level_build_accepts_uncapped_delay_with_acceleration_disabled(max_
             rnn._inputs_order.append(name)
         rnn.build(training=False)
         assert rnn.cell.max_delay == 3
-        assert rnn.cell.acceleration_report is None
+        assert rnn.cell.acceleration_report["profile"] is None
     finally:
         tf.keras.mixed_precision.set_global_policy(policy)
 
@@ -249,6 +249,9 @@ def test_rate_count_auto_uses_declared_single_replica_boundary():
     assert not objective.compiled_spike_counts
     rnn._cell = cell
     assert objective.compiled_spike_counts
+    cell.acceleration_report["profile"] = "compatibility_v1"
+    assert not objective.compiled_spike_counts
+    cell.acceleration_report["profile"] = "auto"
     assert not TargetFiringRate(rnn, 5.0, compiled_spike_counts=False).compiled_spike_counts
     metadata["single_replica"] = False
     assert not objective.compiled_spike_counts

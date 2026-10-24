@@ -385,6 +385,33 @@ explicit and automatic acceleration selected:
 
    migrated = preserve_previous_defaults(old_config_dict)
 
+By default the helper retains explicit execution overrides from the old
+configuration. Under the current automatic profile, inherited per-option
+``"auto"`` now means current policy, just like omission; it no longer selects a
+different, historical batch heuristic. Explicit Boolean overrides still win.
+Use :doc:`dpointnet_performance` to interpret the final effective audit.
+
+When deliberately adopting current execution policy while retaining the
+scientific recipe, discard the old profile-managed overlay explicitly:
+
+.. code-block:: python
+
+   migrated = preserve_previous_defaults(
+       old_config_dict, execution_policy="current"
+   )
+
+This opt-in removes profile-managed accelerator flags and the manual joint
+target tile, selects the automatic profile, and resets training spike packing
+to ``"auto"``. It does not change batch, sequence length, precision, dynamics,
+reset/credit, losses, optimizer, input generation, device-Poisson choice or RNG.
+The helper still pins omitted historical scientific defaults as described
+below. Save and review a new configuration; never modify a frozen capsule.
+
+For historical constructor execution heuristics rather than current policy,
+use ``acceleration_profile="compatibility_v1"`` with the original explicit
+options and pinned source/environment. This is a named execution policy, not
+a scientific-recipe migration or a promise of identical trajectories.
+
 The helper recognizes ``GLIF3Cell``, its historical ``GLIF3`` selector and
 ``default``. It pins omitted training checkpointing off, preserving the previous
 non-recomputed route; explicit checkpoint choices remain unchanged.

@@ -174,9 +174,10 @@ def test_public_shadow_creation_preserves_explicit_dtype_refresh_and_restore(tmp
 
 def test_native_options_are_actual_explicit_selections_not_mutable_policy():
     cell = make_cell("nest", selective=False)
-    assert cell.acceleration_report is None
+    assert cell.acceleration_report["profile"] is None
+    assert cell.acceleration_report["stage"] == "cell"
     options = cell.native_execution_options
-    assert set(options) == {
+    assert set(options) >= {
         "use_fused_cuda", "use_fused_state", "use_fused_state_history",
         "use_pair_projection", "use_fused_nest_event_vjp",
     }

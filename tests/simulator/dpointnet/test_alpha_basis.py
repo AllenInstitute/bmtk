@@ -277,7 +277,7 @@ def test_real_sonata_rnn_uses_shared_basis_for_recurrent_and_input(
     rnn.cell_params["acceleration_profile"] = acceleration_profile
     try:
         rnn.build()
-        assert (rnn.acceleration_report is None) == (acceleration_profile is None)
+        assert rnn.acceleration_report["profile"] == acceleration_profile
         assert rnn.cell.synaptic_basis_weights.shape == (2, 5 if provided else 4)
         assert (rnn.alpha_basis_fit is None) == provided
         if provided:

@@ -35,6 +35,7 @@ class TargetFiringRate:
         context = getattr(cell, "_performance_auto_context", None)
         return bool(
             report is not None and report["architecture"] == 86
+            and report.get("profile", "auto") == "auto"
             and report.get("tensorflow", "").startswith("2.21.")
             and report.get("selected", {}).get("use_fused_cuda") is True
             and context is not None and context["standard_cell"] and context["single_replica"]
