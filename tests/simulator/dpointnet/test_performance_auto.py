@@ -636,6 +636,24 @@ PROJECTION_OPTIONS = (
 )
 
 
+@pytest.mark.parametrize("boundary", [{}, {"dynamics_mode": "legacy"}, {"use_fused_cuda": False}])
+def test_joint_override_recommendation_ignores_only_own_override(monkeypatch, boundary):
+    _resolver_hardware(monkeypatch)
+    options, report = resolve({"use_combined_current_sweep": False, **boundary})
+    assert options["use_combined_current_sweep"] is False
+    assert options["use_csr_master_weights"] is False
+    assert all(options[name] is False for name in PROJECTION_OPTIONS)
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], report["selected"],
+    )
+    entry = final["effective"]["use_combined_current_sweep"]
+    assert entry["current_policy"] is (not boundary)
+    audit = next(
+        item for item in final["optimization_audit"] if item["option"] == "use_combined_current_sweep"
+    )
+    assert (audit["classification"] == "avoidable_execution_override") is (not boundary)
+
+
 @pytest.mark.parametrize("batch", [1, 16, 32])
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
 def test_auto_selects_projection_traversals_and_prepared_poisson_with_joint_sweep(

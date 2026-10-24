@@ -86,7 +86,7 @@ def pair_projection_predicates(
     return predicates
 
 
-def finalize_acceleration_report(report, requested, effective, *, predicates=None):
+def finalize_acceleration_report(report, requested, effective, *, predicates=None, policy_predicates=None):
     """Reconcile resolver intent with cell/connectivity selections for preflight.
 
     ``effective`` contains booleans or named paths, never unresolved "auto".
@@ -101,7 +101,7 @@ def finalize_acceleration_report(report, requested, effective, *, predicates=Non
             "selected": {}, "reasons": {}, "provenance": {}, "automatic": {},
             "predicates": {},
         }
-    report["resolver_selected"] = dict(report["selected"])
+    report.setdefault("resolver_selected", dict(report["selected"]))
     report["selected"] = dict(effective)
     report["stage"] = "cell"
     report["predicates"].update(predicates or {})
@@ -119,13 +119,16 @@ def finalize_acceleration_report(report, requested, effective, *, predicates=Non
             )
         checks = dict(report["predicates"].get(name, {}))
         blocked = [label for label, ok in checks.items() if not ok] if value is False else []
+        policy_checks = dict((policy_predicates or {}).get(name, checks))
         automatic = report["automatic"].get(name)
+        if automatic is not None:
+            automatic = bool(automatic and all(policy_checks.values()))
         if value is False and supplied and request is False:
             blocked.insert(0, "explicit False override")
         entry = {
             "requested": request, "supplied": supplied, "provenance": provenance,
             "resolved": value, "predicates": checks, "blocked_by": blocked,
-            "current_policy": automatic,
+            "current_policy": automatic, "policy_predicates": policy_checks,
         }
         entries[name] = entry
         if value is False and automatic is True and supplied and (
@@ -522,13 +525,16 @@ def resolve_acceleration_options(
     )
     currents = currents and options["use_fused_cuda"] is not False
     projection_checks = {}
+    projection_options = dict(cell_params)
+    projection_options.pop("use_combined_current_sweep", None)
     combined, tile, combined_reason = select_performance_projection(
-        cell_params, performance_context, compute_dtype=compute_dtype,
+        projection_options, performance_context, compute_dtype=compute_dtype,
         variable_dtype=variable_dtype, batch_size=batch_size, basis_width=basis_width,
         architecture=architecture, diagnostics=projection_checks,
     )
     projection_checks["compatible fused currents"] = currents
     select("use_combined_current_sweep", currents and combined, combined_reason, projection_checks)
+    combined = combined and cell_params.get("use_combined_current_sweep") is not False
     joint = options["use_combined_current_sweep"] is True
     # Projection traversal choices inside the admitted joint sweep. Each is a
     # pure scheduling change over the same FP32 tile accumulation and rounding;
@@ -772,6 +778,7 @@ def resolve_acceleration_options(
         raise ValueError(
             "use_javier_recurrent_vjp=True requires compatible FP16 native accumulation."
         )
+    report["resolver_selected"] = dict(report["selected"])
     io.log_info(f"DPointNet acceleration resolver (not final cell dispatch): {report}")
     if not currents:
         io.log_warning(

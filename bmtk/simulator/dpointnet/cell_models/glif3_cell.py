@@ -2506,6 +2506,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             }
             input_paths[name] = {
                 "fixed4_forward": bool(net.get("use_fixed4_forward", False)),
+                "fixed4_eligible": bool(connectivity is not None and connectivity["fixed4_eligible"]),
                 "packed_backward": bool(
                     connectivity is not None and _resolve_packed_sm120_backward(
                         net.get("use_packed_sm120_backward", False), spikes,
@@ -2518,13 +2519,18 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 [label for label, ok in checks.items() if not ok]
                 if not input_paths[name]["packed_backward"] else []
             )
+            policy_checks = dict(checks)
+            if connectivity is not None and connectivity["n_edges"] > 0:
+                # Removing the packing override builds this optional metadata.
+                policy_checks.pop("compact pair metadata is unavailable", None)
+            input_paths[name]["packed_eligible"] = all(policy_checks.values())
             external_checks.update({f"{name}: {label}": ok for label, ok in checks.items()})
         effective["use_fixed4_input_forward"] = any(
             value["fixed4_forward"] for value in input_paths.values()
         )
         predicates["use_fixed4_input_forward"] = {
             "at least one native input with exactly four incoming edges per target": (
-                effective["use_fixed4_input_forward"]
+                any(value["fixed4_eligible"] for value in input_paths.values())
             ),
         }
         effective["use_packed_sm120_external_backward"] = any(
@@ -2548,13 +2554,21 @@ class GLIF3Cell(tf.keras.layers.Layer):
             predicates[name] = existing
         self.acceleration_report = finalize_acceleration_report(
             self.acceleration_report, requested, effective, predicates=predicates,
+            policy_predicates={
+                "use_packed_sm120_external_backward": {
+                    "at least one eligible trainable native input": any(
+                        value["packed_eligible"] for value in input_paths.values()
+                    ),
+                },
+            },
         )
         self.acceleration_report["input_paths"] = input_paths
         if pair_option == "auto":
             entry = self.acceleration_report["effective"]["use_pair_projection"]
-            entry["current_policy"] = all(pair_projection_predicates(
+            entry["policy_predicates"] = pair_projection_predicates(
                 self._use_fused_cuda, self._declared_batch_size, self._n_syn_basis,
-            ).values())
+            )
+            entry["current_policy"] = all(entry["policy_predicates"].values())
             if not self._use_pair_projection and entry["current_policy"]:
                 message = (
                     "Pair projection OFF: compatibility_v1 auto requires batch32/four bases; "

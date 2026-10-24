@@ -452,6 +452,146 @@ def test_explicit_enabled_choice_is_not_reported_blocked_by_auto_policy(hardware
     assert final["effective"]["use_static_type_indexed_nest_dispatch"]["blocked_by"] == []
 
 
+def test_resolver_snapshot_survives_constructor_fallback_and_refinalization(hardware):
+    _, report = resolve(batch_size=5)
+    name = "use_fused_recurrent_accumulation"
+    assert report["selected"][name] is True
+    report["selected"][name] = False
+    for _ in range(2):
+        final = acceleration.finalize_acceleration_report(
+            report, report["requested"], report["selected"],
+            predicates={name: {"nonempty compact-pair connectivity": False}},
+        )
+        assert final["resolver_selected"][name] is True
+        assert final["selected"][name] is False
+
+
+@pytest.mark.parametrize("name,predicate", [
+    ("use_fixed4_input_forward", "exactly four incoming edges"),
+    ("use_fused_recurrent_accumulation", "nonempty compact-pair connectivity"),
+    ("use_fused_recurrent_accumulation", "uint32 recurrent connectivity"),
+])
+@pytest.mark.parametrize("eligible", [False, True])
+def test_override_audit_requires_final_independent_eligibility(hardware, name, predicate, eligible):
+    _, report = resolve({name: False}, batch_size=5)
+    assert report["automatic"][name] is True
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], report["selected"],
+        predicates={name: {predicate: eligible}},
+    )
+    entry = final["effective"][name]
+    assert entry["resolved"] is False
+    assert entry["current_policy"] is eligible
+    audit = next(item for item in final["optimization_audit"] if item["option"] == name)
+    assert audit["classification"] == (
+        "avoidable_execution_override" if eligible else "eligibility_or_dependency"
+    )
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("counts", [(1, 1), (4, 4), (2, 6)])
+@pytest.mark.parametrize("option", ["auto", False])
+def test_native_audit_uses_topology_not_fixed4_override(precision_policy, counts, option):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=5, use_fixed4_input_forward=option,
+    )
+    net = inputs["drive"]
+    net.update(
+        input_type="spikes",
+        indices=np.array([[post, 0] for post, count in enumerate(counts) for _ in range(count)]),
+        weights=np.ones(sum(counts)), delays=np.ones(sum(counts)),
+        syn_ids=np.zeros(sum(counts), dtype=np.int64),
+    )
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        eligible = counts == (4, 4)
+        entry = cell.acceleration_report["effective"]["use_fixed4_input_forward"]
+        assert entry["current_policy"] is eligible
+        assert entry["resolved"] is (eligible and option == "auto")
+        assert cell.inputs["drive"]["fused_connectivity"]["fixed4_eligible"] is eligible
+        audits = [
+            item for item in cell.acceleration_report["optimization_audit"]
+            if item["option"] == "use_fixed4_input_forward"
+        ]
+        assert any(item["classification"] == "avoidable_execution_override" for item in audits) is (
+            eligible and option is False
+        )
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("disabled", [False, True])
+def test_native_empty_recurrence_preserves_resolver_snapshot_and_audit(precision_policy, disabled):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=5, _canonical_gradient_boundary=True,
+        **({"use_fused_recurrent_accumulation": False} if disabled else {}),
+    )
+    for key in ("indices", "weights", "delays", "syn_ids"):
+        network["synapses"][key] = network["synapses"][key][:0]
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        report = cell.acceleration_report
+        name = "use_fused_recurrent_accumulation"
+        assert report["resolver_selected"][name] is (not disabled)
+        entry = report["effective"][name]
+        assert entry["resolved"] is False
+        assert entry["current_policy"] is False
+        assert "nonempty compact-pair connectivity" in entry["blocked_by"]
+        assert not any(
+            item["classification"] == "avoidable_execution_override" and item["option"] == name
+            for item in report["optimization_audit"]
+        )
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+def test_native_packed_input_override_does_not_hide_metadata_eligibility(precision_policy):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    if not acceleration.csr_spike_ops._auto_native_architecture(
+        acceleration.csr_spike_ops._gpu_compute_architecture(),
+    ):
+        pytest.skip("Automatic packed backward requires SM70+")
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=32, use_packed_sm120_external_backward=False,
+    )
+    inputs["drive"]["input_type"] = "spikes"
+    inputs["current"] = copy.deepcopy(inputs["drive"])
+    inputs["current"]["input_type"] = "current"
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        entry = cell.acceleration_report["effective"]["use_packed_sm120_external_backward"]
+        assert entry["resolved"] is False
+        assert entry["current_policy"] is True
+        assert cell.inputs["drive"]["fused_connectivity"]["n_pairs"] == 0
+        paths = cell.acceleration_report["input_paths"]
+        assert paths["drive"]["packed_eligible"] is True
+        assert paths["current"]["packed_eligible"] is False
+    finally:
+        cell.close_fused_cuda()
+
+
 @pytest.mark.parametrize("architecture", [None, 61, 70, 75, 80, 86])
 @pytest.mark.parametrize("available", [False, True])
 def test_auto_pair_equivalence_preserves_hardware_guards(hardware, monkeypatch, architecture, available):

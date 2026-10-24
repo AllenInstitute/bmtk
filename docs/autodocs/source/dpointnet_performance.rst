@@ -76,7 +76,7 @@ authoritative **cell-stage** selection report, including compatibility/null
 profiles that previously returned no report:
 
 * ``requested`` retains the supplied values. ``resolver_selected`` retains
-  the earlier policy selections for comparison.
+  a snapshot taken before constructor/connectivity fallbacks for comparison.
 * ``selected`` contains final cell/connectivity choices, not unresolved
   ``"auto"`` strings. Packed backward is checked against the same static
   dtype/batch/pair/index predicates used by the native wrapper.
@@ -85,6 +85,9 @@ profiles that previously returned no report:
 * Each ``effective`` entry records ``requested``, ``supplied``, ``provenance``,
   ``resolved``, ``current_policy``, ``predicates`` and ``blocked_by``.
   Dependency entries include the parent's resolved choice and provenance.
+  ``policy_predicates`` records independent eligibility checks, including
+  optional metadata that removing the override would build; for named inputs,
+  the recommendation requires at least one eligible source, not every source.
   Provenance distinguishes profile selection, explicit automatic requests,
   Boolean overrides, historical automatic compatibility overrides and
   constructor defaults.
@@ -106,6 +109,10 @@ recurrent carrier supersedes ordinary packed backward when used, and a caller
 can choose a different enclosing loop. Use a native trace for execution proof.
 ``current_policy`` is an eligibility recommendation with the other supplied
 dependencies retained, not a measured fastest configuration or a speedup claim.
+It ignores the option's own Boolean override, but includes final topology
+eligibility evaluated independently of whether optional metadata was built.
+An override is only called avoidable when removing it actually admits the path;
+empty/incompatible recurrence or a non-four-edge input remains an exclusion.
 
 Automatic state selection checks optional event-gradient, history, voltage-penalty
 and type-indexed entry points individually, retaining compatible fallbacks when
