@@ -218,7 +218,7 @@ def test_high_level_build_accepts_uncapped_delay_with_acceleration_disabled(max_
             rnn._inputs_order.append(name)
         rnn.build(training=False)
         assert rnn.cell.max_delay == 3
-        assert rnn.cell.acceleration_report is None
+        assert rnn.cell.acceleration_report["profile"] is None
     finally:
         tf.keras.mixed_precision.set_global_policy(policy)
 
@@ -249,6 +249,9 @@ def test_rate_count_auto_uses_declared_single_replica_boundary():
     assert not objective.compiled_spike_counts
     rnn._cell = cell
     assert objective.compiled_spike_counts
+    cell.acceleration_report["profile"] = "compatibility_v1"
+    assert not objective.compiled_spike_counts
+    cell.acceleration_report["profile"] = "auto"
     assert not TargetFiringRate(rnn, 5.0, compiled_spike_counts=False).compiled_spike_counts
     metadata["single_replica"] = False
     assert not objective.compiled_spike_counts
@@ -631,6 +634,24 @@ def resolve(options=None, metadata=None, **overrides):
 PROJECTION_OPTIONS = (
     "use_cooperative_row_projection", "use_fanout_row_projection", "use_target_gather_projection",
 )
+
+
+@pytest.mark.parametrize("boundary", [{}, {"dynamics_mode": "legacy"}, {"use_fused_cuda": False}])
+def test_joint_override_recommendation_ignores_only_own_override(monkeypatch, boundary):
+    _resolver_hardware(monkeypatch)
+    options, report = resolve({"use_combined_current_sweep": False, **boundary})
+    assert options["use_combined_current_sweep"] is False
+    assert options["use_csr_master_weights"] is False
+    assert all(options[name] is False for name in PROJECTION_OPTIONS)
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], report["selected"],
+    )
+    entry = final["effective"]["use_combined_current_sweep"]
+    assert entry["current_policy"] is (not boundary)
+    audit = next(
+        item for item in final["optimization_audit"] if item["option"] == "use_combined_current_sweep"
+    )
+    assert (audit["classification"] == "avoidable_execution_override") is (not boundary)
 
 
 @pytest.mark.parametrize("batch", [1, 16, 32])

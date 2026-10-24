@@ -1,6 +1,7 @@
 """Opt-in hardware-aware execution choices, independent of scientific settings."""
 
 from numbers import Integral
+import warnings
 
 import numpy as np
 import tensorflow as tf
@@ -63,6 +64,120 @@ COMBINED_TARGET_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
 # B8 -1.6%, B16 -2.3%, B32 -2.3%. Batches 2..7 were not measured and keep the
 # previous dense route. Explicit ``use_adaptive_routing=True`` is still honored.
 ADAPTIVE_ROUTING_MIN_BATCH = 8
+
+
+def pair_projection_predicates(
+    fused_cuda, batch_size, basis_width, *, compatibility=False, defer_basis=False,
+):
+    """Shared current/compatibility admission, independent of dynamics and precision."""
+    predicates = {
+        "compatible fused CUDA currents": bool(fused_cuda),
+        f"batch_size must be positive and known (found {batch_size})": (
+            isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0
+        ),
+        f"the synaptic basis must have positive width (found {basis_width})": (
+            defer_basis if basis_width is None else basis_width > 0
+        ),
+    }
+    if compatibility:
+        predicates["compatibility_v1 auto requires batch32 and four bases"] = (
+            batch_size == 32 and basis_width == 4
+        )
+    return predicates
+
+
+def finalize_acceleration_report(report, requested, effective, *, predicates=None, policy_predicates=None):
+    """Reconcile resolver intent with cell/connectivity selections for preflight.
+
+    ``effective`` contains booleans or named paths, never unresolved "auto".
+    Rollout-dependent paths are explicitly identified, not kernel-execution proof.
+    """
+    if report is None:
+        report = {
+            "profile": requested.get("acceleration_profile"),
+            "architecture": csr_spike_ops._gpu_compute_architecture(),
+            "tensorflow": tf.__version__,
+            "requested": dict(requested),
+            "selected": {}, "reasons": {}, "provenance": {}, "automatic": {},
+            "predicates": {},
+        }
+    report.setdefault("resolver_selected", dict(report["selected"]))
+    report["selected"] = dict(effective)
+    report["stage"] = "cell"
+    report["predicates"].update(predicates or {})
+    entries = {}
+    audit = []
+    for name, value in effective.items():
+        supplied = name in requested
+        request = requested.get(name)
+        provenance = report["provenance"].get(name)
+        if provenance is None:
+            provenance = (
+                "explicit_compatibility_override" if supplied and request == "auto"
+                else "explicit_override" if supplied
+                else "profile" if name in report["resolver_selected"] else "constructor_default"
+            )
+        checks = dict(report["predicates"].get(name, {}))
+        blocked = [label for label, ok in checks.items() if not ok] if value is False else []
+        policy_checks = dict((policy_predicates or {}).get(name, checks))
+        automatic = report["automatic"].get(name)
+        if automatic is not None:
+            automatic = bool(automatic and all(policy_checks.values()))
+        if value is False and supplied and request is False:
+            blocked.insert(0, "explicit False override")
+        entry = {
+            "requested": request, "supplied": supplied, "provenance": provenance,
+            "resolved": value, "predicates": checks, "blocked_by": blocked,
+            "current_policy": automatic, "policy_predicates": policy_checks,
+        }
+        entries[name] = entry
+        if value is False and automatic is True and supplied and (
+            request is False or provenance == "explicit_compatibility_override"
+        ):
+            audit.append({
+                "option": name, "classification": "avoidable_execution_override",
+                "message": (
+                    f"{name} is OFF due to {provenance}; current policy admits it. "
+                    'Use acceleration_profile="auto" and omit the override or set it to "auto".'
+                ),
+            })
+        elif value is False and blocked:
+            audit.append({
+                "option": name,
+                "classification": (
+                    "scientific_incompatibility"
+                    if any(label in ("NEST dynamics", "compute temporal gradients") for label in blocked)
+                    else "eligibility_or_dependency"
+                ),
+                "message": "; ".join(blocked),
+            })
+    report["effective"] = entries
+    for name, dependencies in {
+        "use_fused_recurrent_accumulation": (
+            "use_pair_projection", "use_direct_csr_recurrent_gradient",
+        ),
+        "use_javier_recurrent_vjp": ("use_fused_recurrent_accumulation", "use_pair_projection"),
+        "use_csr_master_weights": ("use_combined_current_sweep",),
+        "use_uint8_synapse_types": ("use_csr_master_weights",),
+        "use_adaptive_routing": ("use_uint8_synapse_types",),
+    }.items():
+        if name in entries:
+            entries[name]["dependencies"] = {
+                dependency: {
+                    "resolved": entries[dependency]["resolved"],
+                    "provenance": entries[dependency]["provenance"],
+                }
+                for dependency in dependencies if dependency in entries
+            }
+    report["optimization_audit"] = audit
+    return report
+
+
+def record_rollout_acceleration(report, selections):
+    """Record the last traced rollout's path without changing execution policy."""
+    if report is None:
+        return
+    report["rollout_selected"] = dict(selections)
 
 # Architecture-determined limits (CUDA programming guide, technical specifications
 # per compute capability). Multiprocessor counts differ between products; the
@@ -173,7 +288,7 @@ def _index_bytes(context):
 
 def select_performance_projection(
     options, context, *, compute_dtype, variable_dtype, batch_size, basis_width,
-    architecture,
+    architecture, diagnostics=None,
 ):
     """Choose a qualified joint-current route without changing explicit options."""
     reason = (
@@ -181,23 +296,29 @@ def select_performance_projection(
         "SASS, FP16/FP32 with FP32 masters, batch1..32, four bases, native spike inputs and "
         "bounded routing; joint FP32 accumulation rounds once to compute dtype"
     )
-    eligible = (
-        options.get("acceleration_profile", "auto") == "auto"
-        and options.get("use_combined_current_sweep") is not False
-        and options.get("use_fused_cuda") is not False
-        and options.get("dynamics_mode", "nest") == "nest"
-        and options.get("temporal_gradient_precision", "compute") == "compute"
-        and architecture in JOINT_SWEEP_ARCHITECTURES
-        and architecture in csr_spike_ops._SM_ARCHITECTURES
-        and tf.as_dtype(compute_dtype) in (tf.float16, tf.float32)
-        and tf.as_dtype(variable_dtype) == tf.float32
-        and isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
-        and 1 <= batch_size <= JOINT_SWEEP_MAX_BATCH and basis_width == 4
-        and context is not None and context["standard_cell"]
-        and context["single_replica"] and context["spike_inputs"]
-        and context["recurrent_edges"] > 0
-        and csr_spike_ops.combined_sweep_available()
-    )
+    context = context or {}
+    predicates = {
+        "automatic profile": options.get("acceleration_profile", "auto") == "auto",
+        "joint sweep not explicitly disabled": options.get("use_combined_current_sweep") is not False,
+        "fused currents not explicitly disabled": options.get("use_fused_cuda") is not False,
+        "NEST dynamics": options.get("dynamics_mode", "nest") == "nest",
+        "compute temporal gradients": options.get("temporal_gradient_precision", "compute") == "compute",
+        f"SM{architecture} in qualified fat-binary targets": architecture in JOINT_SWEEP_ARCHITECTURES,
+        f"SM{architecture} SASS in loaded library": architecture in csr_spike_ops._SM_ARCHITECTURES,
+        "FP16/FP32 compute": tf.as_dtype(compute_dtype) in (tf.float16, tf.float32),
+        "FP32 masters": tf.as_dtype(variable_dtype) == tf.float32,
+        f"batch1..32 (found {batch_size})": (
+            isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
+            and 1 <= batch_size <= JOINT_SWEEP_MAX_BATCH
+        ),
+        f"four bases (found {basis_width})": basis_width == 4,
+        "standard high-level cell": context.get("standard_cell", False),
+        "single replica": context.get("single_replica", False),
+        "nonempty supported spike inputs": context.get("spike_inputs", False),
+        "nonempty recurrence": context.get("recurrent_edges", 0) > 0,
+        "loaded joint-sweep ABI": csr_spike_ops.combined_sweep_available(),
+    }
+    eligible = all(predicates.values())
     tile = 256 if eligible and batch_size == 1 else 2048
     if eligible:
         index_bytes = _index_bytes(context)
@@ -213,6 +334,12 @@ def select_performance_projection(
         eligible = routing_bytes(tile) <= 512 * 1024**2 and combined_sweep_launch_geometry(
             architecture, tile, index_bytes=index_bytes,
         )["valid"]
+        predicates["routing table <= 512 MiB and launchable tile"] = eligible
+    missing = [name for name, ok in predicates.items() if not ok]
+    if missing:
+        reason += "; blocked by: " + "; ".join(missing)
+    if diagnostics is not None:
+        diagnostics.update(predicates)
     return bool(eligible), tile, reason
 
 
@@ -256,6 +383,7 @@ def resolve_csr_master_options(
         "use_csr_master_weights", not missing,
         "CSR-ordered FP32 masters read directly by native kernels with host-prepared "
         "metadata" if not missing else "previous path kept; requires " + _option_names_requiring(missing),
+        {name: False for name in missing} if missing else {"CSR-master prerequisites": True},
     )
     masters = options["use_csr_master_weights"] is True
 
@@ -279,6 +407,7 @@ def resolve_csr_master_options(
         "use_uint8_synapse_types", not missing,
         "uint8 per-edge type tail in the single CSR metadata resource" if not missing
         else "wide types kept; requires " + _option_names_requiring(missing),
+        {name: False for name in missing} if missing else {"uint8 prerequisites": True},
     )
     uint8 = options["use_uint8_synapse_types"] is True
 
@@ -308,7 +437,11 @@ def resolve_csr_master_options(
             "compressed segment routing with per-launch wide/narrow tiles" if not missing
             else "dense tile routing kept; requires " + _option_names_requiring(missing)
         )
-    select("use_adaptive_routing", enabled, reason)
+    checks = {name: False for name in missing}
+    checks[f"batch >= {ADAPTIVE_ROUTING_MIN_BATCH} (found {batch_size})"] = (
+        isinstance(batch_size, Integral) and batch_size >= ADAPTIVE_ROUTING_MIN_BATCH
+    )
+    select("use_adaptive_routing", enabled, reason, checks)
 
 
 def resolve_acceleration_options(
@@ -316,19 +449,28 @@ def resolve_acceleration_options(
     train_recurrent_per_type=False, canonical_gradient_boundary=True,
     performance_context=None, synapse_type_range=None,
 ):
-    """Resolve ``acceleration_profile="auto"`` without overriding explicit flags.
+    """Resolve automatic requests centrally, retaining explicit boolean overrides.
 
     The returned report is suitable for recording with execution provenance.
-    Omitting the profile selects auto; explicit None disables profile expansion.
+    Omission and per-option "auto" use the same current policy under auto.
+    None and "compatibility_v1" disable expansion (historical constructor policy).
     ``synapse_type_range`` is the (min, max) per-edge synapse type ID over the
     recurrent and every input network, used by ``use_uint8_synapse_types``.
     """
     options = dict(cell_params)
     profile = options.pop("acceleration_profile", "auto")
-    if profile is None:
+    if profile is None or profile == "compatibility_v1":
+        if profile is None and any(
+            name.startswith("use_") and value == "auto" for name, value in options.items()
+        ):
+            warnings.warn(
+                'acceleration_profile=None retains historical per-option "auto" heuristics. '
+                'Use "compatibility_v1" to name this policy, or "auto" for current policy.',
+                FutureWarning, stacklevel=2,
+            )
         return options, None
     if profile != "auto":
-        raise ValueError('acceleration_profile must be None or "auto".')
+        raise ValueError('acceleration_profile must be None, "auto" or "compatibility_v1".')
 
     compute_dtype = tf.as_dtype(compute_dtype)
     variable_dtype = tf.as_dtype(variable_dtype)
@@ -345,14 +487,24 @@ def resolve_acceleration_options(
         "requested": dict(cell_params),
         "selected": {},
         "reasons": {},
+        "provenance": {},
+        "automatic": {},
+        "predicates": {},
+        "stage": "resolver",
     }
 
-    def select(name, enabled, reason):
-        if name in options:
+    def select(name, enabled, reason, predicates=None):
+        report["automatic"][name] = bool(enabled)
+        report["predicates"][name] = predicates or {reason: bool(enabled)}
+        if name in options and options[name] != "auto":
             report["reasons"][name] = "explicit override; constructor validation retained"
+            report["provenance"][name] = "explicit_override"
         else:
             options[name] = bool(enabled)
             report["reasons"][name] = reason
+            report["provenance"][name] = (
+                "explicit_auto" if name in cell_params else "profile"
+            )
         report["selected"][name] = options[name]
 
     numeric = compute_dtype in (tf.float16, tf.float32) and variable_dtype == tf.float32
@@ -365,14 +517,24 @@ def resolve_acceleration_options(
         "compatible loaded CSR library and FP16/FP32 compute with FP32 masters; "
         "SM61-compatible CSR currents; matching loaded library, FP16/FP32 compute "
         "and FP32 masters; explicit homogeneous data-parallel GPU strategies supported",
+        {
+            "FP16/FP32 compute and FP32 masters": numeric,
+            "loaded compatible CSR library": csr_spike_ops.fused_cuda_available(),
+            "supported NEST architecture": not unsupported_nest,
+        },
     )
     currents = currents and options["use_fused_cuda"] is not False
+    projection_checks = {}
+    projection_options = dict(cell_params)
+    projection_options.pop("use_combined_current_sweep", None)
     combined, tile, combined_reason = select_performance_projection(
-        cell_params, performance_context, compute_dtype=compute_dtype,
+        projection_options, performance_context, compute_dtype=compute_dtype,
         variable_dtype=variable_dtype, batch_size=batch_size, basis_width=basis_width,
-        architecture=architecture,
+        architecture=architecture, diagnostics=projection_checks,
     )
-    select("use_combined_current_sweep", currents and combined, combined_reason)
+    projection_checks["compatible fused currents"] = currents
+    select("use_combined_current_sweep", currents and combined, combined_reason, projection_checks)
+    combined = combined and cell_params.get("use_combined_current_sweep") is not False
     joint = options["use_combined_current_sweep"] is True
     # Projection traversal choices inside the admitted joint sweep. Each is a
     # pure scheduling change over the same FP32 tile accumulation and rounding;
@@ -383,18 +545,21 @@ def resolve_acceleration_options(
         joint and csr_spike_ops.cooperative_combined_sweep_available(),
         "admitted joint sweep and rebuilt cooperative-row capability; register-only "
         "eight-row warp packing for known target-unique sources below512edges per row",
+        {"joint sweep": joint, "loaded cooperative-row ABI": csr_spike_ops.cooperative_combined_sweep_available()},
     )
     select(
         "use_fanout_row_projection",
         joint and csr_spike_ops.fanout_combined_sweep_available(),
         "admitted joint sweep and rebuilt fanout-row capability; compact nonempty-row "
         "scan with concatenated edge walk for sources of at least512edges per row",
+        {"joint sweep": joint, "loaded fanout-row ABI": csr_spike_ops.fanout_combined_sweep_available()},
     )
     select(
         "use_target_gather_projection",
         joint and csr_spike_ops.gather_combined_sweep_available(),
         "admitted joint sweep and rebuilt gather capability; target-major atomic-free "
         "gather for sources with at most16incoming edges per target",
+        {"joint sweep": joint, "loaded target-gather ABI": csr_spike_ops.gather_combined_sweep_available()},
     )
     resolve_csr_master_options(
         options, report, select=select, admitted=currents and combined, joint=joint,
@@ -464,10 +629,17 @@ def resolve_acceleration_options(
         numeric and four_basis and state_available and not unsupported_nest,
         "compatible mode-specific state library, FP32 masters and four bases; "
         "SM61 NEST requires rebuilt occupancy-aware launch capability",
+        {
+            "FP16/FP32 compute and FP32 masters": numeric,
+            "four synaptic bases": four_basis,
+            "mode-specific state ABI (including Pascal occupancy)": state_available,
+            "supported NEST architecture": not unsupported_nest,
+        },
     )
     state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not unsupported_nest
     select("use_direct_state_rnn_loop", state and currents,
-           "compatible fused state/currents and explicit-state loop")
+           "compatible fused state/currents and explicit-state loop",
+           {"compatible fused state": state, "compatible fused currents": currents})
     prepared = (
         nest and options["use_direct_state_rnn_loop"] is True
         and options.get("temporal_gradient_precision", "compute") == "compute"
@@ -475,7 +647,7 @@ def resolve_acceleration_options(
         and performance_context is not None and performance_context["single_replica"]
         and performance_context["standard_cell"]
     )
-    if "use_prepared_cpu_poisson" in options:
+    if "use_prepared_cpu_poisson" in options and options["use_prepared_cpu_poisson"] != "auto":
         report["reasons"]["use_prepared_cpu_poisson"] = "explicit override; constructor validation retained"
     else:
         # "auto" prepares exact per-step CPU Poisson counts once per rollout when
@@ -487,6 +659,11 @@ def resolve_acceleration_options(
             "the layer falls back to per-step sampling outside the direct loop or budget"
         )
     report["selected"]["use_prepared_cpu_poisson"] = options["use_prepared_cpu_poisson"]
+    report["automatic"]["use_prepared_cpu_poisson"] = prepared
+    report["provenance"]["use_prepared_cpu_poisson"] = (
+        "explicit_auto" if cell_params.get("use_prepared_cpu_poisson") == "auto"
+        else "explicit_override" if "use_prepared_cpu_poisson" in cell_params else "profile"
+    )
     select("use_fused_nest_event_vjp",
            nest and state and glif_state_ops.fused_nest_event_vjp_available(),
            "compatible NEST state and loaded event-gradient operator")
@@ -499,8 +676,11 @@ def resolve_acceleration_options(
            "compatible state, enabled penalty tracking and loaded penalty operators")
     select("use_forward_run_aggregation", currents and small_batch and four_basis,
            "compatible batch1..32/four-basis CSR route")
-    select("use_pair_projection", currents and known_batch,
-           "compatible CSR library and known positive batch")
+    pair_predicates = pair_projection_predicates(
+        currents, batch_size, basis_width, defer_basis=True,
+    )
+    select("use_pair_projection", all(pair_predicates.values()),
+           "compatible CSR library, known positive batch and nonempty basis", pair_predicates)
     select("use_fixed4_input_forward", currents and four_basis,
            "compatible CSR library and four bases; each input checks exactly four incoming edges")
     select("use_fused_current_accumulation", currents and four_basis and batch_size == 32,
@@ -509,28 +689,37 @@ def resolve_acceleration_options(
         "train_recurrent_per_type", train_recurrent_per_type
     )
     select("use_direct_csr_recurrent_gradient", currents and per_edge_training and canonical_gradient_boundary,
-           "compatible CSR library, per-edge weights and an enclosing canonical-gradient boundary")
+           "compatible CSR library, per-edge weights and an enclosing canonical-gradient boundary",
+           {
+               "compatible fused currents": currents, "per-edge trainable recurrence": per_edge_training,
+               "canonical-gradient boundary": canonical_gradient_boundary,
+           })
     select("use_active_row_forward", currents and small_batch and four_basis,
            "compatible CSR library, batch1..32 and four bases")
     select("use_device_active_queue_forward", currents and small_batch and four_basis,
            "compatible CSR library, batch1..32 and four bases")
-    pair_projection = options["use_pair_projection"] is True or (
-        options["use_pair_projection"] == "auto" and batch_size == 32 and four_basis
-    )
-    packed = (
-        currents and fp16_backward and four_basis and batch_size == 32
-        and csr_spike_ops._auto_native_architecture(architecture) and pair_projection
-    )
+    pair_projection = options["use_pair_projection"] is True
+    packed_predicates = {
+        "compatible fused currents": currents,
+        "FP16 compute-temporal backward": fp16_backward,
+        "four synaptic bases": four_basis,
+        f"batch32 (found {batch_size})": batch_size == 32,
+        f"SM{architecture} admitted for automatic packed backward": (
+            csr_spike_ops._auto_native_architecture(architecture)
+        ),
+        "use_pair_projection=True": pair_projection,
+    }
+    packed = all(packed_predicates.values())
     select("use_packed_sm120_backward", packed,
            "FP16 temporal backward, automatic policy SM70+, batch32, four bases and pair metadata; "
-           "per-connectivity checks remain automatic")
+           "per-connectivity checks remain automatic", packed_predicates)
     select("use_packed_sm120_external_backward", packed,
-           "FP16 temporal backward, automatic policy SM70+, batch32 and four bases")
+           "FP16 temporal backward, automatic policy SM70+, batch32 and four bases", packed_predicates)
     # Auto keeps the existing per-connectivity fallback for oversized/int64 metadata.
-    if packed and cell_params.get("use_packed_sm120_backward") is None:
+    if packed and cell_params.get("use_packed_sm120_backward") in (None, "auto"):
         options["use_packed_sm120_backward"] = "auto"
         report["selected"]["use_packed_sm120_backward"] = "auto"
-    if packed and cell_params.get("use_packed_sm120_external_backward") is None:
+    if packed and cell_params.get("use_packed_sm120_external_backward") in (None, "auto"):
         options["use_packed_sm120_external_backward"] = "auto"
         report["selected"]["use_packed_sm120_external_backward"] = "auto"
     select("use_prepacked_nest_coefficients", nest and state,
@@ -549,22 +738,34 @@ def resolve_acceleration_options(
     carry_route = options.get("temporal_gradient_precision") == "float32" or options.get(
         "use_direct_state_rnn_loop", False
     )
-    accumulator = (
-        currents and small_batch and four_basis and carry_route
-        and (pascal or csr_spike_ops._auto_native_architecture(architecture))
-        and (architecture != 75 or fp16_backward)
-        and options["use_direct_csr_recurrent_gradient"] is True
-        and per_edge_training
-        and pair_projection and csr_spike_ops.fused_recurrent_accumulation_available()
-    )
+    accumulator_predicates = {
+        "compatible fused currents": currents,
+        f"batch1..32 (found {batch_size})": small_batch,
+        f"four bases (found {basis_width})": four_basis,
+        "direct state loop or FP32 temporal carry": bool(carry_route),
+        f"SM{architecture} admitted for accumulator": (
+            pascal or csr_spike_ops._auto_native_architecture(architecture)
+        ),
+        "SM75 requires FP16 temporal backward": architecture != 75 or fp16_backward,
+        "use_direct_csr_recurrent_gradient=True": options["use_direct_csr_recurrent_gradient"] is True,
+        "per-edge trainable recurrence": bool(per_edge_training),
+        "use_pair_projection=True": pair_projection,
+        "loaded fused accumulator ABI": csr_spike_ops.fused_recurrent_accumulation_available(),
+    }
+    accumulator = all(accumulator_predicates.values())
     select("use_fused_recurrent_accumulation", accumulator,
            "Automatic policy SM61, SM70+ (SM75 with FP16 temporal backward) accumulator library, "
            "batch1..32/four bases, per-edge training, direct CSR "
-           "and explicitly selected direct-loop or FP32 replay route")
+           "and explicitly selected direct-loop or FP32 replay route", accumulator_predicates)
     select(
         "use_javier_recurrent_vjp",
         accumulator and options["use_fused_recurrent_accumulation"] is True and fp16_backward,
         "compatible fused accumulator and FP16 temporal backward",
+        {
+            "accumulator eligible": accumulator,
+            "use_fused_recurrent_accumulation=True": options["use_fused_recurrent_accumulation"] is True,
+            "FP16 compute-temporal backward": fp16_backward,
+        },
     )
     if options["use_fused_recurrent_accumulation"] is True and not accumulator:
         raise ValueError(
@@ -577,7 +778,8 @@ def resolve_acceleration_options(
         raise ValueError(
             "use_javier_recurrent_vjp=True requires compatible FP16 native accumulation."
         )
-    io.log_info(f"DPointNet automatic acceleration: {report}")
+    report["resolver_selected"] = dict(report["selected"])
+    io.log_info(f"DPointNet acceleration resolver (not final cell dispatch): {report}")
     if not currents:
         io.log_warning(
             "DPointNet automatic acceleration did not admit fused CSR currents; "

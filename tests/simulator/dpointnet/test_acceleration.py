@@ -374,12 +374,372 @@ def test_actual_five_basis_auto_projection_and_gradients(batch):
         conn.close()
 
 
-def test_explicit_auto_pair_metadata_does_not_admit_variable_batch_accumulator(hardware):
-    actual, _ = resolve(
-        {"use_direct_state_rnn_loop": True, "use_pair_projection": "auto"},
-        batch_size=7,
+@pytest.mark.parametrize("batch", [1, 5, 7, 8, 16, 32])
+@pytest.mark.parametrize("mode", ["legacy", "nest"])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("pair", ["auto", True, False])
+def test_pair_auto_inherits_current_profile_policy(hardware, batch, mode, dtype, pair):
+    params = {"dynamics_mode": mode, "use_direct_state_rnn_loop": True}
+    omitted, _ = resolve(params, batch_size=batch, compute_dtype=dtype)
+    actual, report = resolve(
+        {**params, "use_pair_projection": pair}, batch_size=batch, compute_dtype=dtype,
     )
-    assert not actual["use_fused_recurrent_accumulation"]
+    assert actual["use_pair_projection"] is (pair is not False)
+    for name in ("use_fused_recurrent_accumulation", "use_javier_recurrent_vjp"):
+        assert actual[name] == (omitted[name] if pair is not False else False)
+    assert report["requested"]["use_pair_projection"] == pair
+
+
+def test_compatibility_v1_preserves_historical_batch32_pair_heuristic(hardware):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import _resolve_pair_projection
+
+    actual, report = resolve({
+        "acceleration_profile": "compatibility_v1", "use_pair_projection": "auto",
+    }, batch_size=7)
+    assert actual["use_pair_projection"] == "auto"
+    assert report is None
+    assert not _resolve_pair_projection(actual["use_pair_projection"], True, 7, 4)
+    assert _resolve_pair_projection(actual["use_pair_projection"], True, 32, 4)
+
+
+def test_null_profile_warns_for_historical_auto():
+    with pytest.warns(FutureWarning, match="compatibility_v1"):
+        actual, report = resolve({"acceleration_profile": None, "use_pair_projection": "auto"})
+    assert actual["use_pair_projection"] == "auto"
+    assert report is None
+
+
+def test_all_profile_managed_auto_requests_match_omission(hardware):
+    from bmtk.simulator.dpointnet.migration import PROFILE_EXECUTION_OPTIONS
+
+    omitted, report = resolve()
+    assert set(report["selected"]) == set(PROFILE_EXECUTION_OPTIONS)
+    params = {name: "auto" for name in report["selected"] if name.startswith("use_")}
+    actual, explicit = resolve(params)
+    assert actual == omitted
+    assert explicit["provenance"]["use_pair_projection"] == "explicit_auto"
+    assert report["provenance"]["use_pair_projection"] == "profile"
+
+
+def test_pair_policy_defers_unknown_basis_width_to_constructor(hardware):
+    actual, _ = resolve({"use_pair_projection": "auto"}, basis_width=None, batch_size=5)
+    assert actual["use_pair_projection"] is True
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import _resolve_pair_projection
+    with pytest.raises(ValueError, match="basis must have positive width"):
+        _resolve_pair_projection(actual["use_pair_projection"], True, 5, 0)
+
+
+def test_final_topology_fallback_is_not_an_avoidable_override(hardware):
+    selected, report = resolve()
+    selected = dict(report["selected"])
+    selected["use_fixed4_input_forward"] = False
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], selected,
+        predicates={"use_fixed4_input_forward": {"exactly four incoming edges": False}},
+    )
+    entry = final["effective"]["use_fixed4_input_forward"]
+    assert entry["provenance"] == "profile"
+    assert entry["blocked_by"] == ["exactly four incoming edges"]
+    audit = next(item for item in final["optimization_audit"] if item["option"] == "use_fixed4_input_forward")
+    assert audit["classification"] == "eligibility_or_dependency"
+
+
+def test_explicit_enabled_choice_is_not_reported_blocked_by_auto_policy(hardware):
+    _, report = resolve({"use_static_type_indexed_nest_dispatch": True})
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], report["selected"],
+    )
+    assert final["effective"]["use_static_type_indexed_nest_dispatch"]["blocked_by"] == []
+
+
+def test_resolver_snapshot_survives_constructor_fallback_and_refinalization(hardware):
+    _, report = resolve(batch_size=5)
+    name = "use_fused_recurrent_accumulation"
+    assert report["selected"][name] is True
+    report["selected"][name] = False
+    for _ in range(2):
+        final = acceleration.finalize_acceleration_report(
+            report, report["requested"], report["selected"],
+            predicates={name: {"nonempty compact-pair connectivity": False}},
+        )
+        assert final["resolver_selected"][name] is True
+        assert final["selected"][name] is False
+
+
+@pytest.mark.parametrize("name,predicate", [
+    ("use_fixed4_input_forward", "exactly four incoming edges"),
+    ("use_fused_recurrent_accumulation", "nonempty compact-pair connectivity"),
+    ("use_fused_recurrent_accumulation", "uint32 recurrent connectivity"),
+])
+@pytest.mark.parametrize("eligible", [False, True])
+def test_override_audit_requires_final_independent_eligibility(hardware, name, predicate, eligible):
+    _, report = resolve({name: False}, batch_size=5)
+    assert report["automatic"][name] is True
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], report["selected"],
+        predicates={name: {predicate: eligible}},
+    )
+    entry = final["effective"][name]
+    assert entry["resolved"] is False
+    assert entry["current_policy"] is eligible
+    audit = next(item for item in final["optimization_audit"] if item["option"] == name)
+    assert audit["classification"] == (
+        "avoidable_execution_override" if eligible else "eligibility_or_dependency"
+    )
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("counts", [(1, 1), (4, 4), (2, 6)])
+@pytest.mark.parametrize("option", ["auto", False])
+def test_native_audit_uses_topology_not_fixed4_override(precision_policy, counts, option):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=5, use_fixed4_input_forward=option,
+    )
+    net = inputs["drive"]
+    net.update(
+        input_type="spikes",
+        indices=np.array([[post, 0] for post, count in enumerate(counts) for _ in range(count)]),
+        weights=np.ones(sum(counts)), delays=np.ones(sum(counts)),
+        syn_ids=np.zeros(sum(counts), dtype=np.int64),
+    )
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        eligible = counts == (4, 4)
+        entry = cell.acceleration_report["effective"]["use_fixed4_input_forward"]
+        assert entry["current_policy"] is eligible
+        assert entry["resolved"] is (eligible and option == "auto")
+        assert cell.inputs["drive"]["fused_connectivity"]["fixed4_eligible"] is eligible
+        audits = [
+            item for item in cell.acceleration_report["optimization_audit"]
+            if item["option"] == "use_fixed4_input_forward"
+        ]
+        assert any(item["classification"] == "avoidable_execution_override" for item in audits) is (
+            eligible and option is False
+        )
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("disabled", [False, True])
+def test_native_empty_recurrence_preserves_resolver_snapshot_and_audit(precision_policy, disabled):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=5, _canonical_gradient_boundary=True,
+        **({"use_fused_recurrent_accumulation": False} if disabled else {}),
+    )
+    for key in ("indices", "weights", "delays", "syn_ids"):
+        network["synapses"][key] = network["synapses"][key][:0]
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        report = cell.acceleration_report
+        name = "use_fused_recurrent_accumulation"
+        assert report["resolver_selected"][name] is (not disabled)
+        entry = report["effective"][name]
+        assert entry["resolved"] is False
+        assert entry["current_policy"] is False
+        assert "nonempty compact-pair connectivity" in entry["blocked_by"]
+        assert not any(
+            item["classification"] == "avoidable_execution_override" and item["option"] == name
+            for item in report["optimization_audit"]
+        )
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+def test_native_packed_input_override_does_not_hide_metadata_eligibility(precision_policy):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    if not acceleration.csr_spike_ops._auto_native_architecture(
+        acceleration.csr_spike_ops._gpu_compute_architecture(),
+    ):
+        pytest.skip("Automatic packed backward requires SM70+")
+    network, inputs, args = make_cell(
+        return_spec=True, fused=True, acceleration_profile="auto",
+        batch_size=32, use_packed_sm120_external_backward=False,
+    )
+    inputs["drive"]["input_type"] = "spikes"
+    inputs["current"] = copy.deepcopy(inputs["drive"])
+    inputs["current"]["input_type"] = "current"
+    cell = GLIF3Cell(network, inputs, **args)
+    try:
+        entry = cell.acceleration_report["effective"]["use_packed_sm120_external_backward"]
+        assert entry["resolved"] is False
+        assert entry["current_policy"] is True
+        assert cell.inputs["drive"]["fused_connectivity"]["n_pairs"] == 0
+        paths = cell.acceleration_report["input_paths"]
+        assert paths["drive"]["packed_eligible"] is True
+        assert paths["current"]["packed_eligible"] is False
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.parametrize("architecture", [None, 61, 70, 75, 80, 86])
+@pytest.mark.parametrize("available", [False, True])
+def test_auto_pair_equivalence_preserves_hardware_guards(hardware, monkeypatch, architecture, available):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
+    monkeypatch.setattr(csr, "fused_cuda_available", lambda: available and architecture is not None)
+    omitted, _ = resolve(batch_size=5)
+    actual, _ = resolve({"use_pair_projection": "auto"}, batch_size=5)
+    assert actual == omitted
+    if not available or architecture is None:
+        assert not actual["use_pair_projection"]
+        assert not actual["use_fused_recurrent_accumulation"]
+        assert not actual["use_javier_recurrent_vjp"]
+
+
+def test_cpu_final_report_contains_no_unresolved_auto(precision_policy):
+    from test_precision_credit import make_cell
+
+    cell = make_cell(
+        acceleration_profile="auto", use_pair_projection="auto",
+        use_fused_cuda=False, use_fused_state=False, batch_size=5,
+    )
+    report = cell.acceleration_report
+    assert report["stage"] == "cell"
+    assert report["selected"]["use_pair_projection"] is False
+    assert "auto" not in report["selected"].values()
+    pair = report["effective"]["use_pair_projection"]
+    assert pair["requested"] == "auto"
+    assert pair["provenance"] == "explicit_auto"
+    assert "compatible fused CUDA currents" in pair["blocked_by"]
+    assert any(
+        "use_pair_projection=True" in item["message"]
+        for item in report["optimization_audit"]
+    )
+
+
+def test_final_report_distinguishes_scientific_incompatibility_and_override(hardware):
+    options, report = resolve({"dynamics_mode": "legacy", "use_pair_projection": False}, batch_size=5)
+    final = acceleration.finalize_acceleration_report(
+        report, report["requested"], options,
+    )
+    entries = {item["option"]: item for item in final["optimization_audit"]}
+    assert entries["use_pair_projection"]["classification"] == "avoidable_execution_override"
+    assert entries["use_combined_current_sweep"]["classification"] == "scientific_incompatibility"
+    assert "NEST dynamics" in final["effective"]["use_combined_current_sweep"]["blocked_by"]
+    assert "use_pair_projection=True" in final["effective"]["use_fused_recurrent_accumulation"]["blocked_by"]
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("profile", ["auto", "compatibility_v1"])
+@pytest.mark.parametrize("pair", ["auto", False])
+def test_native_batch5_reports_requested_policy_and_actual_pairing(precision_policy, profile, pair):
+    from test_precision_credit import make_cell
+
+    cell = make_cell(
+        batch_size=5, acceleration_profile=profile, use_pair_projection=pair,
+        fused=True, use_fused_cuda=True, _canonical_gradient_boundary=True,
+    )
+    try:
+        report = cell.acceleration_report
+        entry = report["effective"]["use_pair_projection"]
+        assert entry["requested"] == pair
+        assert entry["resolved"] is (profile == "auto" and pair == "auto")
+        assert report["selected"]["use_pair_projection"] == cell._use_pair_projection
+        if profile == "compatibility_v1" and pair == "auto":
+            assert entry["provenance"] == "explicit_compatibility_override"
+            assert entry["current_policy"] is True
+            assert "compatibility_v1 auto requires batch32 and four bases" in entry["blocked_by"]
+            assert any(
+                "blocks fused recurrent accumulation and Javier VJP" in item["message"]
+                for item in report["optimization_audit"]
+            )
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("batch", [1, 5, 7, 8, 16, 32])
+@pytest.mark.parametrize("mode", ["legacy", "nest"])
+@pytest.mark.parametrize("selective", [False, True])
+def test_native_omitted_and_auto_pair_values_vjps_and_restore(
+    precision_policy, tmp_path, batch, mode, selective,
+):
+    from test_precision_credit import make_cell
+    from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+
+    csr = acceleration.csr_spike_ops
+    if not csr._auto_native_architecture(csr._gpu_compute_architecture()):
+        pytest.skip("Automatic accumulator requires SM70+")
+    cells = [
+        make_cell(
+            mode=mode, selective=selective, fused=True, acceleration_profile="auto",
+            batch_size=batch, _canonical_gradient_boundary=True,
+            **({"use_pair_projection": "auto"} if explicit else {}),
+        )
+        for explicit in (False, True)
+    ]
+    results = []
+    try:
+        for index, cell in enumerate(cells):
+            assert cell._use_pair_projection is True
+            assert cell.use_fused_recurrent_accumulation is True
+            assert cell.use_javier_recurrent_vjp is selective
+            assert cell.acceleration_report["selected"]["use_pair_projection"] is True
+            layer = ExplicitStateRNN(cell, return_sequences=True, return_state=True)
+            states = list(cell.zero_state(batch, cell.compute_dtype))
+            states[0] = tf.ones_like(states[0])
+            sequences = tf.ones([batch, 5, 2], cell.compute_dtype)
+
+            @tf.function
+            def evaluate():
+                with tf.GradientTape() as tape:
+                    output = layer(sequences, initial_state=states)
+                    loss = sum(
+                        tf.reduce_sum(tf.cast(value, tf.float32))
+                        for value in tf.nest.flatten(output)
+                        if value.dtype.is_floating
+                    )
+                return output, tape.gradient(loss, cell.recurrent_weight_values)
+
+            output, gradient = evaluate()
+            assert gradient is not None
+            assert np.all(np.isfinite(gradient))
+            assert np.any(gradient.numpy() != 0)
+            results.append((output, gradient))
+            original = cell.canonical_weight_values().numpy().copy()
+            checkpoint = tf.train.Checkpoint(cell=cell)
+            path = checkpoint.save(str(tmp_path / f"cell-{index}"))
+            cell.recurrent_weight_values.assign_add(tf.ones_like(cell.recurrent_weight_values))
+            checkpoint.restore(path).assert_consumed()
+            cell.refresh_recurrent_weight_shadow()
+            np.testing.assert_array_equal(cell.canonical_weight_values(), original)
+            replay, replay_gradient = evaluate()
+            for before, after in zip(tf.nest.flatten(output), tf.nest.flatten(replay)):
+                np.testing.assert_array_equal(before, after)
+            np.testing.assert_array_equal(gradient, replay_gradient)
+            assert cell.acceleration_report["rollout_selected"]["use_direct_state_rnn_loop"]
+        for left, right in zip(tf.nest.flatten(results[0]), tf.nest.flatten(results[1])):
+            np.testing.assert_array_equal(left, right)
+    finally:
+        for cell in cells:
+            cell.close_fused_cuda()
 
 
 @pytest.mark.parametrize("profile", [True, False, "fast", 1])

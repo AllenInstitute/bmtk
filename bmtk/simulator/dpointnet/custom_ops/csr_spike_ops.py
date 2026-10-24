@@ -178,7 +178,7 @@ def _auto_native_architecture(architecture):
     return architecture is not None and architecture >= 70
 
 
-def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
+def _resolve_packed_sm120_backward(option, spikes, connectivity, basis, *, diagnostics=None):
     option = _validate_packed_sm120_option(option)
     incompatibilities = []
     if spikes.dtype != tf.float16:
@@ -203,6 +203,11 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
         raise ValueError(
             "use_packed_sm120_backward=True is incompatible: "
             + "; ".join(incompatibilities)
+        )
+    if diagnostics is not None:
+        diagnostics.update({message: False for message in incompatibilities})
+        diagnostics["explicit True or automatically admitted SM70+"] = (
+            option is True or _auto_native_architecture(architecture)
         )
     return (
         option is not False and not incompatibilities
@@ -459,19 +464,21 @@ def build_csr_connectivity(
         incoming_pre_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_edge_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_types = np.empty(0, dtype=numpy_index_dtype)
-        if build_fixed4_incoming and not host_lifecycle and post_ids.size == 4 * n_target_neurons:
-            post_counts = np.bincount(post_ids, minlength=n_target_neurons)
-            if np.all(post_counts == 4):
-                incoming_order = np.argsort(post_ids, kind="stable").astype(
-                    numpy_index_dtype, copy=False
-                )
-                source_ids = np.repeat(
-                    np.arange(n_source_neurons, dtype=numpy_index_dtype),
-                    counts,
-                )
-                incoming_pre_ids = source_ids[incoming_order]
-                incoming_edge_ids = incoming_order
-                incoming_types = sorted_synapse_types[incoming_order]
+        fixed4_eligible = bool(
+            not host_lifecycle and post_ids.size == 4 * n_target_neurons
+            and np.all(np.bincount(indices[:, 0], minlength=n_target_neurons) == 4)
+        )
+        if build_fixed4_incoming and fixed4_eligible:
+            incoming_order = np.argsort(post_ids, kind="stable").astype(
+                numpy_index_dtype, copy=False
+            )
+            source_ids = np.repeat(
+                np.arange(n_source_neurons, dtype=numpy_index_dtype),
+                counts,
+            )
+            incoming_pre_ids = source_ids[incoming_order]
+            incoming_edge_ids = incoming_order
+            incoming_types = sorted_synapse_types[incoming_order]
         metadata_parts = [
             post_ids,
             sorted_synapse_types,
@@ -603,6 +610,7 @@ def build_csr_connectivity(
                 ),
                 "has_repeated_targets": has_repeated_targets,
                 "sorted_by_target": bool(sort_by_target),
+                "fixed4_eligible": fixed4_eligible,
                 "fixed4_incoming": bool(incoming_pre_ids.size),
                 "incoming_pre_ids": replica_values[0]["incoming_pre_ids"],
                 "incoming_edge_ids": replica_values[0]["incoming_edge_ids"],

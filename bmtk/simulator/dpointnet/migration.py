@@ -4,7 +4,31 @@ from copy import deepcopy
 from math import isfinite
 
 
-def preserve_previous_defaults(config):
+PROFILE_EXECUTION_OPTIONS = (
+    "use_fused_cuda", "use_fused_state", "use_fused_nest_event_vjp",
+    "use_pair_projection", "use_packed_sm120_backward", "use_packed_sm120_external_backward",
+    "use_fixed4_input_forward", "use_fused_current_accumulation",
+    "use_direct_csr_recurrent_gradient", "use_active_row_forward",
+    "use_forward_run_aggregation", "use_device_active_queue_forward",
+    "use_fused_recurrent_accumulation", "use_javier_recurrent_vjp",
+    "use_prepacked_nest_coefficients", "use_type_indexed_nest_coefficients",
+    "use_static_type_indexed_nest_dispatch", "use_direct_state_rnn_loop",
+    "use_native_voltage_penalty", "use_fused_state_history", "use_prepared_cpu_poisson",
+    "use_combined_current_sweep", "use_cooperative_row_projection",
+    "use_fanout_row_projection", "use_target_gather_projection",
+    "use_csr_master_weights", "use_uint8_synapse_types", "use_adaptive_routing",
+)
+
+
+def preserve_previous_defaults(config, *, execution_policy="preserve"):
+    """Pin historical scientific defaults, optionally discard inherited execution flags.
+
+    "preserve" retains the existing migration behavior and explicit flags;
+    "current" requests current automatic execution without changing science/RNG.
+    This returns a copy, never edits a frozen configuration in place.
+    """
+    if execution_policy not in ("preserve", "current"):
+        raise ValueError('execution_policy must be "preserve" or "current".')
     result = deepcopy(config)
     cell = result.get("rnn_cell_params")
     if not isinstance(cell, dict) or cell.get("cell_model", "GLIF3Cell") not in ("GLIF3Cell", "GLIF3", "default"):
@@ -57,4 +81,9 @@ def preserve_previous_defaults(config):
     cell.setdefault("hard_reset", False)
     cell.setdefault("hard_reset_gradient_mode", "exact")
     cell["acceleration_profile"] = "auto"
+    if execution_policy == "current":
+        for name in (*PROFILE_EXECUTION_OPTIONS, "combined_current_target_tile_size"):
+            cell.pop(name, None)
+        if result.get("training"):
+            result["training"]["pack_spike_checkpoints"] = "auto"
     return result

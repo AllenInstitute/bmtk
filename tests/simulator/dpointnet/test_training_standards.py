@@ -367,6 +367,36 @@ def test_migration_preserves_explicit_nest_inference_reset_and_voltage_conventio
     assert "voltage_gradient_dampening" not in cell
 
 
+def test_migration_separates_science_from_inherited_execution_policy():
+    from bmtk.simulator.dpointnet.migration import PROFILE_EXECUTION_OPTIONS
+
+    science = {
+        "dynamics_mode": "legacy", "hard_reset": False,
+        "detach_reset": False, "detach_asc_reset": False,
+        "spike_surrogate": "triangular", "spike_surrogate_gain": 0.1,
+        "recurrent_spike_gradient_scale": 0.1, "voltage_state_gradient_scale": 1.0,
+        "state_precision": "compute", "use_device_poisson": True, "noise_seed": 5,
+    }
+    original = {
+        "run": {"batch_size": 5, "seq_len": 500, "dt": 1, "dtype": "float16"},
+        "rnn_cell_params": {**science, **{name: False for name in PROFILE_EXECUTION_OPTIONS}},
+        "training": {"gradient_checkpointing": True, "pack_spike_checkpoints": False},
+    }
+    original["rnn_cell_params"]["use_pair_projection"] = "auto"
+    retained = copy.deepcopy(original)
+    old = preserve_previous_defaults(original)
+    current = preserve_previous_defaults(original, execution_policy="current")
+    assert original == retained
+    assert old["rnn_cell_params"]["use_pair_projection"] == "auto"
+    assert all(name not in current["rnn_cell_params"] for name in PROFILE_EXECUTION_OPTIONS)
+    assert current["run"] == original["run"]
+    for name, value in science.items():
+        assert old["rnn_cell_params"][name] == current["rnn_cell_params"][name] == value
+    assert current["training"] == {"gradient_checkpointing": True, "pack_spike_checkpoints": "auto"}
+    with pytest.raises(ValueError, match="execution_policy"):
+        preserve_previous_defaults(original, execution_policy="fast")
+
+
 @pytest.mark.parametrize("supplied", [{"batch_size": 2}, {"seq_len": 5}, {}])
 def test_project_batch_and_window_remain_required(supplied):
     rnn = RNN(**supplied)

@@ -174,6 +174,8 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 )
 
     def call(self, sequences, initial_state=None, mask=None, training=False):
+        from ..acceleration import record_rollout_acceleration
+
         if self.stateful:
             raise ValueError(
                 "ExplicitStateRNN requires explicit state, not stateful=True"
@@ -200,6 +202,11 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
         self.cell.validate_state_precision(states)
         with _rollout_context(self.cell):
             if float32_temporal:
+                record_rollout_acceleration(getattr(self.cell, "acceleration_report", None), {
+                    "use_direct_state_rnn_loop": False,
+                    "use_prepared_cpu_poisson": False,
+                    "temporal_path": "float32_adjoint",
+                })
                 from ..temporal_adjoint import TemporalAdjointRunner
 
                 runner = TemporalAdjointRunner(
@@ -231,6 +238,11 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 # the exact prepared route or its static budget is not established.
                 prepare_noise = prepared_route and _prepared_poisson_admitted(self.cell, sequences)
                 noise_budget = PREPARED_POISSON_AUTO_CEILING_BYTES
+            record_rollout_acceleration(getattr(self.cell, "acceleration_report", None), {
+                "use_direct_state_rnn_loop": bool(use_direct_loop),
+                "use_prepared_cpu_poisson": bool(prepare_noise and _internal_poisson_inputs(self.cell)),
+                "temporal_path": "direct_state_loop" if use_direct_loop else "keras_loop",
+            })
             carry_weights = (
                 use_direct_loop
                 and getattr(self.cell, "temporal_gradient_precision", "compute")

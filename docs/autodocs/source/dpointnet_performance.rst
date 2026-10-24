@@ -28,12 +28,91 @@ After building a model, inspect its choices:
    rnn.build()
    print(rnn.precision_report)
    print(rnn.acceleration_report)
+   print(rnn.acceleration_report["effective"])
+   print(rnn.acceleration_report["optimization_audit"])
 
 These reports explain requested/resolved settings; they do not prove that
 every topology-specific kernel executed. Without compatible custom operators,
 automatic selection retains supported TensorFlow paths. Explicit unsupported
 kernel requests raise rather than silently switching implementations.
-Explicit ``acceleration_profile=null`` disables profile expansion.
+
+Automatic requests and compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With an omitted or ``"auto"`` profile, omitting a profile-managed execution
+option and setting that option to ``"auto"`` mean the **same current policy**.
+Explicit Boolean ``true`` and ``false`` remain
+overrides, including strict validation of unsupported ``true`` requests.
+This does not apply to scientific settings or opt-in options outside the
+profile, such as device Poisson generation.
+
+In particular, ``use_pair_projection="auto"`` now inherits the current
+profile policy at every known positive batch, just like omission; it no longer
+silently retains a batch-32-only heuristic under the automatic profile.
+For a compatible legacy FP16 model at batch 5 with four bases, trainable
+per-edge recurrence and the enclosing direct-CSR/direct-state-loop gradient
+boundary, pairing can therefore admit fused recurrent accumulation and
+Javier recurrent VJP. NEST-only joint projection, CSR masters and dependent
+uint8/adaptive routing do **not** become eligible by changing this option.
+Do not change dynamics, reset, batch, losses or precision to clear an audit.
+
+For a new compatibility run that deliberately needs historical constructor
+heuristics, use the explicitly named ``acceleration_profile="compatibility_v1"``.
+This disables profile expansion: omitted options retain constructor defaults,
+and a per-option pair ``"auto"`` keeps the historical batch32/four-basis rule.
+It is not a frozen package revision or a pin of every numerical default.
+Existing ``acceleration_profile=null`` retains the same behavior; supplying
+per-option ``"auto"`` with null emits a ``FutureWarning`` directing users to
+the named compatibility policy or current auto policy.
+Never rewrite an immutable experiment capsule to migrate it.
+
+Reading the final preflight audit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``resolve_acceleration_options`` returns a **resolver-stage** policy report,
+not the final cell dispatch. After successful model construction,
+``rnn.acceleration_report`` (also ``rnn.cell.acceleration_report``) is the
+authoritative **cell-stage** selection report, including compatibility/null
+profiles that previously returned no report:
+
+* ``requested`` retains the supplied values. ``resolver_selected`` retains
+  a snapshot taken before constructor/connectivity fallbacks for comparison.
+* ``selected`` contains final cell/connectivity choices, not unresolved
+  ``"auto"`` strings. Packed backward is checked against the same static
+  dtype/batch/pair/index predicates used by the native wrapper.
+  ``input_paths`` identifies fixed-four forward and packed backward separately
+  for each named input; a cell-wide Boolean means at least one input qualifies.
+* Each ``effective`` entry records ``requested``, ``supplied``, ``provenance``,
+  ``resolved``, ``current_policy``, ``predicates`` and ``blocked_by``.
+  Dependency entries include the parent's resolved choice and provenance.
+  ``policy_predicates`` records independent eligibility checks, including
+  optional metadata that removing the override would build; for named inputs,
+  the recommendation requires at least one eligible source, not every source.
+  Provenance distinguishes profile selection, explicit automatic requests,
+  Boolean overrides, historical automatic compatibility overrides and
+  constructor defaults.
+* ``optimization_audit`` separates avoidable execution overrides from
+  scientific incompatibilities (for example legacy dynamics versus a
+  NEST-only joint sweep) and hardware/connectivity/dependency exclusions.
+  At batch 5, compatibility pairing reports OFF, names the historical
+  batch32/four-basis restriction, identifies the blocked accumulator/VJP
+  dependency and points to the current-policy alternative.
+* Some choices depend on the actual rollout. Prepared CPU Poisson is reported
+  as the named path ``"rollout_dependent"``, not as an enabled kernel.
+  After a call, ``rollout_selected`` records the last traced direct/Keras/
+  FP32-adjoint path and prepared-Poisson admission. For reused graphs, this
+  describes trace-time admission, not an execution counter or profiling result.
+
+Cell selection is still not proof that every selected branch executed:
+coefficient identity is live, source traversals vary with topology, the
+recurrent carrier supersedes ordinary packed backward when used, and a caller
+can choose a different enclosing loop. Use a native trace for execution proof.
+``current_policy`` is an eligibility recommendation with the other supplied
+dependencies retained, not a measured fastest configuration or a speedup claim.
+It ignores the option's own Boolean override, but includes final topology
+eligibility evaluated independently of whether optional metadata was built.
+An override is only called avoidable when removing it actually admits the path;
+empty/incompatible recurrence or a non-four-edge input remains an exclusion.
 
 Automatic state selection checks optional event-gradient, history, voltage-penalty
 and type-indexed entry points individually, retaining compatible fallbacks when

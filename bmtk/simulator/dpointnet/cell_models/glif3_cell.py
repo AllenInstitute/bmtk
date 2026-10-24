@@ -662,22 +662,19 @@ def _validate_direct_csr_gradient_option(value):
 
 
 def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
+    from ..acceleration import pair_projection_predicates
+
     option = _validate_pair_projection_option(option)
-    incompatibilities = []
-    if not fused_cuda:
-        incompatibilities.append("fused CUDA currents are disabled or unavailable")
-    if batch_size is None or batch_size < 1:
-        incompatibilities.append("batch_size must be positive and known")
-    if n_syn_basis < 1:
-        incompatibilities.append("the synaptic basis must have positive width")
+    predicates = pair_projection_predicates(fused_cuda, batch_size, n_syn_basis)
+    incompatibilities = [name for name, ok in predicates.items() if not ok]
     if option is True and incompatibilities:
         raise ValueError(
             "use_pair_projection=True is incompatible with this model: "
             + "; ".join(incompatibilities)
         )
-    return not incompatibilities and (
-        option is True or (option == "auto" and batch_size == 32 and n_syn_basis == 4)
-    )
+    return option is not False and all(pair_projection_predicates(
+        fused_cuda, batch_size, n_syn_basis, compatibility=option == "auto",
+    ).values())
 
 
 def _resolve_fused_state(
@@ -1054,6 +1051,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def _guarded_type_indexed_dispatch(self):
         return bool(
             self.acceleration_report is not None
+            and self.acceleration_report["profile"] == "auto"
             and self.acceleration_report["architecture"] == 86
             and self.acceleration_report["tensorflow"].startswith("2.21.")
             and self.temporal_gradient_precision == "compute"
@@ -1069,13 +1067,31 @@ class GLIF3Cell(tf.keras.layers.Layer):
         This works for explicit profiles as well as auto. It describes selection,
         not proof of kernel execution or a subclass's separate projection.
         """
-        return {
+        options = {
             "use_fused_cuda": self._use_fused_cuda,
             "use_fused_state": self._use_fused_state,
             "use_fused_state_history": self._use_fused_state_history,
             "use_pair_projection": self._use_pair_projection,
             "use_fused_nest_event_vjp": self.use_fused_nest_event_vjp,
         }
+        for name in (
+            "use_direct_state_rnn_loop", "use_native_voltage_penalty",
+            "use_combined_current_sweep", "use_direct_csr_recurrent_gradient",
+            "use_active_row_forward", "use_forward_run_aggregation",
+            "use_device_active_queue_forward", "use_fused_current_accumulation",
+            "use_prepacked_nest_coefficients", "use_type_indexed_nest_coefficients",
+            "use_static_type_indexed_nest_dispatch", "use_cooperative_row_projection",
+            "use_fanout_row_projection", "use_target_gather_projection",
+        ):
+            options[name] = getattr(self, "_" + name)
+        options.update(
+            use_fused_recurrent_accumulation=self.use_fused_recurrent_accumulation,
+            use_javier_recurrent_vjp=self.use_javier_recurrent_vjp,
+            use_csr_master_weights=self._csr_master_weights,
+            use_uint8_synapse_types=self._uint8_synapse_types,
+            use_adaptive_routing=self._adaptive_routing,
+        )
+        return options
 
     def __init__(
         self,
@@ -1237,6 +1253,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
         if combined_current_target_tile_size is not UNSET:
             execution["combined_current_target_tile_size"] = combined_current_target_tile_size
+        requested_execution = dict(execution)
         execution, self.acceleration_report = resolve_acceleration_options(
             execution, compute_dtype=self.compute_dtype, variable_dtype=self.variable_dtype,
             batch_size=batch_size,
@@ -2387,6 +2404,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     )
                 self.acceleration_report["routing_geometry"] = self.combined_routing_geometry()
 
+        self._finalize_acceleration_report(requested_execution, use_pair_projection)
+
         """
         lgn_inputs = inputs[0]
         # self.input_dim = inputs['lgn']['n_inputs']
@@ -2450,6 +2469,118 @@ class GLIF3Cell(tf.keras.layers.Layer):
         print(f"    > # BKG input synapses {len(bkg_input_indices)}")
         del bkg_input_indices, bkg_input_weights, bkg_input_syn_ids, bkg_input_weight_positive #, bkg_input_delays
         """
+
+    def _finalize_acceleration_report(self, requested, pair_option):
+        from ..acceleration import finalize_acceleration_report, pair_projection_predicates
+        from ..custom_ops.csr_spike_ops import _resolve_packed_sm120_backward
+
+        effective = self.native_execution_options
+        conn = self.recurrent_fused_connectivity
+        checks = pair_projection_predicates(
+            self._use_fused_cuda, self._declared_batch_size, self._n_syn_basis,
+            compatibility=pair_option == "auto",
+        )
+        predicates = {"use_pair_projection": checks}
+        # Reuse the wrapper's topology checks, without allocating spike buffers.
+        spikes = tf.TensorSpec([self._declared_batch_size, 0], self.compute_dtype)
+        packed_checks = dict(
+            (self.acceleration_report or {}).get("predicates", {}).get("use_packed_sm120_backward", {})
+        )
+        packed_checks["native recurrent connectivity"] = conn is not None
+        effective["use_packed_sm120_backward"] = bool(
+            conn is not None and _resolve_packed_sm120_backward(
+                self._use_packed_sm120_backward, spikes, conn, self.synaptic_basis_weights,
+                diagnostics=packed_checks,
+            )
+        )
+        predicates["use_packed_sm120_backward"] = packed_checks
+        input_paths = {}
+        external_checks = dict(
+            (self.acceleration_report or {}).get("predicates", {}).get("use_packed_sm120_external_backward", {})
+        )
+        for name, net in self.inputs.items():
+            connectivity = net.get("fused_connectivity")
+            checks = {
+                "native connectivity": connectivity is not None,
+                "trainable input weights": net["input_weight_values"].trainable,
+            }
+            input_paths[name] = {
+                "fixed4_forward": bool(net.get("use_fixed4_forward", False)),
+                "fixed4_eligible": bool(connectivity is not None and connectivity["fixed4_eligible"]),
+                "packed_backward": bool(
+                    connectivity is not None and _resolve_packed_sm120_backward(
+                        net.get("use_packed_sm120_backward", False), spikes,
+                        connectivity, self.synaptic_basis_weights,
+                        diagnostics=checks,
+                    )
+                ),
+            }
+            input_paths[name]["packed_blocked_by"] = (
+                [label for label, ok in checks.items() if not ok]
+                if not input_paths[name]["packed_backward"] else []
+            )
+            policy_checks = dict(checks)
+            if connectivity is not None and connectivity["n_edges"] > 0:
+                # Removing the packing override builds this optional metadata.
+                policy_checks.pop("compact pair metadata is unavailable", None)
+            input_paths[name]["packed_eligible"] = all(policy_checks.values())
+            external_checks.update({f"{name}: {label}": ok for label, ok in checks.items()})
+        effective["use_fixed4_input_forward"] = any(
+            value["fixed4_forward"] for value in input_paths.values()
+        )
+        predicates["use_fixed4_input_forward"] = {
+            "at least one native input with exactly four incoming edges per target": (
+                any(value["fixed4_eligible"] for value in input_paths.values())
+            ),
+        }
+        effective["use_packed_sm120_external_backward"] = any(
+            value["packed_backward"] for value in input_paths.values()
+        )
+        predicates["use_packed_sm120_external_backward"] = external_checks
+        effective["use_prepared_cpu_poisson"] = (
+            "rollout_dependent" if self._use_prepared_cpu_poisson else False
+        )
+        if self._use_combined_current_sweep:
+            effective["combined_current_target_tile_size"] = self.combined_current_target_tile_size
+        for name in ("use_fused_recurrent_accumulation", "use_javier_recurrent_vjp"):
+            existing = dict((self.acceleration_report or {}).get("predicates", {}).get(name, {}))
+            existing.update({
+                "use_pair_projection=True": self._use_pair_projection,
+                "nonempty compact-pair connectivity": conn is not None and conn["n_pairs"] > 0,
+                "uint32 recurrent connectivity": conn is not None and conn["index_dtype"] == "uint32",
+                "four synaptic bases": self._n_syn_basis == 4,
+                "loaded fused accumulator ABI": fused_recurrent_accumulation_available(),
+            })
+            predicates[name] = existing
+        self.acceleration_report = finalize_acceleration_report(
+            self.acceleration_report, requested, effective, predicates=predicates,
+            policy_predicates={
+                "use_packed_sm120_external_backward": {
+                    "at least one eligible trainable native input": any(
+                        value["packed_eligible"] for value in input_paths.values()
+                    ),
+                },
+            },
+        )
+        self.acceleration_report["input_paths"] = input_paths
+        if pair_option == "auto":
+            entry = self.acceleration_report["effective"]["use_pair_projection"]
+            entry["policy_predicates"] = pair_projection_predicates(
+                self._use_fused_cuda, self._declared_batch_size, self._n_syn_basis,
+            )
+            entry["current_policy"] = all(entry["policy_predicates"].values())
+            if not self._use_pair_projection and entry["current_policy"]:
+                message = (
+                    "Pair projection OFF: compatibility_v1 auto requires batch32/four bases; "
+                    "this blocks fused recurrent accumulation and Javier VJP. "
+                    'Current acceleration_profile="auto" admits pairing at this batch.'
+                )
+                self.acceleration_report["optimization_audit"].append({
+                    "option": "use_pair_projection",
+                    "classification": "avoidable_execution_override", "message": message,
+                })
+                io.log_warning(message)
+        io.log_info(f"DPointNet final cell acceleration (not kernel-execution proof): {self.acceleration_report}")
 
     def refresh_recurrent_weight_shadow(self):
         """Sync the compute-dtype shadow of the recurrent weights with the trained master.
