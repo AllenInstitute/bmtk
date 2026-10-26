@@ -804,55 +804,63 @@ class TrainingEngine:
         else:
             report["reasons"]["stream_spike_statistics"] = "explicit request"
         adjoint = self._recorded_adjoint_request
-        auto_adjoint = None
-        if adjoint == "auto" or (adjoint is not True and adjoint != "direct"):
-            if not stream:
-                auto_adjoint, reason = False, "recorded routes require streamed statistics"
-                if adjoint == "auto":
-                    adjoint = False
-                    report["reasons"]["recorded_adjoint"] = reason
-            else:
-                unmet = list(direct_records_supported(cell))
-                variables = getattr(getattr(self.rnn, "model", None), "trainable_variables", None)
-                if variables is not None and type(cell) is GLIF3Cell:
-                    masters = {id(cell.recurrent_weight_values)} | {
-                        id(net["input_weight_values"]) for net in cell.inputs.values()
-                    }
-                    extra = [
-                        getattr(v, "name", str(v)) for v in variables
-                        if id(v) not in masters and id(getattr(v, "value", None)) not in masters
-                    ]
-                    if extra:
-                        unmet.append("trainable surfaces limited to recurrent/named-input CSR masters "
-                                     f"(found {', '.join(extra[:3])})")
-                try:
-                    batch, length = int(self.adjusted_batch_size), int(self.adjusted_seq_len)
-                except (IndexError, TypeError, ValueError):
-                    batch = length = None
-                fits, memory_reason = direct_record_bytes(
-                    cell, batch, length, self.gradient_checkpoint_chunk_size,
-                )
-                auto_adjoint = "direct" if not unmet else False
-                reason = (
-                    "direct recorded adjoint: eligible cell and CSR-master surfaces; " + memory_reason
-                    if auto_adjoint else
-                    "checkpointed streaming kept: requires " + "; ".join(unmet)
-                )
-                report["record_payload"] = {"fits": fits, "estimate": memory_reason}
-                # The payload estimate is advisory: the fastest qualified route is
-                # still selected, and the user is told when it may not fit.
-                if auto_adjoint and adjoint == "auto" and fits is not True:
-                    io.log_warning(
-                        "Direct recorded adjoint selected automatically, but its record payload may "
-                        "not fit the device (" + memory_reason + "). The rollout can fail with an "
-                        "out-of-memory error; set recorded_adjoint=False to keep checkpointed "
-                        "streaming, or reduce the batch, sequence length or network size."
-                    )
+        # The automatic adjoint choice is computed for every request so that an
+        # explicit (possibly slower) override can be audited against it.
+        if not stream:
+            auto_adjoint, reason = False, "recorded routes require streamed statistics"
             if adjoint == "auto":
-                adjoint = auto_adjoint
+                adjoint = False
                 report["reasons"]["recorded_adjoint"] = reason
+        else:
+            unmet = list(direct_records_supported(cell))
+            variables = getattr(getattr(self.rnn, "model", None), "trainable_variables", None)
+            if variables is not None and type(cell) is GLIF3Cell:
+                masters = {id(cell.recurrent_weight_values)} | {
+                    id(net["input_weight_values"]) for net in cell.inputs.values()
+                }
+                extra = [
+                    getattr(v, "name", str(v)) for v in variables
+                    if id(v) not in masters and id(getattr(v, "value", None)) not in masters
+                ]
+                if extra:
+                    unmet.append("trainable surfaces limited to recurrent/named-input CSR masters "
+                                 f"(found {', '.join(extra[:3])})")
+            try:
+                batch, length = int(self.adjusted_batch_size), int(self.adjusted_seq_len)
+            except (IndexError, TypeError, ValueError):
+                batch = length = None
+            fits, memory_reason = direct_record_bytes(
+                cell, batch, length, self.gradient_checkpoint_chunk_size,
+            )
+            auto_adjoint = "direct" if not unmet else False
+            reason = (
+                "direct recorded adjoint: eligible cell and CSR-master surfaces; " + memory_reason
+                if auto_adjoint else
+                "checkpointed streaming kept: requires " + "; ".join(unmet)
+            )
+            report["record_payload"] = {"fits": fits, "estimate": memory_reason}
+            # The payload estimate is advisory: the fastest qualified route is
+            # still selected, and the user is told when it may not fit.
+            if auto_adjoint and adjoint == "auto" and fits is not True:
+                io.log_warning(
+                    "Direct recorded adjoint selected automatically, but its record payload may "
+                    "not fit the device (" + memory_reason + "). The rollout can fail with an "
+                    "out-of-memory error; set recorded_adjoint=False to keep checkpointed "
+                    "streaming, or reduce the batch, sequence length or network size."
+                )
+        if adjoint == "auto":
+            adjoint = auto_adjoint
+            report["reasons"]["recorded_adjoint"] = reason
         if self._recorded_adjoint_request != "auto":
             report["reasons"]["recorded_adjoint"] = "explicit request"
+            # An explicit recorded route needs streamed statistics: its runner
+            # emits SpikeStatistics, which the dense extractor path cannot consume.
+            if adjoint and not stream:
+                raise ValueError(
+                    f"recorded_adjoint={adjoint!r} requires streamed spike statistics, but "
+                    "stream_spike_statistics resolved to False: "
+                    + report["reasons"]["stream_spike_statistics"]
+                )
         report["selected"] = {"stream_spike_statistics": bool(stream), "recorded_adjoint": adjoint}
         report["automatic"] = {"stream_spike_statistics": bool(auto_stream), "recorded_adjoint": auto_adjoint}
         # Explicit engine requests are the supported opt-out; name the ones that
@@ -861,7 +869,6 @@ class TrainingEngine:
             name: {"explicit": report["selected"][name], "automatic": report["automatic"][name]}
             for name in ("stream_spike_statistics", "recorded_adjoint")
             if getattr(self, f"_{name}_request") != "auto"
-            and report["automatic"][name] is not None
             and report["selected"][name] != report["automatic"][name]
         }
         self.stream_spike_statistics = bool(stream)
@@ -1007,6 +1014,11 @@ class TrainingEngine:
                 unmet.append("automatic streaming requires the RNN's distribution strategy")
         elif strategy.num_replicas_in_sync != 1:
             unmet.append("stream_spike_statistics currently requires one replica.")
+        elif getattr(self.rnn, "data_parallel", None) is not None:
+            # Process-based data parallelism keeps one local replica per process
+            # but reduces dense losses/gradients across processes; streaming is
+            # qualified for the single-process route only.
+            unmet.append("stream_spike_statistics currently requires a single process (no data_parallel distribution).")
         if automatic and not self.parameters:
             unmet.append("automatic streaming requires at least one parameter group with losses")
         for parameter in self.parameters:
@@ -1026,6 +1038,8 @@ class TrainingEngine:
                     if id(loss) in sampled:
                         unmet.append("A synchronization loss cannot be reused twice in one statistics batch group.")
                     sampled.add(id(loss))
+                    if getattr(loss, "_t_start_idx", 0) < 0 or getattr(loss, "_t_end_idx", 0) < 0:
+                        unmet.append("Streamed synchronization requires nonnegative time bounds.")
         if not unmet:
             try:
                 self._statistics_windows()

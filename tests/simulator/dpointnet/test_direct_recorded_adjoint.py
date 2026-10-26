@@ -492,6 +492,115 @@ def test_training_engine_auto_keeps_dense_route_for_unsupported_losses():
         cell.close_fused_cuda()
 
 
+def test_training_engine_auto_keeps_dense_route_under_data_parallel():
+    """A configured data-parallel distribution (process-based MPI keeps one local
+    replica per process) keeps the dense segmented route under auto; explicit
+    streaming still raises."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
+
+    cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        states = list(cell.zero_state(32, cell.compute_dtype))
+        model = _model(cell, tuple(states))
+        engine = _engine_for(cell, states, model, _rate_losses)
+        engine.rnn.data_parallel = SimpleNamespace(process_based=True, is_chief=True)
+        engine.prepare_gradient_checkpointing()
+        assert engine.stream_spike_statistics is False and engine.recorded_adjoint is False
+        assert isinstance(engine._extractor_forward, SegmentedRecomputeRunner)
+        assert "single process" in engine.training_route_report["reasons"]["stream_spike_statistics"]
+        explicit = _engine_for(cell, states, model, _rate_losses, stream_spike_statistics=True)
+        explicit.rnn.data_parallel = SimpleNamespace(process_based=True, is_chief=True)
+        with pytest.raises(ValueError, match="single process"):
+            explicit.prepare_gradient_checkpointing()
+    finally:
+        cell.close_fused_cuda()
+
+
+def test_explicit_recorded_request_rejects_unstreamable_losses():
+    """An explicit recorded/direct request with default auto streaming raises when a
+    prerequisite (here an unsupported loss) keeps streaming off, instead of installing a
+    recorded runner whose SpikeStatistics the dense extractor path cannot consume."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+
+    class CustomLoss:
+        def __call__(self, spikes, **kwargs):
+            return tf.reduce_mean(tf.cast(spikes, tf.float32))
+
+    def losses(rnn):
+        return {**_rate_losses(rnn), "custom": CustomLoss()}
+
+    cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        states = list(cell.zero_state(32, cell.compute_dtype))
+        model = _model(cell, tuple(states))
+        for request in (True, "direct"):
+            engine = _engine_for(cell, states, model, losses, recorded_adjoint=request)
+            with pytest.raises(ValueError, match="requires streamed spike statistics.*CustomLoss"):
+                engine.prepare_gradient_checkpointing()
+            assert engine._extractor_forward is None
+    finally:
+        cell.close_fused_cuda()
+
+
+def test_explicit_tape_recorded_request_is_reported_as_deviation():
+    """On a direct-eligible cell an explicit recorded_adjoint=True is audited against the
+    automatic 'direct' choice."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.recorded_adjoint import RecordedAdjointRunner
+
+    cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        states = list(cell.zero_state(32, cell.compute_dtype))
+        model = _model(cell, tuple(states))
+        engine = _engine_for(cell, states, model, _rate_losses, recorded_adjoint=True)
+        engine.prepare_gradient_checkpointing()
+        assert isinstance(engine._extractor_forward, RecordedAdjointRunner)
+        report = engine.training_route_report
+        assert report["automatic"] == {"stream_spike_statistics": True, "recorded_adjoint": "direct"}
+        assert report["explicit_deviations"] == {"recorded_adjoint": {"explicit": True, "automatic": "direct"}}
+    finally:
+        cell.close_fused_cuda()
+
+
+def test_streaming_eligibility_rejects_negative_synchronization_bounds(monkeypatch):
+    """A SynchronizationLoss with negative time bounds keeps the dense route under auto and
+    fails an explicit streaming request at preparation, not on the first batch."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.loss_functions import SynchronizationLoss, loss_utils
+    from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
+
+    names = np.array(["e0"] * 2)
+    monkeypatch.setattr(loss_utils, "get_pop_names", lambda network, data_dir="": names)
+    monkeypatch.setattr("os.path.exists", lambda path: True)
+    monkeypatch.setattr(np, "load", lambda *args, **kwargs: np.ones((3, 20), np.float32))
+
+    def losses(rnn):
+        rnn.recurrent_network = {"n_nodes": 2, "node_params": {"pop_name": names}}
+        sync = SynchronizationLoss(rnn, t_start=20, t_end=40, n_samples=2, seed=3)
+        sync._t_start_idx, sync._t_end_idx = -3, 4
+        return {**_rate_losses(rnn), "sync": sync}
+
+    cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        states = list(cell.zero_state(32, cell.compute_dtype))
+        model = _model(cell, tuple(states))
+        engine = _engine_for(cell, states, model, losses)
+        engine.prepare_gradient_checkpointing()
+        assert engine.stream_spike_statistics is False
+        assert isinstance(engine._extractor_forward, SegmentedRecomputeRunner)
+        assert "nonnegative time bounds" in engine.training_route_report["reasons"]["stream_spike_statistics"]
+        explicit = _engine_for(cell, states, model, losses, stream_spike_statistics=True)
+        with pytest.raises(ValueError, match="nonnegative time bounds"):
+            explicit.prepare_gradient_checkpointing()
+    finally:
+        cell.close_fused_cuda()
+
+
 def test_training_engine_auto_keeps_streaming_without_direct_eligibility():
     """A legacy-dynamics cell streams statistics but cannot record: auto picks
     checkpointed streaming and names the unmet direct prerequisite."""
