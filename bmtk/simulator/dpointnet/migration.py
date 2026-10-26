@@ -17,6 +17,7 @@ PROFILE_EXECUTION_OPTIONS = (
     "use_combined_current_sweep", "use_cooperative_row_projection",
     "use_fanout_row_projection", "use_target_gather_projection",
     "use_csr_master_weights", "use_uint8_synapse_types", "use_adaptive_routing",
+    "use_scalar_input_projection",
 )
 
 
@@ -86,4 +87,6 @@ def preserve_previous_defaults(config, *, execution_policy="preserve"):
             cell.pop(name, None)
         if result.get("training"):
             result["training"]["pack_spike_checkpoints"] = "auto"
+            result["training"]["stream_spike_statistics"] = "auto"
+            result["training"]["recorded_adjoint"] = "auto"
     return result

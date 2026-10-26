@@ -206,9 +206,14 @@ def fused_nest_state(
     require_type_indexed_coefficients=False,
     fuse_history=False,
     hoist_type_indexed_guard=False,
+    recorded_outputs=None,
 ):
     """Four-basis NEST transition with live frozen coefficients and event VJPs."""
     validate_bool_option(hoist_type_indexed_guard, "hoist_type_indexed_guard")
+    if recorded_outputs is not None and (
+        not fuse_history or not return_pre_reset_voltage or len(recorded_outputs) != 8
+    ):
+        raise ValueError("Recorded NEST VJPs require eight state/history outputs and pre-reset voltage.")
     from ..cell_models.nest_dynamics import validate_hard_reset_gradient_mode
 
     validate_hard_reset_gradient_mode(
@@ -340,6 +345,11 @@ def fused_nest_state(
         # gradient of ``transition`` owns the state VJP.
         return lambda: tuple(tf.stop_gradient(value) for value in branch())
 
+    def state_forward(operation, *arguments, **options):
+        if recorded_outputs is not None:
+            return tuple(recorded_outputs)
+        return operation(*arguments, **options)
+
     @tf.custom_gradient
     def transition(*arguments):
         layout = "soa" if dtype == tf.float32 else "aos"
@@ -361,19 +371,19 @@ def fused_nest_state(
                 suffix = "device_dispatch" if device_dispatch else "type_indexed"
                 if fuse_history:
                     operation = getattr(_OPS, "dpointnet_nest_state_history_forward_" + suffix)
-                    return tuple(operation(
+                    return tuple(state_forward(operation,
                         *arguments[:6], type_coefficients_arg, type_indices_arg,
                         *arguments[8:11], arguments[13],
                         hard_reset=hard_reset, **forward_options, **dispatch_options
                     ))
                 operation = getattr(_OPS, "dpointnet_nest_state_forward_" + suffix)
-                return tuple(operation(
+                return tuple(state_forward(operation,
                     *arguments[:6], type_coefficients_arg, type_indices_arg,
                     *arguments[8:11], hard_reset=hard_reset, **forward_options, **dispatch_options
                 ))
 
             def full_forward():
-                return tuple(forward(
+                return tuple(state_forward(forward,
                     *arguments[:6], kernel_coefficients, *arguments[8:11],
                     *history_arguments,
                     hard_reset=hard_reset, coefficients_layout=layout, **forward_options
@@ -390,7 +400,7 @@ def fused_nest_state(
                     type_identity_arg, opaque(type_indexed_forward), opaque(full_forward),
                 )
         else:
-            outputs = forward(
+            outputs = state_forward(forward,
                 *arguments[:6], kernel_coefficients, *arguments[8:11],
                 *history_arguments,
                 hard_reset=hard_reset, coefficients_layout=layout, **forward_options
@@ -590,7 +600,7 @@ def fused_nest_state(
         type_coefficients_arg,
         type_indices_arg,
     ):
-        outputs = tuple(_OPS.dpointnet_nest_state_history_forward_type_indexed(
+        outputs = tuple(state_forward(_OPS.dpointnet_nest_state_history_forward_type_indexed,
             voltage_arg,
             refractory_arg,
             asc_arg,
@@ -1007,3 +1017,303 @@ def fused_spike_shift(
         tf.cast(dampening, voltage.dtype),
         tf.cast(gauss_std, voltage.dtype),
     )
+
+
+def step_record_ops_available():
+    """Bit-packed per-step spike/refractory records for the direct recorded adjoint."""
+    return fused_glif_state_available() and all(
+        hasattr(_OPS, name)
+        for name in ("dpointnet_pack_step_record", "dpointnet_unpack_step_record")
+    )
+
+
+def pack_step_record(spikes, refractory):
+    """``[batch, 2 * ceil(neurons / 32)]`` int32 words: spike bits, then ``refractory > 0`` bits."""
+    if not step_record_ops_available():
+        raise RuntimeError("Step records require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_pack_step_record(spikes, refractory)
+
+
+def unpack_step_record(words, neurons, spike_dtype, refractory_dtype):
+    """Inverse of ``pack_step_record``: ``(spikes, blocked)`` with 1 for set bits."""
+    if not step_record_ops_available():
+        raise RuntimeError("Step records require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_unpack_step_record(
+        words, neurons=int(neurons), S=tf.as_dtype(spike_dtype), R=tf.as_dtype(refractory_dtype),
+    )
+
+
+class NestDirectDispatch:
+    """Resolve, once per rollout, which native NEST history forward/backward to call.
+
+    Mirrors the selection ``fused_nest_state`` makes (full coefficients, static
+    type-indexed, device-dispatched type-indexed or a predicate ``tf.cond``) so
+    a direct loop calls the same kernels with the same prepared coefficient
+    tensors and no per-step Python glue.
+    """
+
+    def __init__(self, rollout_coefficients, dtype, *, hoist_type_indexed_guard,
+                 hard_reset, hard_reset_gradient_mode, detach_reset,
+                 detach_asc_reset, pseudo_gauss):
+        if rollout_coefficients is None:
+            raise ValueError("Direct NEST backward requires prepacked rollout coefficients.")
+        if not fused_nest_event_vjp_available() or not fused_nest_state_history_available():
+            raise RuntimeError("Direct NEST backward requires the history/events operators.")
+        from ..cell_models.nest_dynamics import validate_hard_reset_gradient_mode
+
+        validate_hard_reset_gradient_mode(
+            hard_reset_gradient_mode, hard_reset=hard_reset, dynamics_mode="nest"
+        )
+        self.dtype = tf.as_dtype(dtype)
+        self.layout = "soa" if self.dtype == tf.float32 else "aos"
+        self.coefficients = tf.cast(rollout_coefficients[0], self.dtype)
+        self.kernel_coefficients = tf.cast(rollout_coefficients[1], self.dtype)
+        self.backward_hard_reset = hard_reset and hard_reset_gradient_mode == "exact"
+        self.options = dict(
+            detach_reset=detach_reset, detach_asc_reset=detach_asc_reset,
+            pseudo_gauss=pseudo_gauss,
+        )
+        self.use_type_indexed = len(rollout_coefficients) > 2
+        self.type_coefficients = self.type_indices = self.type_identity = None
+        self.identity_static = None
+        self.device_dispatch = False
+        if self.use_type_indexed:
+            if not fused_nest_state_history_type_indexed_available():
+                raise RuntimeError("Type-indexed NEST backward requires rebuilt CUDA operators.")
+            self.type_coefficients = tf.cast(rollout_coefficients[2], self.dtype)
+            self.type_indices = tf.cast(rollout_coefficients[3], tf.int64)
+            self.type_identity = tf.cast(rollout_coefficients[4], tf.bool)
+            static = tf.get_static_value(self.type_identity)
+            self.identity_static = None if static is None else bool(static)
+            if rollout_coefficients[5]:
+                with tf.control_dependencies([tf.debugging.assert_equal(
+                    self.type_identity, True,
+                    message="NEST type-indexed coefficients were required for the direct "
+                            "recorded adjoint, but live per-neuron coefficients are not type-identical.",
+                )]):
+                    self.type_identity = tf.identity(self.type_identity)
+            fits = (
+                self.type_coefficients.shape.rank == 2
+                and self.type_coefficients.shape[0] is not None
+                and int(self.type_coefficients.shape[0]) * 28 * self.dtype.size <= 48 * 1024
+            )
+            self.device_dispatch = bool(
+                hoist_type_indexed_guard and self.identity_static is None and fits
+                and fused_nest_device_dispatch_available()
+            )
+        # Matches ``1 - arguments[6][0, 27]`` in fused_nest_state.
+        self.retention = 1 - self.coefficients[0, 27]
+        self.hard_reset = bool(hard_reset)
+
+    def forward(self, voltage, refractory, asc, rise, psc, currents, history, t_ref, dt, v_th):
+        """``(pre_reset, new_v, new_r, new_asc, new_rise, new_psc, spikes, new_history)``.
+
+        The hard forward with the pre-reset membrane emitted, as
+        ``fused_nest_state(..., return_pre_reset_voltage=True, fuse_history=True)``.
+        """
+        def full():
+            return tuple(_OPS.dpointnet_nest_state_history_forward(
+                voltage, refractory, asc, rise, psc, currents, self.kernel_coefficients,
+                t_ref, dt, v_th, history, hard_reset=self.hard_reset,
+                coefficients_layout=self.layout, emit_pre_reset_voltage=True,
+            ))
+
+        if not self.use_type_indexed:
+            return full()
+        operation = _OPS.dpointnet_nest_state_history_forward_type_indexed
+        dispatch = {}
+        if self.device_dispatch:
+            operation = _OPS.dpointnet_nest_state_history_forward_device_dispatch
+            dispatch = dict(fallback_coefficients=self.coefficients, type_identity=self.type_identity)
+
+        def typed():
+            return tuple(operation(
+                voltage, refractory, asc, rise, psc, currents, self.type_coefficients,
+                self.type_indices, t_ref, dt, v_th, history, hard_reset=self.hard_reset,
+                emit_pre_reset_voltage=True, **dispatch,
+            ))
+
+        if self.identity_static is True or self.device_dispatch:
+            return typed()
+        if self.identity_static is False:
+            return full()
+        stop = lambda branch: (lambda: tuple(tf.stop_gradient(v) for v in branch()))
+        return tf.cond(self.type_identity, stop(typed), stop(full))
+
+    def forward_record(self, voltage, refractory, asc, rise, psc, currents, history,
+                       t_ref, dt, v_th, buffer, row):
+        """``(new_v, new_r, new_asc, new_rise, new_psc, spikes, new_history, words)``.
+
+        As :meth:`forward`, but the pre-reset membrane is written into row ``row``
+        (host int32) of the ``[time, batch, neurons]`` resource variable ``buffer``
+        and the packed step record ``words`` (``pack_step_record`` layout) is
+        produced in the same kernel. Requires ``nest_record_forward_available()``.
+        """
+        def full():
+            return tuple(_OPS.dpointnet_nest_state_history_forward_record(
+                voltage, refractory, asc, rise, psc, currents, self.kernel_coefficients,
+                t_ref, dt, v_th, history, buffer, row, hard_reset=self.hard_reset,
+                coefficients_layout=self.layout,
+            ))
+
+        if not self.use_type_indexed:
+            return full()
+        operation = _OPS.dpointnet_nest_state_history_forward_record_type_indexed
+        dispatch = {}
+        if self.device_dispatch:
+            operation = _OPS.dpointnet_nest_state_history_forward_record_device_dispatch
+            dispatch = dict(fallback_coefficients=self.coefficients, type_identity=self.type_identity)
+
+        def typed():
+            return tuple(operation(
+                voltage, refractory, asc, rise, psc, currents, self.type_coefficients,
+                self.type_indices, t_ref, dt, v_th, history, buffer, row,
+                hard_reset=self.hard_reset, **dispatch,
+            ))
+
+        if self.identity_static is True or self.device_dispatch:
+            return typed()
+        if self.identity_static is False:
+            return full()
+        stop = lambda branch: (lambda: tuple(tf.stop_gradient(v) for v in branch()))
+        return tf.cond(self.type_identity, stop(typed), stop(full))
+
+    def __call__(self, threshold, refractory, dt, grad_threshold, grad_v, grad_asc,
+                 grad_rise, grad_psc, previous_asc, v_th, dampening, gauss_std,
+                 grad_spikes, grad_history, grad_history_addend=None):
+        """``(v_grad, asc_grad, rise_grad, psc_grad, currents_grad, old_history_grad)``.
+
+        ``grad_history_addend`` is an optional second new-history cotangent the
+        kernel adds to ``grad_history`` with the compute dtype's rounding.
+        """
+        gradients = (grad_threshold, grad_v, grad_asc, grad_rise, grad_psc)
+        events = (previous_asc, v_th, dampening, gauss_std)
+        extra = (grad_spikes, grad_history)
+        suffix = ""
+        if grad_history_addend is not None:
+            if not hasattr(_OPS, "dpointnet_nest_state_history_backward_events_addend"):
+                raise RuntimeError("History-addend NEST backward requires rebuilt CUDA operators.")
+            extra += (grad_history_addend,)
+            suffix = "_addend"
+
+        def full():
+            return tuple(getattr(_OPS, "dpointnet_nest_state_history_backward_events" + suffix)(
+                threshold, refractory, self.kernel_coefficients, dt, self.retention,
+                *gradients, *events, *extra,
+                hard_reset=self.backward_hard_reset, coefficients_layout=self.layout,
+                **self.options,
+            ))
+
+        if not self.use_type_indexed:
+            return full()
+        operation = getattr(_OPS, "dpointnet_nest_state_history_backward_events" + suffix + "_type_indexed")
+        dispatch = {}
+        if self.device_dispatch:
+            operation = getattr(_OPS, "dpointnet_nest_state_history_backward_events" + suffix + "_device_dispatch")
+            dispatch = dict(fallback_coefficients=self.coefficients, type_identity=self.type_identity)
+
+        def typed():
+            return tuple(operation(
+                threshold, refractory, self.type_coefficients, self.type_indices, dt,
+                self.retention, *gradients, *events, *extra,
+                hard_reset=self.backward_hard_reset, **self.options, **dispatch,
+            ))
+
+        if self.identity_static is True or self.device_dispatch:
+            return typed()
+        if self.identity_static is False:
+            return full()
+        stop = lambda branch: (lambda: tuple(tf.stop_gradient(v) for v in branch()))
+        return tf.cond(self.type_identity, stop(typed), stop(full))
+
+
+def nest_record_forward_available():
+    """Record-writing NEST history forwards (pre-reset row write plus packed words in-kernel)."""
+    return step_record_ops_available() and all(
+        hasattr(_OPS, "dpointnet_nest_state_history_forward_record" + suffix)
+        for suffix in ("", "_type_indexed", "_device_dispatch")
+    )
+
+
+def direct_reverse_ops_available():
+    """Native ASC re-walk, reverse prelude and record statistics of the direct recorded adjoint."""
+    return step_record_ops_available() and all(
+        hasattr(_OPS, name)
+        for name in (
+            "dpointnet_advance_asc_record", "dpointnet_direct_reverse_record",
+            "dpointnet_direct_reverse_record_resource", "dpointnet_shift_history_record",
+            "dpointnet_record_counts", "dpointnet_record_traces",
+            "dpointnet_nest_state_history_backward_events_addend",
+        )
+    )
+
+
+def advance_asc_record(asc, words, coefficients):
+    """Exact ASC after the recorded step ``words`` from the AoS ``[neurons, 28]`` table."""
+    if not direct_reverse_ops_available():
+        raise RuntimeError("Direct reverse records require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_advance_asc_record(asc, words, coefficients)
+
+
+def direct_reverse_record(pre_reset, words, grad_v, grad_penalty, v_th, v_reset, *,
+                          spike_base, refractory_dtype, penalty_mode, row=0, trace=None):
+    """``(threshold, blocked, total_grad_v, spikes, spike_cotangent)`` of one recorded step.
+
+    ``pre_reset`` is the step's ``[batch, neurons]`` record or a
+    ``[time, batch, neurons]`` record buffer (tensor or resource variable) read
+    at ``row``. ``threshold`` is ``pre_reset - v_th``; ``total_grad_v`` adds the
+    native voltage-penalty VJP of the post-reset membrane to the carried
+    cotangent; ``spike_cotangent`` is ``spike_base`` plus, when ``trace`` is
+    ``(column, indices, mask, groups)``, the sampled-trace cotangents
+    ``column[groups[k]] * mask[k]`` added at ``indices[k]`` (one rounding per
+    entry in the spike dtype).
+    """
+    if penalty_mode not in ("range", "threshold"):
+        raise ValueError("penalty_mode must be 'range' or 'threshold'.")
+    if not direct_reverse_ops_available():
+        raise RuntimeError("Direct reverse records require rebuilt CUDA operators: " + glif_state_op_status())
+    if trace is None:
+        trace = (
+            tf.zeros([0], tf.float32), tf.zeros([0, 2], tf.int64),
+            tf.zeros([0], tf.float32), tf.zeros([0], tf.int64),
+        )
+    column, indices, mask, groups = trace
+    options = dict(R=tf.as_dtype(refractory_dtype), mode=penalty_mode)
+    if isinstance(pre_reset, tf.Variable) or (
+        hasattr(pre_reset, "dtype") and tf.as_dtype(pre_reset.dtype) == tf.resource
+    ):
+        handle = pre_reset.handle if isinstance(pre_reset, tf.Variable) else pre_reset
+        return _OPS.dpointnet_direct_reverse_record_resource(
+            handle, tf.cast(row, tf.int32), words, grad_v, grad_penalty, v_th, v_reset,
+            spike_base, column, indices, mask, groups, **options,
+        )
+    return _OPS.dpointnet_direct_reverse_record(
+        pre_reset, tf.cast(row, tf.int32), words, grad_v, grad_penalty, v_th, v_reset,
+        spike_base, column, indices, mask, groups, **options,
+    )
+
+
+NestBackwardDispatch = NestDirectDispatch
+
+
+def record_counts(words, neurons, begin, end):
+    """Per-neuron spike counts over ``[begin, end)`` of stacked packed records."""
+    if not direct_reverse_ops_available() or not hasattr(_OPS, "dpointnet_record_counts"):
+        raise RuntimeError("Record statistics require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_record_counts(words, neurons=int(neurons), begin=int(begin), end=int(end))
+
+
+def record_traces(words, indices, mask, groups, neurons, rows, begin, end):
+    """Masked sampled-population traces ``[rows, end - begin]`` of stacked packed records."""
+    if not direct_reverse_ops_available() or not hasattr(_OPS, "dpointnet_record_traces"):
+        raise RuntimeError("Record statistics require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_record_traces(
+        words, indices, mask, groups, neurons=int(neurons), rows=int(rows), begin=int(begin), end=int(end),
+    )
+
+
+def shift_history_record(history, words, neurons):
+    """Previous-step delay window: drop the newest slot, shift, unpack ``words`` into the oldest."""
+    if not direct_reverse_ops_available():
+        raise RuntimeError("Record statistics require rebuilt CUDA operators: " + glif_state_op_status())
+    return _OPS.dpointnet_shift_history_record(history, words, neurons=int(neurons))

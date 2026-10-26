@@ -14,6 +14,8 @@ from .data_iterator import DataIterator
 from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
 from .learning_rules import LearningRuleObservations
 from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
+from .spike_statistics import SpikeStatisticsRunner
+from .spike_summary import SpikeSummary
 from .loss_functions import loss_utils
 from .loss_functions.weight_regularization import weight_regularization_scope
 
@@ -34,7 +36,11 @@ def _binary_spike_checkpoint_state(rnn):
         return False
     try:
         _, names = cell.zero_state(1, tf.float32, with_names=True)
-    except (TypeError, ValueError):
+    except TypeError:
+        # A wrapped zero_state without the names keyword: the base cell's
+        # first state is the binary spike buffer by construction.
+        return type(cell) is GLIF3Cell
+    except ValueError:
         return False
     return bool(names) and names[0] == "z0_buf"
 
@@ -149,6 +155,13 @@ class InputsSignatureFactory:
 class TrainingEngine:
     _record_signature_metrics_enabled = True
     _record_mean_rate_metrics_enabled = True
+    stream_spike_statistics = False
+    recorded_adjoint = False
+    # Class-level fallbacks for engines built without __init__ (test doubles):
+    # explicit dense requests, so preparation never resolves a route for them.
+    _stream_spike_statistics_request = False
+    _recorded_adjoint_request = False
+    training_route_report = None
 
     def __init__(
         self, rnn, n_epochs, steps_per_epoch, training_approach=None, **kwargs
@@ -166,6 +179,22 @@ class TrainingEngine:
         self._learning_rule = BPTTLearningRule()
 
         self.gradient_checkpointing = kwargs.get("gradient_checkpointing", True)
+        # Requests are kept apart from the resolved booleans: "auto" (the default)
+        # resolves in prepare_gradient_checkpointing, once the cell, losses and
+        # strategy are known. Until then both resolved flags read False.
+        self._stream_spike_statistics_request = kwargs.get("stream_spike_statistics", "auto")
+        if self._stream_spike_statistics_request != "auto":
+            validate_bool_option(self._stream_spike_statistics_request, "stream_spike_statistics")
+        self._recorded_adjoint_request = kwargs.get("recorded_adjoint", "auto")
+        if self._recorded_adjoint_request not in ("auto", "direct"):
+            validate_bool_option(self._recorded_adjoint_request, "recorded_adjoint")
+        if self._recorded_adjoint_request not in ("auto", False) and self._stream_spike_statistics_request is False:
+            raise ValueError("recorded_adjoint requires stream_spike_statistics=True.")
+        self.stream_spike_statistics = self._stream_spike_statistics_request is True
+        self.recorded_adjoint = (
+            self._recorded_adjoint_request if self._recorded_adjoint_request in (True, "direct") else False
+        )
+        self.training_route_report = None
         chunk_size = kwargs.get("gradient_checkpoint_chunk_size", UNSET)
         self._gradient_checkpoint_chunk_size = (
             UNSET if chunk_size is UNSET else int(chunk_size)
@@ -655,7 +684,8 @@ class TrainingEngine:
         for loss_fnc in parameter.loss_functions.values():
             update_normalizers = getattr(loss_fnc, "update_normalizers", None)
             if update_normalizers is not None:
-                update_normalizers(tf.stop_gradient(spikes), self._normalizers, **cached)
+                detached = spikes.stop_gradient() if isinstance(spikes, SpikeSummary) else tf.stop_gradient(spikes)
+                update_normalizers(detached, self._normalizers, **cached)
                 break
 
     @property
@@ -682,7 +712,7 @@ class TrainingEngine:
 
         return self._inputs_sig_factory
 
-    def _run_extractor(self, x, init_state):
+    def _run_extractor(self, x, init_state, parameters=None):
         """Run the extractor (RNN) forward pass, optionally with gradient checkpointing.
 
         When checkpointing is enabled, only chunk-boundary recurrent states are
@@ -694,15 +724,176 @@ class TrainingEngine:
                 x = tf.cast(x, self.rnn.dtype)
             self.rnn.cell.advance_noise_seed()
             init_state = self.rnn.cell.reset_voltage_penalty_state(init_state)
+            if self.stream_spike_statistics:
+                from .loss_functions import SynchronizationLoss
+
+                groups = self.parameters if parameters is None else parameters
+                traces, keys, start = [], [], 0
+                for parameter in groups:
+                    for loss in parameter.loss_functions.values():
+                        if type(loss) is SynchronizationLoss and loss._sync_cost > 0:
+                            plan = loss.prepare_sampled_statistics(
+                                parameter.batch_size, x.dtype, x.shape[1], start
+                            )
+                            if plan is not None:
+                                traces.append(plan)
+                                keys.append((loss.name, *plan.batch_range))
+                    start += parameter.batch_size
+                if start != x.shape[0]:
+                    raise ValueError("Spike statistics batch groups do not match extractor inputs.")
+                result = self._extractor_forward(
+                    x, init_state, sampled_traces=tuple(traces)
+                )
+                spikes = SpikeSummary(
+                    result.counts, self._extractor_forward.count_windows,
+                    x.shape[1], result.traces, tuple(keys),
+                )
+                return ((spikes, *result.sequences), *result.final_state)
             flat_output = self._extractor_forward(x, init_state)
             return self.rnn._unpack_extractor_output(flat_output)
         return self.rnn.run_extractor(x, init_state)
+
+    def _run_parameter_extractor(self, x, init_state, parameter):
+        if self.stream_spike_statistics:
+            return self._run_extractor(x, init_state, (parameter,))
+        return self._run_extractor(x, init_state)
+
+    @property
+    def stream_spike_statistics_request(self):
+        """The constructor request: ``"auto"`` (default) or an explicit boolean."""
+        return self._stream_spike_statistics_request
+
+    @property
+    def recorded_adjoint_request(self):
+        """The constructor request: ``"auto"`` (default), ``False``, ``True`` or ``"direct"``."""
+        return self._recorded_adjoint_request
+
+    def _resolve_training_route(self, cell):
+        """Resolve ``"auto"`` streaming/adjoint requests into the engine's booleans.
+
+        Automatic policy: stream spike statistics when every streaming
+        prerequisite holds, and use the direct recorded adjoint when the cell
+        and trainable surfaces satisfy its eligibility and the per-step record
+        payload fits the device. Explicit requests are used as given and keep
+        their validation errors. The decision and its reasons are recorded in
+        ``training_route_report`` and the cell's acceleration report.
+        """
+        from .direct_recorded_adjoint import direct_records_supported, direct_record_bytes
+        from .cell_models.glif3_cell import GLIF3Cell
+
+        report = {
+            "requested": {
+                "stream_spike_statistics": self._stream_spike_statistics_request,
+                "recorded_adjoint": self._recorded_adjoint_request,
+            },
+            "reasons": {},
+        }
+        if not self.gradient_checkpointing or getattr(cell, "temporal_gradient_precision", "compute") == "float32":
+            auto_stream, stream_reason = False, "dense route kept: requires checkpointed compute-temporal gradients"
+        else:
+            unmet = self._spike_statistics_unmet(automatic=True)
+            auto_stream = not unmet
+            stream_reason = (
+                "streamed FP32 counts and sampled traces: every streaming prerequisite holds"
+                if auto_stream else "dense route kept: " + "; ".join(unmet)
+            )
+        stream = self._stream_spike_statistics_request
+        if stream == "auto":
+            stream = auto_stream
+            report["reasons"]["stream_spike_statistics"] = stream_reason
+        else:
+            report["reasons"]["stream_spike_statistics"] = "explicit request"
+        adjoint = self._recorded_adjoint_request
+        auto_adjoint = None
+        if adjoint == "auto" or (adjoint is not True and adjoint != "direct"):
+            if not stream:
+                auto_adjoint, reason = False, "recorded routes require streamed statistics"
+                if adjoint == "auto":
+                    adjoint = False
+                    report["reasons"]["recorded_adjoint"] = reason
+            else:
+                unmet = list(direct_records_supported(cell))
+                variables = getattr(getattr(self.rnn, "model", None), "trainable_variables", None)
+                if variables is not None and type(cell) is GLIF3Cell:
+                    masters = {id(cell.recurrent_weight_values)} | {
+                        id(net["input_weight_values"]) for net in cell.inputs.values()
+                    }
+                    extra = [
+                        getattr(v, "name", str(v)) for v in variables
+                        if id(v) not in masters and id(getattr(v, "value", None)) not in masters
+                    ]
+                    if extra:
+                        unmet.append("trainable surfaces limited to recurrent/named-input CSR masters "
+                                     f"(found {', '.join(extra[:3])})")
+                try:
+                    batch, length = int(self.adjusted_batch_size), int(self.adjusted_seq_len)
+                except (IndexError, TypeError, ValueError):
+                    batch = length = None
+                fits, memory_reason = direct_record_bytes(
+                    cell, batch, length, self.gradient_checkpoint_chunk_size,
+                )
+                auto_adjoint = "direct" if not unmet else False
+                reason = (
+                    "direct recorded adjoint: eligible cell and CSR-master surfaces; " + memory_reason
+                    if auto_adjoint else
+                    "checkpointed streaming kept: requires " + "; ".join(unmet)
+                )
+                report["record_payload"] = {"fits": fits, "estimate": memory_reason}
+                # The payload estimate is advisory: the fastest qualified route is
+                # still selected, and the user is told when it may not fit.
+                if auto_adjoint and adjoint == "auto" and fits is not True:
+                    io.log_warning(
+                        "Direct recorded adjoint selected automatically, but its record payload may "
+                        "not fit the device (" + memory_reason + "). The rollout can fail with an "
+                        "out-of-memory error; set recorded_adjoint=False to keep checkpointed "
+                        "streaming, or reduce the batch, sequence length or network size."
+                    )
+            if adjoint == "auto":
+                adjoint = auto_adjoint
+                report["reasons"]["recorded_adjoint"] = reason
+        if self._recorded_adjoint_request != "auto":
+            report["reasons"]["recorded_adjoint"] = "explicit request"
+        report["selected"] = {"stream_spike_statistics": bool(stream), "recorded_adjoint": adjoint}
+        report["automatic"] = {"stream_spike_statistics": bool(auto_stream), "recorded_adjoint": auto_adjoint}
+        # Explicit engine requests are the supported opt-out; name the ones that
+        # leave the automatic (fastest qualified) route so stale flags are visible.
+        report["explicit_deviations"] = {
+            name: {"explicit": report["selected"][name], "automatic": report["automatic"][name]}
+            for name in ("stream_spike_statistics", "recorded_adjoint")
+            if getattr(self, f"_{name}_request") != "auto"
+            and report["automatic"][name] is not None
+            and report["selected"][name] != report["automatic"][name]
+        }
+        self.stream_spike_statistics = bool(stream)
+        self.recorded_adjoint = adjoint
+        self.training_route_report = report
+        acceleration = getattr(cell, "acceleration_report", None)
+        if isinstance(acceleration, dict):
+            acceleration["training_route"] = report
+        io.log_info(
+            "Training route: stream_spike_statistics=%s (%s); recorded_adjoint=%s (%s)."
+            % (report["selected"]["stream_spike_statistics"], report["reasons"]["stream_spike_statistics"],
+               report["selected"]["recorded_adjoint"], report["reasons"]["recorded_adjoint"])
+        )
+        if report["explicit_deviations"]:
+            io.log_warning(
+                "Explicit training-route requests differ from the automatic (fastest qualified) "
+                "choice: " + ", ".join(
+                    f"{name}={value['explicit']!r} (auto: {value['automatic']!r})"
+                    for name, value in report["explicit_deviations"].items()
+                ) + ". Remove inherited stream_spike_statistics/recorded_adjoint flags unless the "
+                "override is intended."
+            )
 
     def prepare_gradient_checkpointing(self):
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
         if prepare_training_model is not None:
             prepare_training_model()
         cell = getattr(self.rnn, "cell", None)
+        if self._extractor_forward is None:
+            self._resolve_training_route(cell)
+        if self.stream_spike_statistics:
+            self._validate_spike_statistics()
         if getattr(cell, "temporal_gradient_precision", "compute") == "float32":
             if self.gradient_checkpointing and (
                 cell.temporal_checkpoint_chunk_size
@@ -740,11 +931,22 @@ class TrainingEngine:
                 "Full BPTT with one canonical recurrent-gradient restore enabled."
             )
             return
-        self._extractor_forward = SegmentedRecomputeRunner(
+        runner_type = SpikeStatisticsRunner if self.stream_spike_statistics else SegmentedRecomputeRunner
+        statistics_options = {"count_windows": self._statistics_windows()} if self.stream_spike_statistics else {}
+        output_options = {"n_sequence_outputs": 2}
+        if self.recorded_adjoint == "direct":
+            from .direct_recorded_adjoint import DirectRecordedAdjointRunner
+            runner_type = DirectRecordedAdjointRunner
+            output_options = {"cell": cell}
+        elif self.recorded_adjoint:
+            from .recorded_adjoint import RecordedAdjointRunner
+            runner_type = RecordedAdjointRunner
+            output_options = {"cell": cell}
+        self._extractor_forward = runner_type(
             self.rnn.extractor_model,
             sequence_length=self.adjusted_seq_len,
             chunk_size=self.gradient_checkpoint_chunk_size,
-            n_sequence_outputs=2,
+            **output_options,
             differentiate_inputs=False,
             pack_spike_checkpoints=self.pack_spike_checkpoints,
             variable_gradient_transform=(
@@ -752,6 +954,7 @@ class TrainingEngine:
                 if use_direct_csr_gradient and not csr_live_masters
                 else None
             ),
+            **statistics_options,
         )
         io.log_info(
             "Segmented exact BPTT enabled: "
@@ -759,6 +962,96 @@ class TrainingEngine:
             f"chunk_size={self.gradient_checkpoint_chunk_size}, "
             f"pack_spike_checkpoints={self.pack_spike_checkpoints}."
         )
+
+    def _statistics_windows(self):
+        length = self.adjusted_seq_len
+        windows = [(0, length)]
+        for parameter in self.parameters:
+            for loss in parameter.loss_functions.values():
+                if hasattr(loss, "_pre_delay"):
+                    window = (loss._pre_delay or 0, length - (loss._post_delay or 0))
+                    if not 0 <= window[0] < window[1] <= length:
+                        raise ValueError(f"Invalid spike-statistics loss window {window}.")
+                    if window not in windows:
+                        windows.append(window)
+        return tuple(windows)
+
+    def _spike_statistics_unmet(self, automatic=False):
+        """Streaming prerequisites that do not hold, as user-facing sentences.
+
+        ``automatic`` adds the policy-only requirements of the ``"auto"``
+        request (a GLIF3 cell whose first state is the binary spike buffer);
+        explicit ``True`` keeps the contract of the original validation.
+        """
+        from . import loss_functions as losses
+
+        supported = (
+            losses.TargetFiringRate, losses.SpikeRateDistributionTarget,
+            losses.OrientationSelectivityLoss, losses.SynchronizationLoss,
+            losses.VoltageRegularization, losses.EMDWeightRegularization,
+            losses.LowRateFloor, losses.VoltageRateFloor,
+        )
+        unmet = []
+        if not self.gradient_checkpointing:
+            unmet.append("stream_spike_statistics requires gradient_checkpointing.")
+        if not isinstance(self.learning_rule, BPTTLearningRule):
+            unmet.append("stream_spike_statistics currently requires BPTT.")
+        cell = getattr(self.rnn, "cell", None)
+        if automatic and not _binary_spike_checkpoint_state(self.rnn):
+            unmet.append("automatic streaming requires a GLIF3 cell with the binary spike state")
+        if getattr(cell, "temporal_gradient_precision", "compute") != "compute":
+            unmet.append("stream_spike_statistics requires compute temporal gradients.")
+        strategy = getattr(self.rnn, "strategy", None)
+        if strategy is None:
+            if automatic:
+                unmet.append("automatic streaming requires the RNN's distribution strategy")
+        elif strategy.num_replicas_in_sync != 1:
+            unmet.append("stream_spike_statistics currently requires one replica.")
+        if automatic and not self.parameters:
+            unmet.append("automatic streaming requires at least one parameter group with losses")
+        for parameter in self.parameters:
+            sampled = set()
+            loss_functions = getattr(parameter, "loss_functions", None)
+            if not loss_functions:
+                if automatic:
+                    unmet.append("automatic streaming requires every parameter group to define losses")
+                continue
+            for loss in loss_functions.values():
+                if type(loss) not in supported:
+                    unmet.append(f"stream_spike_statistics does not support {type(loss).__name__}.")
+                    continue
+                if type(loss) is losses.OrientationSelectivityLoss and loss._method not in ("crowd_osi", "crowd_spikes"):
+                    unmet.append("Spike statistics require a rate-based orientation objective.")
+                if type(loss) is losses.SynchronizationLoss:
+                    if id(loss) in sampled:
+                        unmet.append("A synchronization loss cannot be reused twice in one statistics batch group.")
+                    sampled.add(id(loss))
+        if not unmet:
+            try:
+                self._statistics_windows()
+            except ValueError as error:
+                unmet.append(str(error))
+        return unmet
+
+    def _validate_spike_statistics(self):
+        unmet = self._spike_statistics_unmet()
+        if unmet:
+            raise ValueError(unmet[0])
+
+    @staticmethod
+    def _mean_spikes(spikes):
+        if isinstance(spikes, SpikeSummary):
+            return tf.reduce_mean(spikes.temporal_sum()) / tf.cast(spikes.shape[1], tf.float32)
+        return tf.cast(tf.reduce_mean(spikes), tf.float32)
+
+    @staticmethod
+    def _spike_shape(spikes):
+        if isinstance(spikes, SpikeSummary):
+            return tf.stack((
+                tf.shape(spikes.counts[0])[0], spikes.shape[1],
+                tf.shape(spikes.counts[0])[-1],
+            ))
+        return tf.shape(spikes)
 
     @staticmethod
     def _add_gradients(accumulated, current):
@@ -791,12 +1084,12 @@ class TrainingEngine:
         loss_vals = {pname: {}}
         input_spikes = x[0]
         with tf.GradientTape() as tape, weight_regularization_scope():
-            _out = self._run_extractor(input_spikes, init_state)
+            _out = self._run_parameter_extractor(input_spikes, init_state, self.parameters[0])
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
             if self._record_mean_rate_metrics_enabled:
                 loss_vals[pname]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_spikes_out), tf.float32
+                    self._mean_spikes(_spikes_out), tf.float32
                 )
 
             _total_loss = 0.0
@@ -840,12 +1133,12 @@ class TrainingEngine:
         )
         loss_vals = {p.name: {}}
         with tf.GradientTape() as tape, weight_regularization_scope():
-            _out = self._run_extractor(x, init_state)
+            _out = self._run_parameter_extractor(x, init_state, p)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
             if self._record_mean_rate_metrics_enabled:
                 loss_vals[p.name]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_spikes_out), tf.float32
+                    self._mean_spikes(_spikes_out), tf.float32
                 )
 
             _total_loss = 0.0
@@ -892,12 +1185,16 @@ class TrainingEngine:
         if not getattr(self.rnn, "_online_voltage_losses", ()):
             return None
         # Detached FP32 chunk reductions never expand the full spike sequence.
-        spikes = tf.stop_gradient(spikes)
-        counts = tf.add_n([
-            tf.reduce_sum(tf.cast(spikes[:, start:start + 25], tf.float32), axis=(0, 1))
-            for start in range(0, spikes.shape[1], 25)
-        ])
-        samples = tf.cast(tf.shape(spikes)[0] * tf.shape(spikes)[1], tf.float32)
+        if isinstance(spikes, SpikeSummary):
+            counts = tf.reduce_sum(tf.stop_gradient(spikes.temporal_sum()), axis=0)
+        else:
+            spikes = tf.stop_gradient(spikes)
+            counts = tf.add_n([
+                tf.reduce_sum(tf.cast(spikes[:, start:start + 25], tf.float32), axis=(0, 1))
+                for start in range(0, spikes.shape[1], 25)
+            ])
+        shape = self._spike_shape(spikes)
+        samples = tf.cast(shape[0] * shape[1], tf.float32)
         context = tf.distribute.get_replica_context()
         if context is not None:
             counts = context.all_reduce(tf.distribute.ReduceOp.SUM, counts)
@@ -988,7 +1285,7 @@ class TrainingEngine:
                 )
                 if self._record_mean_rate_metrics_enabled:
                     loss_vals[p.name]["__mean_rate"] = tf.cast(
-                        tf.reduce_mean(_pspikes), tf.float32
+                        self._mean_spikes(_pspikes), tf.float32
                     )
                 if self._record_signature_metrics_enabled:
                     self._record_signature_metrics(loss_vals, p.name, ysig)
@@ -998,7 +1295,7 @@ class TrainingEngine:
                     cached_spike_counts = loss_utils.temporal_sum(
                         _pspikes, dtype=tf.float32
                     )
-                    cached_spike_duration = tf.cast(tf.shape(_pspikes)[1], tf.float32)
+                    cached_spike_duration = tf.cast(self._spike_shape(_pspikes)[1], tf.float32)
                 loss_kwargs = self._prepare_loss_kwargs(
                     p,
                     _pspikes,
@@ -1015,8 +1312,8 @@ class TrainingEngine:
                     loss_kwargs["spike_count_duration"] = cached_spike_duration
                 if getattr(self.rnn, "_online_voltage_losses", ()):
                     loss_kwargs["voltage_rate_floor_batch_weight"] = tf.cast(
-                        self.n_parameters * tf.shape(_pspikes)[0], tf.float32
-                    ) / tf.cast(tf.shape(_spikes_out)[0], tf.float32)
+                        self.n_parameters * self._spike_shape(_pspikes)[0], tf.float32
+                    ) / tf.cast(self._spike_shape(_spikes_out)[0], tf.float32)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,
@@ -1056,12 +1353,12 @@ class TrainingEngine:
         for parameter_index, (p, x, y) in enumerate(zip(self.parameters, xs, ys)):
             loss_vals[p.name] = {}
             with tf.GradientTape() as tape, weight_regularization_scope():
-                _out = self._run_extractor(x, init_state)
+                _out = self._run_parameter_extractor(x, init_state, p)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
                 if self._record_mean_rate_metrics_enabled:
                     loss_vals[p.name]["__mean_rate"] = tf.cast(
-                        tf.reduce_mean(_spikes_out), tf.float32
+                        self._mean_spikes(_spikes_out), tf.float32
                     )
                 if self._record_signature_metrics_enabled:
                     self._record_signature_metrics(loss_vals, p.name, y)
@@ -1171,7 +1468,7 @@ class TrainingEngine:
                 _model_state = _out[1:]
                 if self._record_mean_rate_metrics_enabled:
                     loss_vals[p.name]["__mean_rate"] = tf.cast(
-                        tf.reduce_mean(_spikes_out), tf.float32
+                        self._mean_spikes(_spikes_out), tf.float32
                     )
                 if self._record_signature_metrics_enabled:
                     self._record_signature_metrics(loss_vals, p.name, y)
@@ -1221,15 +1518,15 @@ class TrainingEngine:
                 )
                 if self._record_mean_rate_metrics_enabled:
                     loss_vals[p.name]["__mean_rate"] = tf.cast(
-                        tf.reduce_mean(_pspikes), tf.float32
+                        self._mean_spikes(_pspikes), tf.float32
                     )
                 if self._record_signature_metrics_enabled:
                     self._record_signature_metrics(loss_vals, p.name, ysig)
                 loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
                 if getattr(self.rnn, "_online_voltage_losses", ()):
                     loss_kwargs["voltage_rate_floor_batch_weight"] = tf.cast(
-                        self.n_parameters * tf.shape(_pspikes)[0], tf.float32
-                    ) / tf.cast(tf.shape(_spikes_out)[0], tf.float32)
+                        self.n_parameters * self._spike_shape(_pspikes)[0], tf.float32
+                    ) / tf.cast(self._spike_shape(_spikes_out)[0], tf.float32)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,

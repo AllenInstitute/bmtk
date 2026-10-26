@@ -152,6 +152,17 @@ REGISTER_OP("DpointnetNestStateHistoryBackwardEventsDeviceDispatch")
     .SetShapeFn([](shape_inference::InferenceContext* c) {
       return NestDeviceDispatchShape(c, true, true, true);
     });
+// ``grad_history_addend`` is a second new-history cotangent summed with
+// ``grad_history`` inside the kernel (direct recorded adjoint: the recurrent
+// source credit of the following step).
+REGISTER_OP("DpointnetNestStateHistoryBackwardEventsAddendDeviceDispatch")
+    NEST_DEVICE_TYPES NEST_DEVICE_EVENT_ATTRS NEST_DEVICE_BACKWARD_INPUTS
+    NEST_DEVICE_EVENT_INPUTS .Input("grad_spikes: S") .Input("grad_history: S")
+    .Input("grad_history_addend: S")
+    NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_BACKWARD_OUTPUTS .Output("old_history_grad: S")
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, true, true, true);
+    });
 
 #undef NEST_DEVICE_TYPES
 #undef NEST_DEVICE_FORWARD_INPUTS
@@ -603,6 +614,54 @@ REGISTER_OP("DpointnetNestStateHistoryBackwardEventsTypeIndexed")
       context->set_output(5, context->input(16));
       return OkStatus();
     });
+REGISTER_OP("DpointnetNestStateHistoryBackwardEventsAddendTypeIndexed")
+    .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("hard_reset: bool = false")
+    .Attr("detach_reset: bool = true")
+    .Attr("detach_asc_reset: bool = true")
+    .Attr("pseudo_gauss: bool = false")
+    .Input("threshold_voltage: T")
+    .Input("r: R")
+    .Input("type_coefficients: T")
+    .Input("type_indices: int64")
+    .Input("dt: T")
+    .Input("voltage_gradient_retention: T")
+    .Input("grad_threshold: T")
+    .Input("grad_v: T")
+    .Input("grad_asc: T")
+    .Input("grad_rise: S")
+    .Input("grad_psc: S")
+    .Input("previous_asc: T")
+    .Input("v_th: T")
+    .Input("dampening: T")
+    .Input("gauss_std: T")
+    .Input("grad_spikes: S")
+    .Input("grad_history: S")
+    .Input("grad_history_addend: S")
+    .Output("v_grad: T")
+    .Output("asc_grad: T")
+    .Output("rise_grad: S")
+    .Output("psc_grad: S")
+    .Output("currents_grad: S")
+    .Output("old_history_grad: S")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestTypeIndexedCoefficientShape(context, 2, 3));
+      shape_inference::ShapeHandle asc;
+      TF_RETURN_IF_ERROR(context->Merge(context->input(8), context->input(11), &asc));
+      for (int index = 12; index < 15; ++index) {
+        shape_inference::ShapeHandle scalar;
+        TF_RETURN_IF_ERROR(context->WithRank(context->input(index), 0, &scalar));
+      }
+      context->set_output(0, context->input(0));
+      context->set_output(1, asc);
+      context->set_output(2, context->input(9));
+      context->set_output(3, context->input(10));
+      context->set_output(4, context->input(9));
+      context->set_output(5, context->input(16));
+      return OkStatus();
+    });
 REGISTER_OP("DpointnetNestStateHistoryBackwardEvents")
     .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
@@ -629,6 +688,55 @@ REGISTER_OP("DpointnetNestStateHistoryBackwardEvents")
     .Input("gauss_std: T")
     .Input("grad_spikes: S")
     .Input("grad_history: S")
+    .Output("v_grad: T")
+    .Output("asc_grad: T")
+    .Output("rise_grad: S")
+    .Output("psc_grad: S")
+    .Output("currents_grad: S")
+    .Output("old_history_grad: S")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestCoefficientShape(context, 2));
+      shape_inference::ShapeHandle asc;
+      TF_RETURN_IF_ERROR(context->Merge(context->input(7), context->input(10), &asc));
+      for (int index = 11; index < 14; ++index) {
+        shape_inference::ShapeHandle scalar;
+        TF_RETURN_IF_ERROR(context->WithRank(context->input(index), 0, &scalar));
+      }
+      context->set_output(0, context->input(0));
+      context->set_output(1, asc);
+      context->set_output(2, context->input(8));
+      context->set_output(3, context->input(9));
+      context->set_output(4, context->input(8));
+      context->set_output(5, context->input(15));
+      return OkStatus();
+    });
+REGISTER_OP("DpointnetNestStateHistoryBackwardEventsAddend")
+    .Attr("launch_geometry_version: int = 1")
+    .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("hard_reset: bool = false")
+    .Attr("detach_reset: bool = true")
+    .Attr("detach_asc_reset: bool = true")
+    .Attr("pseudo_gauss: bool = false")
+    .Attr("coefficients_layout: {'aos', 'soa'} = 'aos'")
+    .Input("threshold_voltage: T")
+    .Input("r: R")
+    .Input("coefficients: T")
+    .Input("dt: T")
+    .Input("voltage_gradient_retention: T")
+    .Input("grad_threshold: T")
+    .Input("grad_v: T")
+    .Input("grad_asc: T")
+    .Input("grad_rise: S")
+    .Input("grad_psc: S")
+    .Input("previous_asc: T")
+    .Input("v_th: T")
+    .Input("dampening: T")
+    .Input("gauss_std: T")
+    .Input("grad_spikes: S")
+    .Input("grad_history: S")
+    .Input("grad_history_addend: S")
     .Output("v_grad: T")
     .Output("asc_grad: T")
     .Output("rise_grad: S")
@@ -791,5 +899,277 @@ REGISTER_OP("DpointnetVoltagePenaltyBackward")
       TF_RETURN_IF_ERROR(context->Merge(context->Dim(voltage, 0),
                                         context->Dim(grad, 0), &dimension));
       context->set_output(0, voltage);
+      return OkStatus();
+    });
+
+// Bit-packed per-step records for the direct recorded adjoint: the step's
+// spikes and its pre-step refractory (blocked) mask, 32 neurons per int32 word.
+REGISTER_OP("DpointnetPackStepRecord")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Input("spikes: S")
+    .Input("refractory: R")
+    .Output("words: int32")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle spikes, refractory;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(1), 2, &refractory));
+      shape_inference::ShapeHandle merged;
+      TF_RETURN_IF_ERROR(context->Merge(spikes, refractory, &merged));
+      shape_inference::DimensionHandle words;
+      TF_RETURN_IF_ERROR(context->Add(context->Dim(merged, 1), 31, &words));
+      TF_RETURN_IF_ERROR(context->Divide(words, 32, false, &words));
+      TF_RETURN_IF_ERROR(context->Multiply(words, 2, &words));
+      context->set_output(0, context->Matrix(context->Dim(merged, 0), words));
+      return OkStatus();
+    });
+
+REGISTER_OP("DpointnetUnpackStepRecord")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("neurons: int >= 1")
+    .Input("words: int32")
+    .Output("spikes: S")
+    .Output("refractory: R")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      int neurons;
+      TF_RETURN_IF_ERROR(context->GetAttr("neurons", &neurons));
+      shape_inference::ShapeHandle words;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &words));
+      shape_inference::DimensionHandle expected;
+      TF_RETURN_IF_ERROR(context->WithValue(
+          context->Dim(words, 1), 2 * ((neurons + 31) / 32), &expected));
+      const auto shape = context->Matrix(context->Dim(words, 0), neurons);
+      context->set_output(0, shape);
+      context->set_output(1, shape);
+      return OkStatus();
+    });
+
+// Direct recorded adjoint: exact ASC after one recorded step, from the pre-step
+// ASC, the step's packed record and the NEST coefficient table (AoS [N, 28]).
+REGISTER_OP("DpointnetAdvanceAscRecord")
+    .Attr("T: {half, float}")
+    .Input("asc: T")
+    .Input("words: int32")
+    .Input("coefficients: T")
+    .Output("new_asc: T")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle asc;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &asc));
+      context->set_output(0, asc);
+      return OkStatus();
+    });
+
+// Direct recorded adjoint reverse prelude: unpack the step record, form the
+// threshold voltage, add the voltage-penalty VJP of the post-reset membrane to
+// the carried voltage cotangent and emit the recorded spikes.
+REGISTER_OP("DpointnetDirectReverseRecord")
+    .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("mode: {'range', 'threshold'} = 'range'")
+    .Input("pre_reset: T")
+    .Input("row: int32")
+    .Input("words: int32")
+    .Input("grad_v: T")
+    .Input("grad_penalty: float")
+    .Input("v_th: T")
+    .Input("v_reset: T")
+    .Input("spike_base: S")
+    .Input("trace_column: float")
+    .Input("trace_indices: int64")
+    .Input("trace_mask: float")
+    .Input("trace_groups: int64")
+    .Output("threshold: T")
+    .Output("blocked: R")
+    .Output("total_grad_v: T")
+    .Output("spikes: S")
+    .Output("spike_cotangent: S")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      // pre_reset is either this step's [batch, neurons] record or the whole
+      // [time, batch, neurons] record buffer read at ``row``.
+      shape_inference::ShapeHandle voltage;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(3), 2, &voltage));
+      for (int output = 0; output < 5; ++output) context->set_output(output, voltage);
+      return OkStatus();
+    });
+
+namespace {
+// Shape function of the record-writing NEST history forwards: the usual state
+// outputs, spikes, new history and the packed ``[batch, 2 * ceil(neurons/32)]``
+// step record; the pre-reset membrane goes to the resource row instead.
+Status NestRecordForwardShape(shape_inference::InferenceContext* context, int history_index) {
+  shape_inference::ShapeHandle voltage, history;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &voltage));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(history_index), 2, &history));
+  shape_inference::DimensionHandle batch;
+  TF_RETURN_IF_ERROR(context->Merge(context->Dim(voltage, 0), context->Dim(history, 0), &batch));
+  context->set_output(0, voltage);
+  for (int output = 1; output < 5; ++output) {
+    context->set_output(output, context->input(output));
+  }
+  context->set_output(5, voltage);
+  context->set_output(6, history);
+  shape_inference::DimensionHandle words = context->UnknownDim();
+  if (context->ValueKnown(context->Dim(voltage, 1))) {
+    const int64_t neurons = context->Value(context->Dim(voltage, 1));
+    words = context->MakeDim(2 * ((neurons + 31) / 32));
+  }
+  context->set_output(7, context->MakeShape({batch, words}));
+  return OkStatus();
+}
+}  // namespace
+
+// NEST history forwards that also emit the packed step record and write the
+// pre-reset membrane into row ``row`` of the ``[time, batch, neurons]`` record
+// scratch variable ``buffer`` (direct recorded adjoint forward).
+REGISTER_OP("DpointnetNestStateHistoryForwardRecord")
+    .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("hard_reset: bool = false")
+    .Attr("coefficients_layout: {'aos', 'soa'} = 'aos'")
+    .Input("v: T")
+    .Input("r: R")
+    .Input("asc: T")
+    .Input("psc_rise: S")
+    .Input("psc: S")
+    .Input("currents: S")
+    .Input("coefficients: T")
+    .Input("t_ref: R")
+    .Input("dt: T")
+    .Input("v_th: T")
+    .Input("history: S")
+    .Input("buffer: resource")
+    .Input("row: int32")
+    .Output("new_v: T")
+    .Output("new_r: R")
+    .Output("new_asc: T")
+    .Output("new_rise: S")
+    .Output("new_psc: S")
+    .Output("spikes: S")
+    .Output("new_history: S")
+    .Output("words: int32")
+    .SetIsStateful()
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestCoefficientShape(context, 6));
+      return NestRecordForwardShape(context, 10);
+    });
+REGISTER_OP("DpointnetNestStateHistoryForwardRecordTypeIndexed")
+    .Attr("T: {half, float}") .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}") .Attr("hard_reset: bool = false")
+    .Input("v: T") .Input("r: R") .Input("asc: T")
+    .Input("psc_rise: S") .Input("psc: S") .Input("currents: S")
+    .Input("type_coefficients: T") .Input("type_indices: int64")
+    .Input("t_ref: R") .Input("dt: T") .Input("v_th: T") .Input("history: S")
+    .Input("buffer: resource") .Input("row: int32")
+    .Output("new_v: T") .Output("new_r: R") .Output("new_asc: T")
+    .Output("new_rise: S") .Output("new_psc: S")
+    .Output("spikes: S") .Output("new_history: S") .Output("words: int32")
+    .SetIsStateful()
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestTypeIndexedCoefficientShape(context, 6, 7));
+      return NestRecordForwardShape(context, 11);
+    });
+REGISTER_OP("DpointnetNestStateHistoryForwardRecordDeviceDispatch")
+    .Attr("T: {half, float}") .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}") .Attr("hard_reset: bool = false")
+    .Input("v: T") .Input("r: R") .Input("asc: T")
+    .Input("psc_rise: S") .Input("psc: S") .Input("currents: S")
+    .Input("type_coefficients: T") .Input("type_indices: int64")
+    .Input("t_ref: R") .Input("dt: T") .Input("v_th: T") .Input("history: S")
+    .Input("buffer: resource") .Input("row: int32")
+    .Input("fallback_coefficients: T") .Input("type_identity: bool")
+    .Output("new_v: T") .Output("new_r: R") .Output("new_asc: T")
+    .Output("new_rise: S") .Output("new_psc: S")
+    .Output("spikes: S") .Output("new_history: S") .Output("words: int32")
+    .SetIsStateful()
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestTypeIndexedCoefficientShape(context, 6, 7));
+      return NestRecordForwardShape(context, 11);
+    });
+
+// Same prelude reading row ``row`` of a [time, batch, neurons] record scratch
+// variable directly (no full-variable read, no row copy).
+REGISTER_OP("DpointnetDirectReverseRecordResource")
+    .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("mode: {'range', 'threshold'} = 'range'")
+    .Input("buffer: resource")
+    .Input("row: int32")
+    .Input("words: int32")
+    .Input("grad_v: T")
+    .Input("grad_penalty: float")
+    .Input("v_th: T")
+    .Input("v_reset: T")
+    .Input("spike_base: S")
+    .Input("trace_column: float")
+    .Input("trace_indices: int64")
+    .Input("trace_mask: float")
+    .Input("trace_groups: int64")
+    .Output("threshold: T")
+    .Output("blocked: R")
+    .Output("total_grad_v: T")
+    .Output("spikes: S")
+    .Output("spike_cotangent: S")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle voltage;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(3), 2, &voltage));
+      for (int output = 0; output < 5; ++output) context->set_output(output, voltage);
+      return OkStatus();
+    });
+
+// Reverse delay window shift: drops the newest slot of the ``[batch,
+// neurons * delay]`` history, moves the others up and unpacks the recorded
+// spikes ``words`` into the oldest slot, in one pass.
+REGISTER_OP("DpointnetShiftHistoryRecord")
+    .Attr("S: {half, float}")
+    .Attr("neurons: int >= 1")
+    .Input("history: S")
+    .Input("words: int32")
+    .Output("shifted: S")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle history;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &history));
+      context->set_output(0, history);
+      return OkStatus();
+    });
+
+// Post-hoc statistics of the packed step records ``[time, batch, 2 * words]``:
+// per-neuron spike counts over ``[begin, end)`` and masked sampled-population
+// traces (``indices`` are flat [k, 2] (sample, neuron) entries, ``groups`` the
+// output row of each entry).
+REGISTER_OP("DpointnetRecordCounts")
+    .Attr("neurons: int >= 1")
+    .Attr("begin: int >= 0")
+    .Attr("end: int >= 0")
+    .Input("words: int32")
+    .Output("counts: float")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      int neurons;
+      TF_RETURN_IF_ERROR(context->GetAttr("neurons", &neurons));
+      shape_inference::ShapeHandle words;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 3, &words));
+      context->set_output(0, context->Matrix(context->Dim(words, 1), neurons));
+      return OkStatus();
+    });
+
+REGISTER_OP("DpointnetRecordTraces")
+    .Attr("neurons: int >= 1")
+    .Attr("rows: int >= 1")
+    .Attr("begin: int >= 0")
+    .Attr("end: int >= 0")
+    .Input("words: int32")
+    .Input("indices: int64")
+    .Input("mask: float")
+    .Input("groups: int64")
+    .Output("traces: float")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      int rows, begin, end;
+      TF_RETURN_IF_ERROR(context->GetAttr("rows", &rows));
+      TF_RETURN_IF_ERROR(context->GetAttr("begin", &begin));
+      TF_RETURN_IF_ERROR(context->GetAttr("end", &end));
+      context->set_output(0, context->Matrix(rows, end - begin));
       return OkStatus();
     });

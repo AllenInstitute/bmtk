@@ -1082,6 +1082,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             "use_prepacked_nest_coefficients", "use_type_indexed_nest_coefficients",
             "use_static_type_indexed_nest_dispatch", "use_cooperative_row_projection",
             "use_fanout_row_projection", "use_target_gather_projection",
+            "use_scalar_input_projection",
         ):
             options[name] = getattr(self, "_" + name)
         options.update(
@@ -1162,6 +1163,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_csr_master_weights=UNSET,
         use_uint8_synapse_types=UNSET,
         use_adaptive_routing=UNSET,
+        use_scalar_input_projection=UNSET,
         spike_surrogate=UNSET,
         spike_surrogate_width=UNSET,
         spike_surrogate_gain=UNSET,
@@ -1537,6 +1539,28 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_forward_run_aggregation = use_forward_run_aggregation
         validate_bool_option(use_combined_current_sweep, "use_combined_current_sweep")
         self._use_combined_current_sweep = use_combined_current_sweep
+        scalar = execution.get("use_scalar_input_projection", False)
+        self._scalar_input_projection_auto = scalar == "auto"
+        if self._scalar_input_projection_auto:
+            from ..custom_ops.csr_spike_ops import scalar_input_projection_available
+
+            # Resolved at build: enabled only when an eligible named input exists.
+            scalar = bool(
+                use_combined_current_sweep and self._adaptive_routing
+                and scalar_input_projection_available()
+            )
+        self._use_scalar_input_projection = scalar
+        validate_bool_option(self._use_scalar_input_projection, "use_scalar_input_projection")
+        self._scalar_input_source = None
+        if self._use_scalar_input_projection:
+            from ..custom_ops.csr_spike_ops import scalar_input_projection_available
+
+            if not use_combined_current_sweep or not self._adaptive_routing:
+                raise ValueError(
+                    "use_scalar_input_projection=True requires the adaptive combined current sweep."
+                )
+            if not scalar_input_projection_available():
+                raise RuntimeError("Rebuild both CUDA operators for scalar input projection.")
         validate_bool_option(use_cooperative_row_projection, "use_cooperative_row_projection")
         self._use_cooperative_row_projection = use_cooperative_row_projection
         validate_bool_option(use_fanout_row_projection, "use_fanout_row_projection")
@@ -2250,6 +2274,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
                         host_lifecycle=self._csr_host_lifecycle,
                         uint8_types=self._uint8_synapse_types,
+                        build_scalar_target_types=self._use_scalar_input_projection,
                     ) if self._use_fused_cuda else cpu_connectivity(
                         input_indices, input_syn_ids, input_dense_shape[1], self._n_neurons,
                         host_lifecycle=self._csr_host_lifecycle,
@@ -2391,6 +2416,37 @@ class GLIF3Cell(tf.keras.layers.Layer):
             #     input_props['spike_prob'] = tf.constant(bkg_firing_rate * 0.001, dtype=self.compute_dtype)
 
             self.inputs[input_name] = input_props
+        if self._use_scalar_input_projection:
+            eligible = [
+                (index, net["master_connectivity"]["n_edges"])
+                for index, net in enumerate(self.inputs.values(), 1)
+                if net["master_connectivity"].get("scalar_target_types") is not None
+                and net["master_connectivity"]["n_edges"] > 0
+            ]
+            if not eligible and self._scalar_input_projection_auto:
+                # Automatic policy keeps the ordinary projection; the built
+                # scalar tables are unused.
+                self._use_scalar_input_projection = False
+                if self.acceleration_report is not None:
+                    self.acceleration_report["reasons"]["use_scalar_input_projection"] = (
+                        "ordinary projection kept; no nonempty named input has one synapse type per target"
+                    )
+            elif not eligible:
+                raise ValueError(
+                    "use_scalar_input_projection=True requires a nonempty named input "
+                    "with one synapse type per postsynaptic neuron."
+                )
+            else:
+                self._scalar_input_source = max(eligible, key=lambda item: item[1])[0]
+                if self.acceleration_report is not None and self._scalar_input_projection_auto:
+                    name = list(self.inputs)[self._scalar_input_source - 1]
+                    self.acceleration_report["reasons"]["use_scalar_input_projection"] = (
+                        f"scalar projection of named input '{name}' (largest eligible input)"
+                    )
+            if self.acceleration_report is not None:
+                self.acceleration_report["selected"]["use_scalar_input_projection"] = (
+                    self._use_scalar_input_projection
+                )
         if self._use_combined_current_sweep:
             if self._n_syn_basis != 4 or any(
                 net["input_type"] == "current" or net.get("fused_connectivity") is None
@@ -2498,13 +2554,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         external_checks = dict(
             (self.acceleration_report or {}).get("predicates", {}).get("use_packed_sm120_external_backward", {})
         )
-        for name, net in self.inputs.items():
+        for index, (name, net) in enumerate(self.inputs.items(), 1):
             connectivity = net.get("fused_connectivity")
             checks = {
                 "native connectivity": connectivity is not None,
                 "trainable input weights": net["input_weight_values"].trainable,
             }
             input_paths[name] = {
+                "scalar_projection": index == self._scalar_input_source,
                 "fixed4_forward": bool(net.get("use_fixed4_forward", False)),
                 "fixed4_eligible": bool(connectivity is not None and connectivity["fixed4_eligible"]),
                 "packed_backward": bool(
@@ -2646,6 +2703,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         plan = adaptive_routing_plan(
             list(sources.values()), target_tile_size=self.combined_current_target_tile_size,
             gather_sources=self._use_target_gather_projection,
+            scalar_source=self._scalar_input_source,
         )
         return {
             "schema": plan["schema"], "wide_tile": plan["wide_tile"],
@@ -2666,6 +2724,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             fanout_rows=self._use_fanout_row_projection,
             gather_sources=self._use_target_gather_projection,
             adaptive_routing=self._adaptive_routing,
+            scalar_source=self._scalar_input_source,
         )
         return dict(zip(sources, geometry))
 
@@ -3512,6 +3571,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         noise_seed=None,
         projection_values=None,
         recurrent_weight_carrier=None,
+        vjp_only=False,
     ):
         """Original compute-dtype math, optionally at immutable rollout weights."""
 
@@ -3537,6 +3597,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if direct_master and (projection_values is not None or recurrent_weight_carrier is not None):
             raise ValueError("The CPU CSR-master reference does not support alternate values or CSR carriers.")
         combined = self._use_combined_current_sweep or direct_master
+        if vjp_only and (not self._use_combined_current_sweep or direct_master):
+            raise ValueError("Projection-only VJPs require the native joint-current route.")
         if combined:
             combined_spikes = [tf.cast(z_buf, self.compute_dtype)]
             combined_weights = [
@@ -3664,6 +3726,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     for z, net in zip(combined_spikes[1:], self.inputs.values())
                 ],
             ]), self.compute_dtype)
+        elif combined and vjp_only:
+            rec_inputs = tf.add_n([i_rec] + extern_currents)
         elif combined:
             rec_inputs = fused_combined_currents(
                 combined_spikes, combined_weights, combined_connections,
@@ -3676,6 +3740,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 gather_sources=self._use_target_gather_projection,
                 **({"csr_master_weights": True} if optimized_master else {}),
                 **({"adaptive_routing": True} if self._adaptive_routing else {}),
+                **({"scalar_source": self._scalar_input_source}
+                   if self._use_scalar_input_projection else {}),
             )
         elif extern_currents:
             rec_inputs = rec_inputs + tf.add_n(extern_currents)
@@ -3720,7 +3786,16 @@ class GLIF3Cell(tf.keras.layers.Layer):
         capture_currents=False,
         projection_values=None,
         recurrent_weight_carrier=None,
+        capture_nest_record=False,
+        recorded_nest_outputs=None,
     ):
+        if (capture_nest_record or recorded_nest_outputs is not None) and (
+            self.dynamics_mode != "nest" or not self._use_fused_state
+            or not self._use_fused_state_history or not self._hard_reset
+            or not self._use_combined_current_sweep
+            or self.temporal_gradient_precision != "compute"
+        ):
+            raise ValueError("Recorded NEST steps require hard-forward compute-temporal fused state/history and joint projection.")
         if self._online_voltage_losses and not adjoint_replay:
             self.validate_state_precision(states)
             inputs = tf.cast(inputs, self.compute_dtype)
@@ -3758,6 +3833,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 inputs,
                 states,
                 noise_seed,
+                **({"vjp_only": True} if recorded_nest_outputs is not None else {}),
                 **(
                     {}
                     if primal_weight_carrier is None
@@ -3856,10 +3932,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 detach_asc_reset=self.detach_asc_reset,
                 pseudo_gauss=self._pseudo_gauss,
                 gauss_std=_rollout_constant(self, "_gauss_std"),
-                return_pre_reset_voltage=bool(self._online_voltage_losses),
+                return_pre_reset_voltage=bool(self._online_voltage_losses) or capture_nest_record or recorded_nest_outputs is not None,
                 use_fused_event_vjp=self.use_fused_nest_event_vjp,
                 fuse_history=self._use_fused_state_history,
                 hoist_type_indexed_guard=self._guarded_type_indexed_dispatch,
+                **({"recorded_outputs": recorded_nest_outputs} if recorded_nest_outputs is not None else {}),
                 **coefficient_kwargs,
             )
             new_z, new_v, new_r, new_asc, new_psc_rise, new_psc, new_z_buf = fused_result[:7]
@@ -3998,6 +4075,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 axis=-1,
             )
             new_state += (tf.cast(states[-1], tf.float32) + penalties,)
+        if capture_nest_record:
+            record = (
+                tf.stop_gradient(fused_result[7]), tf.stop_gradient(asc),
+            )
+            if recurrent_weight_carrier is not None:
+                return outputs, new_state, recurrent_weight_carrier, record
+            return outputs, new_state, record
         if capture_currents:
             return outputs, new_state, tf.stop_gradient(forward_currents)
         if recurrent_weight_carrier is not None:

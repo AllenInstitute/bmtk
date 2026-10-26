@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from . import loss_utils
+from ..spike_summary import SpikeSummary
 
 FANO_SAMPLE_SIZE_MEAN = 70
 FANO_SAMPLE_SIZE_STDDEV = 30
@@ -277,9 +278,45 @@ class SynchronizationLoss(tf.keras.layers.Layer):
 
         return fanos.stack()
 
+    def prepare_sampled_statistics(self, batch_size, dtype, sequence_length, batch_start=0):
+        from ..spike_statistics import SampledSpikeTraces
+
+        if self._t_start_idx < 0 or self._t_end_idx < 0:
+            raise ValueError("Streamed synchronization requires nonnegative time bounds.")
+        window = (min(self._t_start_idx, sequence_length), min(self._t_end_idx, sequence_length))
+        if window[1] <= window[0]:
+            return None
+        plan = self._plan(batch_size)
+        pool = self._draw_pool(self._next_seed_pair(), plan["n_epochs"])
+        ids = tf.gather(pool, tf.constant(plan["positions"], tf.int32))
+        return SampledSpikeTraces(
+            ids, tf.constant(plan["neuron_mask"], dtype=dtype),
+            window,
+            (batch_start, batch_start + batch_size),
+        )
+
+    def loss_from_sampled_traces(self, traces):
+        duration_ms = tf.shape(traces)[1]
+        bin_sizes_mask = self._bin_sizes_ms_tf < duration_ms // 2
+        reference = tf.boolean_mask(self.experimental_fanos_mean, bin_sizes_mask)
+        fanos = tf.boolean_mask(
+            self.pop_fano_tf(tf.cast(traces, self._dtype)), bin_sizes_mask
+        )
+        return self._sync_cost * tf.cond(
+            tf.size(reference) > 0,
+            lambda: tf.reduce_mean(tf.square(reference - fanos)),
+            lambda: tf.constant(0.0, dtype=self._dtype),
+        )
+
     def __call__(self, spikes, trim=True, **kwargs):
         if self._sync_cost <= 0:
             return tf.constant(0.0, dtype=self._dtype)
+        if isinstance(spikes, SpikeSummary):
+            if not trim:
+                raise ValueError("Untrimmed synchronization needs a separately prepared statistics window.")
+            if min(self._t_end_idx, spikes.sequence_length) <= min(self._t_start_idx, spikes.sequence_length):
+                return tf.constant(0.0, dtype=self._dtype)
+            return self.loss_from_sampled_traces(spikes.trace_for_loss(self.name))
 
         spikes = tf.convert_to_tensor(spikes)
         if spikes.dtype == tf.bool:

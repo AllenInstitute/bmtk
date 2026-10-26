@@ -574,6 +574,7 @@ struct AdaptiveSource {
   const Index* csc_splits;
   const Index* csc_edges;
   const Index* csc_sources;
+  const int64_t* scalar_types;
   int width;
   int traversal;
 };
@@ -582,6 +583,19 @@ template <typename T, typename Index>
 struct AdaptiveSources {
   AdaptiveSource<T, Index> source[kCombinedSources];
 };
+
+template <typename T, typename Index>
+__global__ void ValidateScalarTargetTypes(
+    AdaptiveSource<T, Index> source, int64_t edges, int n_post,
+    const int64_t* target_types, int* invalid) {
+  for (int64_t edge = blockIdx.x * blockDim.x + threadIdx.x;
+       edge < edges; edge += static_cast<int64_t>(blockDim.x) * gridDim.x) {
+    const Index target = source.posts[edge];
+    if (target < 0 || target >= n_post || target_types[target] != source.types[edge]) {
+      atomicExch(invalid, 1);
+    }
+  }
+}
 
 // Row `row`'s segment in `tile`: [*first, *stop) in CSR order.
 template <typename T, typename Index>
@@ -610,18 +624,23 @@ __device__ __forceinline__ bool AdaptiveFindSegment(const AdaptiveSource<T, Inde
 
 // Same arithmetic and equal-target run summation as the combined sweep's
 // block walk; `segment` distinguishes rows so that only one row's run merges.
-template <typename T, typename Index>
+template <typename T, typename Index, bool Scalar = false>
 __device__ __forceinline__ void AdaptiveAccumulateRunEdge(
     const AdaptiveSource<T, Index>& source, const T* basis, Index edge, bool valid, float spike,
     int target_start, int lane, float* sums, unsigned int segment) {
   const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
-  float contribution[4] = {};
+  constexpr int kChannels = Scalar ? 1 : 4;
+  float contribution[kChannels] = {};
   if (valid) {
     const float weighted = __fmul_rn(spike, source.weights[edge]);
-    const int type = source.types[edge];
+    if constexpr (Scalar) {
+      contribution[0] = weighted;
+    } else {
+      const int type = source.types[edge];
 #pragma unroll
-    for (int receptor = 0; receptor < 4; ++receptor) {
-      contribution[receptor] = __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor]));
+      for (int receptor = 0; receptor < 4; ++receptor) {
+        contribution[receptor] = __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor]));
+      }
     }
   }
   const unsigned int key = valid ? target | (segment << 13) : 0x80000000u | lane;
@@ -636,7 +655,7 @@ __device__ __forceinline__ void AdaptiveAccumulateRunEdge(
       const bool take = lane + offset < next;
       if (!__any_sync(0xffffffffu, take)) break;
 #pragma unroll
-      for (int receptor = 0; receptor < 4; ++receptor) {
+      for (int receptor = 0; receptor < kChannels; ++receptor) {
         const float other = __shfl_down_sync(0xffffffffu, contribution[receptor], offset);
         if (take) contribution[receptor] += other;
       }
@@ -644,8 +663,8 @@ __device__ __forceinline__ void AdaptiveAccumulateRunEdge(
   }
   if (valid && head) {
 #pragma unroll
-    for (int receptor = 0; receptor < 4; ++receptor) {
-      atomicAdd(sums + target * 4 + receptor, contribution[receptor]);
+    for (int receptor = 0; receptor < kChannels; ++receptor) {
+      atomicAdd(sums + (Scalar ? target : target * 4 + receptor), contribution[receptor]);
     }
   }
 }
@@ -748,7 +767,7 @@ __device__ __forceinline__ void AdaptiveWarpBatches(
 // row finds its segment, one packed block scan yields each found row's slot
 // and edge prefix, and warps walk 32-edge chunks of the concatenated segments
 // (warp-uniform owner search, then a per-lane linear advance).
-template <int kThreads, typename T, typename Index, typename PackedScan>
+template <int kThreads, typename T, typename Index, typename PackedScan, bool Scalar = false>
 __device__ __forceinline__ void AdaptiveBlockRounds(
     const AdaptiveSource<T, Index>& source, int sample, unsigned int tile, int target_start,
     const T* basis, float* sums, Index* starts, Index* offsets, float* amplitudes,
@@ -797,8 +816,9 @@ __device__ __forceinline__ void AdaptiveBlockRounds(
         while (offsets[owner + 1] <= position) ++owner;
       }
       const Index edge = valid ? starts[owner] + (position - offsets[owner]) : Index(0);
-      AdaptiveAccumulateRunEdge(source, basis, edge, valid, amplitudes[owner], target_start, lane,
-                                sums, static_cast<unsigned int>(owner));
+      AdaptiveAccumulateRunEdge<T, Index, Scalar>(
+          source, basis, edge, valid, amplitudes[owner], target_start, lane,
+          sums, static_cast<unsigned int>(owner));
     }
     __syncthreads();
   }
@@ -809,9 +829,9 @@ __device__ __forceinline__ void AdaptiveBlockRounds(
 // "adaptive_routing::" and the AdaptiveSources parameter distinguish it.
 namespace adaptive_routing {
 
-template <typename T, typename Index, int kTargets, int kThreads>
+template <typename T, typename Index, int kTargets, int kThreads, bool Scalar = false>
 __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSweepKernel(
-    AdaptiveSources<T, Index> sources, int source_count, int n_post, const T* basis,
+    AdaptiveSources<T, Index> sources, int source_count, int scalar_source, int n_post, const T* basis,
     bool batch_fast, T* output) {
   static_assert(kThreads == 512 || kThreads == 1024, "adaptive sweep block size");
   __shared__ float static_sums[kTargets <= 2048 ? kTargets * 4 : 1];
@@ -826,8 +846,43 @@ __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSw
   const int tile = batch_fast ? blockIdx.y : blockIdx.x;
   const int target_start = tile * kTargets;
   const int sample = batch_fast ? blockIdx.x : blockIdx.y;
+  const int targets = min(kTargets, n_post - target_start);
   for (int item = threadIdx.x; item < kTargets * 4; item += kThreads) sums[item] = 0.0f;
+  if constexpr (Scalar) {
+    __syncthreads();
+    const auto source = sources.source[scalar_source];
+    if (source.queue != nullptr) {
+      AdaptiveBlockRounds<kThreads, T, Index, PackedScan, true>(
+          source, sample, static_cast<unsigned int>(tile), target_start, basis, sums,
+          starts, offsets, amplitudes, scan_storage);
+    }
+    __syncthreads();
+    float values[(kTargets + kThreads - 1) / kThreads];
+#pragma unroll
+    for (int slot = 0; slot < (kTargets + kThreads - 1) / kThreads; ++slot) {
+      const int item = threadIdx.x + slot * kThreads;
+      values[slot] = item < targets ? sums[item] : 0.0f;
+    }
+    __syncthreads();
+#pragma unroll
+    for (int slot = 0; slot < (kTargets + kThreads - 1) / kThreads; ++slot) {
+      const int item = threadIdx.x + slot * kThreads;
+      if (item < kTargets) {
+        const float value = values[slot];
+        const int type = item < targets ? source.scalar_types[target_start + item] : 0;
+#pragma unroll
+        for (int receptor = 0; receptor < 4; ++receptor) {
+          sums[item * 4 + receptor] = value == 0.0f ? 0.0f :
+              __fmul_rn(value, ToFloat(basis[type * 4 + receptor]));
+        }
+      }
+    }
+    __syncthreads();
+  }
   for (int source_id = 0; source_id < source_count; ++source_id) {
+    if constexpr (Scalar) {
+      if (source_id == scalar_source) continue;
+    }
     const auto source = sources.source[source_id];
     if (source.traversal == kAdaptiveGather || source.queue == nullptr) continue;
     if (threadIdx.x == 0) ticket = 0;
@@ -843,7 +898,6 @@ __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSw
     __syncthreads();
   }
   __syncthreads();
-  const int targets = min(kTargets, n_post - target_start);
   for (int source_id = 0; source_id < source_count; ++source_id) {
     const auto source = sources.source[source_id];
     if (source.traversal != kAdaptiveGather || source.csc_splits == nullptr) continue;
@@ -899,12 +953,12 @@ __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSw
 
 }  // namespace adaptive_routing
 
-template <typename T, typename Index, int kTargets>
+template <typename T, typename Index, int kTargets, bool Scalar = false>
 struct AdaptiveSweepShape {
   static constexpr int kThreads = kTargets > 2048 && sizeof(Index) == 4 ? 1024 : 512;
   static constexpr int kSharedBytes = kTargets > 2048 ? kTargets * 4 * sizeof(float) : 0;
   static const void* Kernel() {
-    return reinterpret_cast<const void*>(adaptive_routing::DpointnetCombinedSweepKernel<T, Index, kTargets, kThreads>);
+    return reinterpret_cast<const void*>(adaptive_routing::DpointnetCombinedSweepKernel<T, Index, kTargets, kThreads, Scalar>);
   }
 };
 

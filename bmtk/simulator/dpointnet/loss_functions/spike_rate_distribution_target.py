@@ -1,5 +1,6 @@
 import os
 import tensorflow as tf
+from ..spike_summary import SpikeSummary
 import numpy as np
 import pandas as pd
 
@@ -143,7 +144,10 @@ class SpikeRateDistributionTarget:
                 spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
             )
             spike_counts = loss_utils.temporal_sum(spikes, dtype=self._dtype)
-            duration = tf.cast(tf.shape(spikes)[1], self._dtype)
+            duration = tf.cast(
+                spikes.shape[1] if isinstance(spikes, SpikeSummary) else tf.shape(spikes)[1],
+                self._dtype,
+            )
         rates = tf.reduce_mean(spike_counts, axis=0)
         rates /= duration
 

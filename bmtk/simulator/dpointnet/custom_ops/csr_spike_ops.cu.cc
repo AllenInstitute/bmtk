@@ -2932,6 +2932,8 @@ class DpointnetCombinedSweepOp : public OpKernel {
       OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
       OP_REQUIRES_OK(context, context->GetAttr("adaptive_routing", &adaptive_));
       OP_REQUIRES_OK(context, context->GetAttr("adaptive_traversal", &traversal_));
+      OP_REQUIRES_OK(context, context->GetAttr("scalar_source", &scalar_source_));
+      OP_REQUIRES_OK(context, context->GetAttr("scalar_target_types", &scalar_types_));
     }
     OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
@@ -2968,6 +2970,17 @@ class DpointnetCombinedSweepOp : public OpKernel {
       OP_REQUIRES(context, traversal_.empty(),
                   errors::InvalidArgument("adaptive_traversal requires adaptive_routing=true."));
     }
+    OP_REQUIRES(context, scalar_source_ == -1 ||
+                    (adaptive_ && scalar_source_ >= 1 && scalar_source_ < sources_ &&
+                     edges_[scalar_source_] > 0 &&
+                     traversal_[scalar_source_] == kAdaptiveBlockRounds),
+                errors::InvalidArgument(
+                    "scalar_source requires a nonempty adaptive block-round named input."));
+    OP_REQUIRES(context, scalar_source_ == -1 ? scalar_types_.empty() :
+                    scalar_types_.size() == static_cast<size_t>(n_post_) &&
+                    std::all_of(scalar_types_.begin(), scalar_types_.end(),
+                                [](int64_t type) { return type >= 0; }),
+                errors::InvalidArgument("scalar_target_types must match all postsynaptic neurons."));
   }
 
   ~DpointnetCombinedSweepOp() override { DpointnetRoutingLedger::Get().EraseOwner(this); }
@@ -3140,6 +3153,9 @@ class DpointnetCombinedSweepOp : public OpKernel {
     if (!context->status().ok()) return;
     OP_REQUIRES(context, basis.dim_size(0) > 0 && basis.dim_size(1) == 4,
                 errors::InvalidArgument("Combined sweep requires four basis columns."));
+    OP_REQUIRES(context, scalar_source_ < 0 ||
+                    *std::max_element(scalar_types_.begin(), scalar_types_.end()) < basis.dim_size(0),
+                errors::InvalidArgument("scalar_target_types contains an out-of-range basis row."));
     const Tensor& first = context->input(0);
     RequireMatrix(context, first, "spikes");
     if (!context->status().ok()) return;
@@ -3154,11 +3170,19 @@ class DpointnetCombinedSweepOp : public OpKernel {
       if (wide_blocks_per_sm_ < 0) {
         OP_REQUIRES_OK(context, WithAdaptiveTile(wide, [&](auto shape) -> Status {
           constexpr int tile = decltype(shape)::value;
-          using Shape = AdaptiveSweepShape<T, Index, tile>;
-          TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+          constexpr int threads = AdaptiveSweepShape<T, Index, tile>::kThreads;
+          constexpr int shared = AdaptiveSweepShape<T, Index, tile>::kSharedBytes;
+          const void* kernel = nullptr;
+          if (scalar_source_ >= 0) {
+            TF_RETURN_IF_ERROR((ConfigureAdaptiveTile<tile, true>()));
+            kernel = AdaptiveSweepShape<T, Index, tile, true>::Kernel();
+          } else {
+            TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+            kernel = AdaptiveSweepShape<T, Index, tile>::Kernel();
+          }
           int blocks = 0;
           const cudaError_t error = cudaOccupancyMaxActiveBlocksPerMultiprocessor(
-              &blocks, Shape::Kernel(), Shape::kThreads, Shape::kSharedBytes);
+              &blocks, kernel, threads, shared);
           if (error != cudaSuccess || blocks < 1) {
             cudaGetLastError();
             return errors::Internal("Adaptive routing occupancy query failed: ",
@@ -3266,6 +3290,11 @@ class DpointnetCombinedSweepOp : public OpKernel {
             this, source * 8 + kRoutingQueue, {key, kRoutingQueue, transient, 1, 0});
       }
     }
+    if (scalar_source_ >= 0) {
+      OP_REQUIRES_OK(context, PrepareScalarTypes(
+          context, views.source[scalar_source_], held_buffers_[scalar_source_]));
+      views.source[scalar_source_].scalar_types = scalar_types_device_.flat<int64>().data();
+    }
     Tensor* output = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({batch * n_post_, 4}), &output));
     const int tiles = (n_post_ + selected - 1) / selected;
@@ -3273,18 +3302,17 @@ class DpointnetCombinedSweepOp : public OpKernel {
     const dim3 grid = batch_fast ? dim3(batch, tiles) : dim3(tiles, batch);
     OP_REQUIRES_OK(context, WithAdaptiveTile(selected, [&](auto shape) -> Status {
       constexpr int tile = decltype(shape)::value;
-      using Shape = AdaptiveSweepShape<T, Index, tile>;
-      TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
-      return GpuLaunchKernel(
-          adaptive_routing::DpointnetCombinedSweepKernel<T, Index, tile, Shape::kThreads>, grid, Shape::kThreads,
-          Shape::kSharedBytes, device.stream(), views, sources_, n_post_, basis.flat<T>().data(),
-          batch_fast, output->flat<T>().data());
+      if (scalar_source_ >= 0) {
+        return LaunchAdaptive<tile, true>(
+            device, views, grid, basis, batch_fast, output);
+      }
+      return LaunchAdaptive<tile, false>(device, views, grid, basis, batch_fast, output);
     }));
   }
 
-  template <int kTile>
+  template <int kTile, bool Scalar = false>
   Status ConfigureAdaptiveTile() {
-    using Shape = AdaptiveSweepShape<T, Index, kTile>;
+    using Shape = AdaptiveSweepShape<T, Index, kTile, Scalar>;
     const int bit = AdaptiveTileBit(kTile);
     if ((adaptive_configured_ & bit) != 0) return OkStatus();
     if (Shape::kSharedBytes > 0) {
@@ -3295,7 +3323,54 @@ class DpointnetCombinedSweepOp : public OpKernel {
     return OkStatus();
   }
 
+  template <int kTile, bool Scalar>
+  Status LaunchAdaptive(const GPUDevice& device, AdaptiveSources<T, Index> views,
+                        dim3 grid, const Tensor& basis, bool batch_fast, Tensor* output) {
+    using Shape = AdaptiveSweepShape<T, Index, kTile, Scalar>;
+    TF_RETURN_IF_ERROR((ConfigureAdaptiveTile<kTile, Scalar>()));
+    return GpuLaunchKernel(
+        adaptive_routing::DpointnetCombinedSweepKernel<T, Index, kTile, Shape::kThreads, Scalar>,
+        grid, Shape::kThreads, Shape::kSharedBytes, device.stream(), views, sources_,
+        scalar_source_, n_post_, basis.flat<T>().data(), batch_fast, output->flat<T>().data());
+  }
+
+  Status PrepareScalarTypes(OpKernelContext* context, AdaptiveSource<T, Index> source,
+                            const void* metadata_key) {
+    if (scalar_key_ == metadata_key && scalar_types_device_.IsInitialized()) return OkStatus();
+    const auto checked = [](cudaError_t error) -> Status {
+      return error == cudaSuccess ? OkStatus() :
+          errors::Internal("Scalar projection initialization failed: ", cudaGetErrorString(error));
+    };
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    Tensor types, invalid;
+    TF_RETURN_IF_ERROR(context->allocate_temp(DT_INT64, TensorShape({n_post_}), &types));
+    TF_RETURN_IF_ERROR(context->allocate_temp(DT_INT32, TensorShape({1}), &invalid));
+    TF_RETURN_IF_ERROR(checked(cudaMemcpyAsync(
+        types.flat<int64>().data(), scalar_types_.data(), n_post_ * sizeof(int64_t),
+        cudaMemcpyHostToDevice, device.stream())));
+    TF_RETURN_IF_ERROR(checked(cudaMemsetAsync(invalid.flat<int32>().data(), 0, sizeof(int),
+                                             device.stream())));
+    TF_RETURN_IF_ERROR(GpuLaunchKernel(
+        ValidateScalarTargetTypes<T, Index>,
+        std::min<int64_t>((edges_[scalar_source_] + 255) / 256, 65535), 256, 0,
+        device.stream(), source, edges_[scalar_source_], n_post_, types.flat<int64>().data(),
+        invalid.flat<int32>().data()));
+    int bad = 0;
+    TF_RETURN_IF_ERROR(checked(cudaMemcpyAsync(
+        &bad, invalid.flat<int32>().data(), sizeof(int), cudaMemcpyDeviceToHost, device.stream())));
+    TF_RETURN_IF_ERROR(checked(cudaStreamSynchronize(device.stream())));
+    if (bad) return errors::InvalidArgument(
+        "scalar_target_types does not match the live per-edge connectivity types.");
+    scalar_types_device_ = types;
+    scalar_key_ = metadata_key;
+    return OkStatus();
+  }
+
   bool adaptive_ = false;
+  int scalar_source_ = -1;
+  std::vector<int64_t> scalar_types_;
+  Tensor scalar_types_device_;
+  const void* scalar_key_ = nullptr;
   std::vector<int> traversal_;
   int wide_blocks_per_sm_ = -1;
   int adaptive_configured_ = 0;

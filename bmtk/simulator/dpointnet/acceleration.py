@@ -160,6 +160,7 @@ def finalize_acceleration_report(report, requested, effective, *, predicates=Non
         "use_csr_master_weights": ("use_combined_current_sweep",),
         "use_uint8_synapse_types": ("use_csr_master_weights",),
         "use_adaptive_routing": ("use_uint8_synapse_types",),
+        "use_scalar_input_projection": ("use_adaptive_routing", "use_combined_current_sweep"),
     }.items():
         if name in entries:
             entries[name]["dependencies"] = {
@@ -724,6 +725,33 @@ def resolve_acceleration_options(
         report["selected"]["use_packed_sm120_external_backward"] = "auto"
     select("use_prepacked_nest_coefficients", nest and state,
            "NEST and compatible fused state")
+    # Scalar input projection depends on the inputs' synapse-type structure,
+    # known only at build: "auto" lets the cell enable it for the largest named
+    # input with one synapse type per target when adaptive routing is admitted.
+    scalar_possible = (
+        joint and options.get("use_adaptive_routing") is True
+        and csr_spike_ops.scalar_input_projection_available()
+    )
+    if "use_scalar_input_projection" in options and options["use_scalar_input_projection"] != "auto":
+        report["reasons"]["use_scalar_input_projection"] = "explicit override; constructor validation retained"
+        report["provenance"]["use_scalar_input_projection"] = "explicit_override"
+    else:
+        options["use_scalar_input_projection"] = "auto" if scalar_possible else False
+        report["reasons"]["use_scalar_input_projection"] = (
+            "admitted adaptive joint sweep and rebuilt scalar capability; the cell enables it at "
+            "build for the largest eligible named input (one synapse type per target), else keeps "
+            "the ordinary projection" if scalar_possible else
+            "ordinary projection kept; requires the admitted adaptive joint sweep and rebuilt scalar capability"
+        )
+        report["provenance"]["use_scalar_input_projection"] = (
+            "explicit_auto" if cell_params.get("use_scalar_input_projection") == "auto" else "profile"
+        )
+    report["selected"]["use_scalar_input_projection"] = options["use_scalar_input_projection"]
+    report["automatic"]["use_scalar_input_projection"] = scalar_possible
+    report["predicates"]["use_scalar_input_projection"] = {
+        "joint sweep": joint, "adaptive routing": options.get("use_adaptive_routing") is True,
+        "loaded scalar projection ABI": csr_spike_ops.scalar_input_projection_available(),
+    }
     select(
         "use_type_indexed_nest_coefficients",
         nest and state and (
@@ -779,6 +807,25 @@ def resolve_acceleration_options(
             "use_javier_recurrent_vjp=True requires compatible FP16 native accumulation."
         )
     report["resolver_selected"] = dict(report["selected"])
+    # Stale explicit execution flags carried into an automatic profile are the
+    # usual way a configuration ends up slower than the policy: name every one
+    # whose value differs from the automatic choice.
+    report["explicit_deviations"] = {
+        name: {"explicit": report["selected"][name], "automatic": automatic}
+        for name, automatic in report["automatic"].items()
+        if report["provenance"].get(name) == "explicit_override"
+        and report["selected"][name] != automatic
+    }
+    if report["explicit_deviations"]:
+        warnings.warn(
+            "acceleration_profile='auto' with explicit execution options that differ from the "
+            "automatic choice: " + ", ".join(
+                f"{name}={value['explicit']!r} (auto: {value['automatic']!r})"
+                for name, value in report["explicit_deviations"].items()
+            ) + ". Remove inherited use_* flags from configurations that adopt the automatic "
+            "profile unless each override is intended and documented.",
+            UserWarning, stacklevel=2,
+        )
     io.log_info(f"DPointNet acceleration resolver (not final cell dispatch): {report}")
     if not currents:
         io.log_warning(

@@ -140,6 +140,13 @@ Freezing a weight group and changing its learning rate are different choices.
    * - ``EMDWeightRegularization``
      - Compare weight distributions; this is not a firing-rate target.
 
+``EMDWeightRegularization.sort_strategy`` accepts ``"per_group"`` (the
+unchanged default) and explicit ``"batched"``. The batched path performs
+stable global value and group ordering while preserving canonical equal-value
+edge order and the existing group reductions and VJPs. It requires a static
+edge count within signed-int32 indexing. It is not automatically selected:
+global sorts can change peak memory and require workload-specific timing.
+
 Loss coefficients and selected populations determine the experiment. Inspect
 individual loss terms, firing-rate distributions and voltage behavior, not
 only their sum. The visual-cortex example in ``examples/dpointnet_v1`` needs
@@ -197,6 +204,25 @@ calculated. It is enabled by default:
        cells, whose first recurrent state is the binary spike buffer, and keeps
        other cell classes unpacked. ``false`` restores unpacked checkpoints.
        Nonzero values are treated as spikes, so only binary states are lossless.
+   * - ``stream_spike_statistics``
+     - ``"auto"``
+     - Retain FP32 spike counts and configured sampled synchrony traces instead
+       of the complete spike sequence. ``"auto"`` streams when checkpointing,
+       BPTT, compute-temporal gradients, one replica, a GLIF3 cell and only
+       supported losses hold; otherwise the dense route is kept. Explicit
+       ``true`` raises on an unmet prerequisite; ``false`` keeps the dense route.
+   * - ``recorded_adjoint``
+     - ``"auto"``
+     - Use retained NEST forward-state records instead of replaying neuron and
+       projection forward kernels. ``"auto"`` selects the direct recorded adjoint
+       (``"direct"``) when statistics are streamed, the cell satisfies its
+       eligibility and only CSR-master surfaces are trainable; otherwise
+       checkpointed streaming is kept. The estimated record payload is
+       advisory: when it exceeds 60 percent of the free device memory a
+       warning says the rollout may run out of memory, and ``false`` is the
+       explicit way to keep checkpointed streaming. ``true`` requests the
+       tape-driven recorded route, ``"direct"`` the direct route, each with
+       its own errors.
    * - ``regenerate_initial_state_each_epoch``
      - ``true``
      - Regenerate the configured initial state at epoch boundaries.
@@ -217,6 +243,116 @@ The omitted chunk size follows the effective training-parameter sequence length,
 including a shorter per-condition length; an explicit size is not silently
 clamped. Existing legacy examples pin checkpointing off to preserve their
 integer-refractory-state training route.
+
+Streamed spike statistics
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``stream_spike_statistics`` is a single-replica BPTT option; the default
+``"auto"`` enables it when every prerequisite below holds and ``true`` requests it explicitly.
+It preserves the configured loss windows, including distinct trimmed rate
+windows, and draws each synchronization sampling plan once per rollout. The
+backward pass constructs only chunk-sized spike cotangents. The ordinary dense
+output route remains the default, including for unsupported custom losses and
+local learning rules; an explicit unsupported streaming request raises.
+
+Supported consumers are ``TargetFiringRate``, ``SpikeRateDistributionTarget``,
+the ``crowd_osi`` and ``crowd_spikes`` orientation methods,
+``SynchronizationLoss``, ``LowRateFloor``, ``VoltageRateFloor``,
+``VoltageRegularization`` and ``EMDWeightRegularization``. Single, series,
+series-accumulated and concatenated parallel parameter groups retain their
+existing update and normalization semantics. FP32 temporal adjoints and multiple
+replicas are not currently supported by this option. Non-spike sequences and
+complete terminal states remain available; streaming spikes does not remove
+requested full voltage sequences.
+
+Custom loops can use ``SpikeStatisticsRunner`` and ``SampledSpikeTraces`` from
+``bmtk.simulator.dpointnet.spike_statistics``. They return ``SpikeStatistics``
+with ``counts``, ``traces``, secondary ``sequences`` and ``final_state`` tuples.
+The typed ``SpikeSummary`` loss input records its count windows explicitly and
+rejects requests for an uncollected window rather than inventing counts.
+
+Recorded NEST adjoint
+~~~~~~~~~~~~~~~~~~~~~
+
+``recorded_adjoint=true`` (the tape-driven recorded route) uses the same summaries but
+retains pre-reset membrane voltage, packed spikes and refractory masks,
+and exact delayed input history. Recurrent delay slots are reconstructed from
+each chunk's boundary history and its recorded spikes, rather than recording
+every delayed slot at every step. Private journals are time-major so reverse
+steps read contiguous frames; public outputs remain batch-major.
+Attached adaptation-reset derivatives require
+previous ASC values; these are reconstructed within each chunk from its exact
+boundary ASC and recorded events, rather than retained for the whole sequence.
+Only delay-slot shifts and the small ASC recurrence are rematerialized: membrane integration and
+current projections are not replayed. Native state/history and per-source
+projection VJPs are reused with the original hard-forward reset, configured
+reset derivatives, temporal retention and live Poisson input semantics.
+
+VJP-only projection placeholders within the recorded route use zero-valued
+TensorFlow producers and the same native sparse derivatives, avoiding native
+forward launches whose outputs are identically zero. This private, scoped
+optimization does not change ordinary projections or their independent
+source/weight gradients. Resource metadata is captured by the current graph,
+not returned through custom-gradient outputs, to preserve nested-loop autodiff.
+
+The recorded route requires the unmodified ``GLIF3Cell``, NEST hard forward,
+compute-temporal gradients, the direct state loop, native joint projection and native state/history,
+full-population compact spikes, and spike/count input sources. It rejects
+continuous-current inputs, custom cell subclasses and input differentiation.
+Initial spike history must be binary. Unsupported explicit requests raise;
+they never change dynamics or precision to make a workload eligible.
+Flag packing and fixed-chunk ASC reconstruction use small compiled TensorFlow
+functions; this is not whole-model XLA.
+
+The retained-state payload can exceed checkpointed recomputation memory.
+This option currently stores exact records on the compute device: it is not
+host offload, lossy voltage compression, a universal memory-saving policy, or
+an established performance recommendation. Qualification must compare complete
+accepted updates and all trainable named inputs, not only forward kernels.
+
+Direct recorded adjoint
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The default ``"auto"`` requests resolve to this route whenever it is eligible,
+so an ordinary NEST hard-forward training configuration needs no engine
+options to use it. ``TrainingEngine.training_route_report`` (also stored under
+the cell's ``acceleration_report["training_route"]``) records the request, the
+selection and the reason, including the unmet prerequisite when a slower route
+was kept; the preparation log repeats it. Explicit engine requests and explicit
+cell ``use_*`` options that differ from the automatic choice are reported
+(``explicit_deviations``) and warned about: configurations that adopt
+``acceleration_profile="auto"`` should carry no inherited execution flags
+unless an override is intended and documented.
+
+``recorded_adjoint="direct"`` keeps the recorded route's eligibility, records
+and values but replaces its tape-driven reverse with a reverse loop that calls
+the native primitives directly, one step at a time: the native NEST
+history/events backward (summing the following step's recurrent credit in the
+same kernel), the native sparse weight and source VJPs, the native
+voltage-penalty VJP and a native reverse prelude that derives the threshold,
+blocked mask, spikes and spike cotangent from the step record. Per step the
+forward stores only the FP32 pre-reset membrane, written by the state kernel
+into a persistent record buffer, and one bit-packed word row holding the spikes
+and the pre-step refractory mask; no chunk-boundary states, stacked spike
+sequences or external input histories are kept. Exact prior ASC values for the
+attached adaptation reset are re-walked from a snapshot taken every chunk.
+Spike counts and sampled traces are reduced from the packed records after the
+forward loop.
+
+Forward values, state and history cotangents and recurrent credit are bitwise
+those of the checkpointed streaming route; named-input and recurrent master
+gradients can differ by one FP32 unit in the last place because each step
+accumulates natively instead of summing chunked tape contributions.
+
+``bmtk.simulator.dpointnet.direct_recorded_adjoint`` separates the per-step
+arithmetic from the single-replica driver: ``DirectRecordedStep`` offers
+transport-independent ``forward`` (optionally writing its record row in place),
+``reverse``, ``advance_asc`` and ``shift_history`` primitives with explicit
+per-population sources, optional dense source credit and caller-owned weight
+accumulators, so a neuron-partitioned driver can reuse them without this
+module's storage policy. ``DirectRecordedAdjointRunner`` is that storage policy
+for one replica. The route needs the rebuilt record/reverse operators and the
+same GPU conditions as the recorded route; unsupported requests raise.
 
 This is different from **saved checkpoints**, which store weights and, when
 explicitly included, optimizer/state variables for later restoration.

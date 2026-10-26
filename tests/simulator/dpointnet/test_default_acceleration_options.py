@@ -215,6 +215,27 @@ def test_explicit_true_is_recorded_as_override(hardware):
         assert report["reasons"][name].startswith("explicit override")
 
 
+def test_explicit_deviations_from_auto_are_named_and_warned(hardware):
+    """Stale explicit flags that differ from the automatic choice are reported and warned;
+    explicit values equal to the automatic choice are silent."""
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _, report = resolve({"use_csr_master_weights": True, "use_adaptive_routing": True})
+    assert report["explicit_deviations"] == {}
+    with pytest.warns(UserWarning, match="use_adaptive_routing=False \\(auto: True\\)") as caught:
+        _, report = resolve({"use_adaptive_routing": False, "use_csr_master_weights": True})
+    assert report["explicit_deviations"] == {
+        "use_adaptive_routing": {"explicit": False, "automatic": True},
+    }
+    assert "Remove inherited use_* flags" in str(caught[0].message)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _, report = resolve(batch_size=1)
+    assert report["explicit_deviations"] == {}
+
+
 def test_disabled_profile_never_selects_new_options(hardware):
     options, report = resolve({"acceleration_profile": None})
     assert report is None and not any(name in options for name in NEW_OPTIONS)
@@ -691,3 +712,27 @@ def test_emd_group_order_checkpoint_matches_canonical_models(tmp_path, monkeypat
     live._group_order.assign(tf.zeros_like(live._group_order))
     tf.train.Checkpoint(order=live._group_order).restore(canonical_path).assert_consumed()
     np.testing.assert_array_equal(live._group_order, original)
+
+
+# ---------------------------------------------------------------------------
+# Scalar input projection under auto
+# ---------------------------------------------------------------------------
+
+def test_scalar_input_projection_auto_placeholder_follows_adaptive_routing(hardware, monkeypatch):
+    monkeypatch.setattr(ops, "scalar_input_projection_available", lambda: True)
+    options, report = resolve()
+    assert options["use_scalar_input_projection"] == "auto"
+    assert report["provenance"]["use_scalar_input_projection"] == "profile"
+    assert report["predicates"]["use_scalar_input_projection"]["adaptive routing"] is True
+    # Below the adaptive-routing batch the ordinary projection is kept.
+    options, report = resolve(batch_size=4)
+    assert options["use_scalar_input_projection"] is False
+    assert "requires the admitted adaptive joint sweep" in report["reasons"]["use_scalar_input_projection"]
+    # Missing capability keeps the ordinary projection; explicit values are overrides.
+    monkeypatch.setattr(ops, "scalar_input_projection_available", lambda: False)
+    options, _ = resolve()
+    assert options["use_scalar_input_projection"] is False
+    options, report = resolve({"use_scalar_input_projection": False})
+    assert options["use_scalar_input_projection"] is False
+    assert report["provenance"]["use_scalar_input_projection"] == "explicit_override"
+
