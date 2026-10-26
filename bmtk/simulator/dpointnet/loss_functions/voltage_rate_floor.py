@@ -4,6 +4,8 @@ import inspect
 
 import tensorflow as tf
 
+from ..spike_summary import SpikeSummary
+
 
 @tf.function(jit_compile=True)
 def voltage_rate_floor_step(voltage, nonrefractory, gate, target=0.9, cost=1.0):
@@ -114,5 +116,6 @@ class VoltageRateFloor:
 
     def __call__(self, spikes, model_state, voltage_rate_floor_batch_weight=1.0, **kwargs):
         return tf.cast(voltage_rate_floor_batch_weight, tf.float32) * tf.reduce_mean(model_state[-1][:, self.index]) / tf.cast(
-            tf.shape(spikes)[1], tf.float32
+            spikes.shape[1] if isinstance(spikes, SpikeSummary) else tf.shape(spikes)[1],
+            tf.float32
         )

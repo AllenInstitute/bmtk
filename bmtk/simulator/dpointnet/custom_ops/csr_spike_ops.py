@@ -3,6 +3,8 @@ import inspect
 import itertools
 import weakref
 from collections.abc import Mapping
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +19,16 @@ _OPS = None
 _LOAD_ERROR = None
 _RESOURCE_COUNTER = itertools.count()
 _RESOURCE_CONTAINER = "bmtk_dpointnet_csr"
+_ELIDE_VJP_PRODUCERS = ContextVar("dpointnet_elide_vjp_producers", default=False)
+
+
+@contextmanager
+def _elide_vjp_producers():
+    token = _ELIDE_VJP_PRODUCERS.set(True)
+    try:
+        yield
+    finally:
+        _ELIDE_VJP_PRODUCERS.reset(token)
 
 
 def _selected_physical_gpus():
@@ -336,6 +348,19 @@ def _uint8_type_options(connectivity):
     return {"uint8_types": True}
 
 
+def _scalar_target_type_map(post_ids, synapse_types, n_post):
+    if not post_ids.size:
+        return None
+    result = np.zeros(n_post, np.int64)
+    np.maximum.at(result, post_ids, synapse_types)
+    for start in range(0, post_ids.size, 1 << 20):
+        stop = start + (1 << 20)
+        if np.any(result[post_ids[start:stop]] != synapse_types[start:stop]):
+            return None
+    result.setflags(write=False)
+    return result
+
+
 def build_csr_connectivity(
     indices,
     synapse_types,
@@ -348,6 +373,7 @@ def build_csr_connectivity(
     projection_basis=None,
     host_lifecycle=False,
     uint8_types=False,
+    build_scalar_target_types=False,
 ):
     """Build canonical CSR routing and optional immutable-basis projection sharing.
 
@@ -357,6 +383,8 @@ def build_csr_connectivity(
     """
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
+    if type(build_scalar_target_types) is not bool:
+        raise TypeError("build_scalar_target_types must be an explicit boolean.")
     if type(uint8_types) is not bool:
         raise TypeError("uint8_types must be an explicit boolean.")
     if uint8_types:
@@ -404,6 +432,10 @@ def build_csr_connectivity(
         )
     if np.any(synapse_types < 0) or np.any(synapse_types >= n_synapse_types):
         raise ValueError("Synapse type indices are outside the basis table.")
+    scalar_target_types = (
+        _scalar_target_type_map(post_ids, synapse_types, n_target_neurons)
+        if build_scalar_target_types else None
+    )
     index_dtype = _csr_index_dtype(
         indices.shape[0],
         n_source_neurons,
@@ -610,6 +642,7 @@ def build_csr_connectivity(
                 ),
                 "has_repeated_targets": has_repeated_targets,
                 "sorted_by_target": bool(sort_by_target),
+                **({"scalar_target_types": scalar_target_types} if build_scalar_target_types else {}),
                 "fixed4_eligible": fixed4_eligible,
                 "fixed4_incoming": bool(incoming_pre_ids.size),
                 "incoming_pre_ids": replica_values[0]["incoming_pre_ids"],
@@ -674,35 +707,50 @@ def _fused_spike_currents_gradient(op, current_grad):
     # masters and the uint8 type tail, so develop-schema nodes and libraries
     # without these attributes take the canonical gradient operators.
     csr_master_weights = op.type == CSR_MASTER_FORWARD_OP
-    type_options = (
-        {"uint8_types": True}
-        if csr_master_weights and _optional_bool_attr(op, "uint8_types") else {}
+    return _projection_gradient(
+        op.inputs, current_grad,
+        csr_master_weights=csr_master_weights,
+        uint8_types=csr_master_weights and _optional_bool_attr(op, "uint8_types"),
+        compute_spike_gradient=op.get_attr("compute_spike_gradient"),
+        compute_weight_gradient=op.get_attr("compute_weight_gradient"),
+        n_post=op.get_attr("n_post"),
+        index_dtype=op.get_attr("Tindex"),
+        n_edges=op.get_attr("n_edges"),
+        n_pairs=op.get_attr("n_pairs"),
+        use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+        write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
+        use_small_batch_backward=op.get_attr("use_small_batch_backward"),
     )
-    compute_spike_gradient = op.get_attr("compute_spike_gradient")
-    compute_weight_gradient = op.get_attr("compute_weight_gradient")
-    n_post = op.get_attr("n_post")
-    index_dtype = op.get_attr("Tindex")
+
+
+def _projection_gradient(
+    inputs, current_grad, *, csr_master_weights, uint8_types,
+    compute_spike_gradient, compute_weight_gradient, n_post, index_dtype,
+    n_edges, n_pairs, use_packed_sm120_backward, write_csr_weight_gradient,
+    use_small_batch_backward,
+):
+    type_options = {"uint8_types": True} if uint8_types else {}
     if compute_spike_gradient:
         gradient_operator = (
             _OPS.dpointnet_csr_spike_grad_csr_master
             if csr_master_weights else _OPS.dpointnet_csr_spike_grad
         )
         spike_grad, weight_grad = gradient_operator(
-            op.inputs[0],
+            inputs[0],
             current_grad,
-            op.inputs[2],
-            op.inputs[3],
-            op.inputs[4],
-            op.inputs[5],
+            inputs[2],
+            inputs[3],
+            inputs[4],
+            inputs[5],
             Tindex=index_dtype,
             n_post=n_post,
-            n_edges=op.get_attr("n_edges"),
-            n_pairs=op.get_attr("n_pairs"),
-            use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+            n_edges=n_edges,
+            n_pairs=n_pairs,
+            use_packed_sm120_backward=use_packed_sm120_backward,
             write_csr_weight_gradient=(
-                op.get_attr("write_csr_weight_gradient") or csr_master_weights
+                write_csr_weight_gradient or csr_master_weights
             ),
-            use_small_batch_backward=op.get_attr("use_small_batch_backward"),
+            use_small_batch_backward=use_small_batch_backward,
             use_javier_batch32_backward=False,
             **type_options,
         )
@@ -711,25 +759,25 @@ def _fused_spike_currents_gradient(op, current_grad):
     elif compute_weight_gradient:
         spike_grad = None
         weight_grad = _OPS.dpointnet_csr_weight_grad(
-            op.inputs[0],
+            inputs[0],
             current_grad,
-            op.inputs[2],
-            op.inputs[4],
+            inputs[2],
+            inputs[4],
             **type_options,
             Tindex=index_dtype,
             n_post=n_post,
-            n_edges=op.get_attr("n_edges"),
-            n_pairs=op.get_attr("n_pairs"),
-            use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+            n_edges=n_edges,
+            n_pairs=n_pairs,
+            use_packed_sm120_backward=use_packed_sm120_backward,
             **({"write_csr_weight_gradient": True} if csr_master_weights else {}),
         )
     else:
         spike_grad = None
         weight_grad = None
-    initial_grad = current_grad if op.inputs[10].shape.rank == 2 else None
+    initial_grad = current_grad if inputs[10].shape.rank == 2 else None
     return (
         spike_grad,
-        (tf.cast(weight_grad, op.inputs[1].dtype) if weight_grad is not None else None),
+        (tf.cast(weight_grad, inputs[1].dtype) if weight_grad is not None else None),
         None,
         None,
         None,
@@ -740,6 +788,35 @@ def _fused_spike_currents_gradient(op, current_grad):
         None,
         initial_grad,
     )
+
+
+def _elided_projection_currents(inputs, **gradient_options):
+    metadata = _projection_metadata_in_current_graph(inputs[2])
+
+    @tf.custom_gradient
+    def project(*arguments):
+        spikes, basis = arguments[0], arguments[3]
+        batch = spikes.shape[0] if spikes.shape[0] is not None else tf.shape(spikes)[0]
+        width = basis.shape[1] if basis.shape[1] is not None else tf.shape(basis)[1]
+        currents = tf.zeros((batch * gradient_options["n_post"], width), spikes.dtype)
+
+        def grad(current_grad):
+            gradients = _projection_gradient(
+                arguments[:2] + (metadata,) + arguments[2:],
+                current_grad, **gradient_options,
+            )
+            return gradients[:2] + gradients[3:]
+
+        return currents, grad
+
+    return project(*(inputs[:2] + inputs[3:]))
+
+
+def _projection_metadata_in_current_graph(metadata):
+    if tf.inside_function():
+        # Resource outputs on custom-gradient IdentityN look like new loop resources.
+        return ops.get_default_graph().capture(metadata)
+    return metadata
 
 
 def fused_recurrent_accumulation_available():
@@ -828,14 +905,12 @@ def fused_recurrent_weight_carry(
             use_device_active_queue_forward=use_device_active_queue_forward,
             **({"csr_master_weights": True} if csr_master_weights else {}),
         )
-        # Reuse this FuncGraph's capture; recapturing the eager handle in grad
-        # breaks TensorFlow's nested while-gradient resource mapping.
         metadata = (
-            connectivity["metadata_handle"]
-            if tf.executing_eagerly()
+            _projection_metadata_in_current_graph(connectivity["metadata_handle"])
+            if vjp_only and _ELIDE_VJP_PRODUCERS.get()
+            else connectivity["metadata_handle"] if tf.executing_eagerly()
             else currents.op.inputs[2]
         )
-
         def grad(dcurrents, dcarrier):
             if dcarrier is None:
                 dcarrier = tf.zeros_like(carrier)
@@ -1020,6 +1095,25 @@ def fused_spike_currents(
         _OPS.dpointnet_csr_spike_forward_csr_master
         if csr_master_weights else _OPS.dpointnet_csr_spike_forward
     )
+    if vjp_only and _ELIDE_VJP_PRODUCERS.get():
+        return _elided_projection_currents(
+            (
+                spikes, master_weights, connectivity["metadata_handle"],
+                csr_weights, basis, spike_gradient_scale, active_rows,
+                tf.cast(connectivity["incoming_pre_ids"], index_dtype),
+                tf.cast(connectivity["incoming_edge_ids"], index_dtype),
+                tf.cast(connectivity["incoming_types"], index_dtype), initial_currents,
+            ),
+            csr_master_weights=csr_master_weights,
+            uint8_types=bool(type_options),
+            compute_spike_gradient=compute_spike_gradient,
+            compute_weight_gradient=compute_weight_gradient,
+            n_post=n_post, index_dtype=index_dtype,
+            n_edges=connectivity["n_edges"], n_pairs=connectivity["n_pairs"],
+            use_packed_sm120_backward=use_packed_sm120_backward,
+            write_csr_weight_gradient=write_csr_weight_gradient,
+            use_small_batch_backward=use_small_batch_backward,
+        )
     return forward(
         spikes,
         master_weights,
@@ -1154,6 +1248,12 @@ def require_adaptive_routing():
         )
 
 
+def scalar_input_projection_available():
+    return adaptive_routing_available() and _operator_accepts(
+        "dpointnet_combined_sweep_csr_master", ("scalar_source", "scalar_target_types"),
+    )
+
+
 def adaptive_narrow_tile(wide):
     """Narrow tile paired with ``wide``; equal to ``wide`` when none is narrower."""
     quarter = int(wide) // 4
@@ -1175,7 +1275,9 @@ def adaptive_selected_tile(batch, n_post, wide_tile, multiprocessors, wide_block
     return narrow if 2 * wide_blocks <= int(multiprocessors) * int(wide_blocks_per_sm) else wide
 
 
-def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sources=False):
+def adaptive_routing_plan(
+    connectivities, *, target_tile_size=2048, gather_sources=False, scalar_source=None,
+):
     """Deterministic per-source traversal policy of the adaptive routing schema.
 
     gather: low in-degree source (``combined_gather_eligible``) when target gather is
@@ -1197,6 +1299,14 @@ def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sourc
             traversals.append("warp_batches")
         else:
             traversals.append("block_rounds")
+    if scalar_source is not None:
+        if not isinstance(scalar_source, (int, np.integer)) or isinstance(scalar_source, bool):
+            raise TypeError("scalar_source must be an integer source index or None.")
+        if not 1 <= scalar_source < len(connectivities):
+            raise ValueError("Scalar input projection requires a named input source.")
+        if connectivities[scalar_source].get("scalar_target_types") is None:
+            raise ValueError("Scalar input projection requires one synapse type per target.")
+        traversals[scalar_source] = "block_rounds"
     return {
         "schema": ADAPTIVE_ROUTING_SCHEMA,
         "wide_tile": wide,
@@ -1208,7 +1318,7 @@ def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sourc
 
 def combined_routing_geometry(
     connectivities, *, target_tile_size=2048, cooperative_rows=False, fanout_rows=False,
-    gather_sources=False, adaptive_routing=False,
+    gather_sources=False, adaptive_routing=False, scalar_source=None,
 ):
     """Static per-source routing geometry for either schema, as the native op dispatches it.
 
@@ -1221,6 +1331,7 @@ def combined_routing_geometry(
     if adaptive_routing:
         plan = adaptive_routing_plan(
             connectivities, target_tile_size=tile, gather_sources=gather_sources,
+            scalar_source=scalar_source,
         )
         rule = (
             "narrow iff 2*batch*ceil(n_post/wide_tile) <= multiprocessors*resident wide blocks "
@@ -1317,6 +1428,7 @@ def fused_combined_currents(
     spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
     cooperative_rows=False, fanout_rows=False, gather_sources=False,
     csr_master_weights=False, adaptive_routing=False,
+    scalar_source=None,
 ):
     """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs.
 
@@ -1324,6 +1436,28 @@ def fused_combined_currents(
     schedule (CSR FP32 masters and uint8 type metadata required); per-source VJPs keep
     their existing routing. The cooperative/fanout requests are superseded by the
     adaptive per-source traversal; gather_sources still admits eligible gather sources.
+    """
+    if len(spikes) != len(proxies):
+        raise ValueError("Combined sweep requires two to eight matching sources and VJP proxies.")
+    primal = combined_sweep_primal(
+        spikes, weights, connectivities, basis, target_tile_size=target_tile_size,
+        cooperative_rows=cooperative_rows, fanout_rows=fanout_rows,
+        gather_sources=gather_sources, csr_master_weights=csr_master_weights,
+        adaptive_routing=adaptive_routing, scalar_source=scalar_source,
+    )
+    return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
+
+
+def combined_sweep_primal(
+    spikes, weights, connectivities, basis, *, target_tile_size=2048,
+    cooperative_rows=False, fanout_rows=False, gather_sources=False,
+    csr_master_weights=False, adaptive_routing=False, scalar_source=None,
+):
+    """The joint sweep's non-differentiable primal currents, ``[batch * n_post, 4]``.
+
+    ``fused_combined_currents`` attaches per-source VJP proxies to this value;
+    the direct recorded adjoint consumes it as-is and calls the per-source
+    native VJP operators itself.
     """
     target_tile_size = validate_combined_target_tile_size(target_tile_size)
     if type(adaptive_routing) is not bool:
@@ -1347,7 +1481,7 @@ def fused_combined_currents(
     if not combined_sweep_available():
         raise RuntimeError("Rebuild both CUDA operators for the combined current sweep.")
     if not 2 <= len(spikes) <= 8 or not (
-        len(spikes) == len(weights) == len(connectivities) == len(proxies)
+        len(spikes) == len(weights) == len(connectivities)
     ):
         raise ValueError("Combined sweep requires two to eight matching sources and VJP proxies.")
     dtype = spikes[0].dtype
@@ -1370,7 +1504,11 @@ def fused_combined_currents(
         if connectivity["n_post"] != connectivities[0]["n_post"]:
             raise ValueError("Combined sweep target dimensions must match.")
         if z.shape[1] != connectivity["n_sources"] or weight.shape != (connectivity["n_edges"],):
-            raise ValueError("Combined sweep connectivity and operand shapes must match.")
+            raise ValueError(
+                "Combined sweep connectivity and operand shapes must match: spikes "
+                f"{z.shape} for {connectivity['n_sources']} sources, weights {weight.shape} "
+                f"for {connectivity['n_edges']} edges."
+            )
         if connectivity["n_synapse_types"] != basis.shape[0]:
             raise ValueError("Combined sweep type counts must match the basis.")
     schedule = {}
@@ -1390,14 +1528,27 @@ def fused_combined_currents(
     if adaptive_routing:
         plan = adaptive_routing_plan(
             connectivities, target_tile_size=target_tile_size, gather_sources=gather_sources,
+            scalar_source=scalar_source,
         )
         schedule["adaptive_routing"] = True
         schedule["adaptive_traversal"] = plan["codes"]
+    if scalar_source is not None:
+        if not isinstance(scalar_source, (int, np.integer)) or isinstance(scalar_source, bool):
+            raise TypeError("scalar_source must be an integer source index or None.")
+        if not adaptive_routing or not 1 <= scalar_source < len(connectivities):
+            raise ValueError("Scalar input projection requires an adaptive named input source.")
+        if not scalar_input_projection_available():
+            raise RuntimeError("Rebuild both CUDA operators for scalar input projection.")
+        target_types = connectivities[scalar_source].get("scalar_target_types")
+        if target_types is None:
+            raise ValueError("Scalar input projection requires one synapse type per target.")
+        schedule["scalar_source"] = int(scalar_source)
+        schedule["scalar_target_types"] = target_types.tolist()
     operator = (
         _OPS.dpointnet_combined_sweep_csr_master if csr_master_weights
         else _OPS.dpointnet_combined_sweep
     )
-    primal = operator(
+    return operator(
         spikes, weights, [conn["metadata_handle"] for conn in connectivities], basis,
         Tindex=tf.as_dtype(index), n_post=connectivities[0]["n_post"],
         n_edges=[conn["n_edges"] for conn in connectivities],
@@ -1406,7 +1557,6 @@ def fused_combined_currents(
         **schedule,
         **type_options,
     )
-    return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
 
 
 ops.NotDifferentiable("DpointnetCombinedSweep")

@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import h5py
 
+from ..spike_summary import SpikeSummary
+
 
 CELL_TYPE_QUERY_MAPPING = {
     "i1H": "L1 Htr3a",
@@ -31,6 +33,8 @@ _INT32_MAX = 2**31 - 1
 
 def spike_trimming(spikes, pre_delay=50, post_delay=50, trim=True):
     pre = pre_delay or 0
+    if isinstance(spikes, SpikeSummary):
+        return spikes.trim(pre, post_delay if trim else 0)
     if trim:
         post = -post_delay if post_delay else None
         spikes = spikes[:, pre:post, :]
@@ -43,6 +47,8 @@ def temporal_sum(
     values, dtype=tf.float32, chunk_size=25, full_tensor_element_limit=_INT32_MAX
 ):
     """Sum over time, chunking only above the GPU indexing limit."""
+    if isinstance(values, SpikeSummary):
+        return values.temporal_sum(dtype)
     sequence_length = values.shape[1]
     if sequence_length is None:
         raise ValueError("Temporal reduction requires a static sequence length.")

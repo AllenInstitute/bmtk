@@ -4,11 +4,13 @@ import numpy as np
 import tensorflow as tf
 
 from . import loss_utils
+from ..spike_summary import SpikeSummary
 
 
 def low_rate_floor(spikes, neuron_ids=None, dt=1.0, floor_hz=0.1, cost=1.0):
     """Mean squared rate deficit in Hz, pooled over batch and time per neuron."""
-    spikes = tf.convert_to_tensor(spikes)
+    if not isinstance(spikes, SpikeSummary):
+        spikes = tf.convert_to_tensor(spikes)
     if spikes.shape.rank != 3 or spikes.shape[1] is None or spikes.shape[1] <= 0:
         raise ValueError(
             "spikes must have shape [batch, positive static time, neurons]."

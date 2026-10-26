@@ -392,7 +392,10 @@ def test_migration_separates_science_from_inherited_execution_policy():
     assert current["run"] == original["run"]
     for name, value in science.items():
         assert old["rnn_cell_params"][name] == current["rnn_cell_params"][name] == value
-    assert current["training"] == {"gradient_checkpointing": True, "pack_spike_checkpoints": "auto"}
+    assert current["training"] == {
+        "gradient_checkpointing": True, "pack_spike_checkpoints": "auto",
+        "stream_spike_statistics": "auto", "recorded_adjoint": "auto",
+    }
     with pytest.raises(ValueError, match="execution_policy"):
         preserve_previous_defaults(original, execution_policy="fast")
 

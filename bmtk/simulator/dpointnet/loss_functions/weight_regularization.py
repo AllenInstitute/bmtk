@@ -134,8 +134,20 @@ def _group_order_to_tensor(value, dtype=None, name=None, as_ref=False):
 tf.register_tensor_conversion_function(_CheckpointCompatibleGroupOrder, _group_order_to_tensor)
 
 
+@tf.function(jit_compile=True)
+def _emd_group_keys(value_order, group_starts):
+    boundaries = tf.scatter_nd(
+        group_starts[1:, None],
+        tf.ones_like(group_starts[1:]),
+        tf.shape(value_order),
+    )
+    groups = tf.cumsum(boundaries)
+    return -tf.gather(groups, value_order), groups
+
+
 def _grouped_emd_custom_gradient(
-    values, group_order, sorted_initial_values, group_slices, sensitivity_denominators
+    values, group_order, sorted_initial_values, group_slices, sensitivity_denominators,
+    sort_strategy="per_group",
 ):
     """Mean per-group Wasserstein-1 distance with a stable canonical scatter VJP.
 
@@ -151,26 +163,48 @@ def _grouped_emd_custom_gradient(
     )
     index_dtype = tf.int32 if compact_indices else tf.int64
     group_indices = tf.cast(tf.reshape(group_order, [-1, 1]), index_dtype)
+    if sort_strategy == "batched" and (
+        values.shape[0] is None or values.shape[0] > np.iinfo(np.int32).max
+    ):
+        raise ValueError("Batched EMD requires a static edge count below 2**31.")
 
     @tf.custom_gradient
     def emd(x):
         grouped_x = tf.reshape(tf.gather(x, group_indices), [-1])
         group_losses = []
-        positions = []
-        sensitivities = []
-        for start, end in group_slices:
-            x_i = grouped_x[start:end]
-            order = tf.math.top_k(-x_i, k=end - start, sorted=True).indices
-            deviation = tf.gather(x_i, order) - sorted_initial_values[start:end]
-            group_losses.append(tf.reduce_mean(tf.abs(deviation)))
-            positions.append(tf.cast(order, tf.int64) + start)
-            denominator = tf.constant(
-                sensitivity_denominators[len(sensitivities)], dtype=x.dtype
+        if sort_strategy == "batched":
+            size = int(x.shape[0])
+            value_order = tf.math.top_k(-grouped_x, k=size, sorted=True).indices
+            keys, groups = _emd_group_keys(
+                value_order, tf.constant([start for start, _ in group_slices], tf.int32)
             )
-            sensitivities.append(tf.sign(deviation) / denominator)
+            group_order = tf.math.top_k(keys, k=size, sorted=True).indices
+            positions = tf.gather(tf.cast(value_order, tf.int64), group_order)
+            deviation = tf.gather(grouped_x, positions) - sorted_initial_values
+            denominators = tf.gather(
+                tf.constant(sensitivity_denominators, dtype=x.dtype), groups
+            )
+            derivative = tf.sign(deviation) / denominators
+            distances = tf.abs(deviation)
+            group_losses = [
+                tf.reduce_mean(distances[start:end]) for start, end in group_slices
+            ]
+        else:
+            positions, sensitivities = [], []
+            for start, end in group_slices:
+                x_i = grouped_x[start:end]
+                order = tf.math.top_k(-x_i, k=end - start, sorted=True).indices
+                deviation = tf.gather(x_i, order) - sorted_initial_values[start:end]
+                group_losses.append(tf.reduce_mean(tf.abs(deviation)))
+                positions.append(tf.cast(order, tf.int64) + start)
+                denominator = tf.constant(
+                    sensitivity_denominators[len(sensitivities)], dtype=x.dtype
+                )
+                sensitivities.append(tf.sign(deviation) / denominator)
+            positions = tf.concat(positions, axis=0)
+            derivative = tf.concat(sensitivities, axis=0)
         loss = tf.reduce_mean(tf.stack(group_losses))
-        targets = tf.gather(group_indices, tf.concat(positions, axis=0))
-        derivative = tf.concat(sensitivities, axis=0)
+        targets = tf.gather(group_indices, positions)
 
         def grad(upstream):
             return tf.scatter_nd(
@@ -202,11 +236,15 @@ class EMDWeightRegularization:
         data_dir='',
         dtype=None,
         deduplicate_within_graph=False,
+        sort_strategy="per_group",
         **kwargs
     ):
         for option in ("use_grouped_custom_gradient", "use_javier_grouped_emd"):
             if option in kwargs:
                 raise TypeError(f"{option} was removed; grouped EMD is automatic.")
+        if sort_strategy not in ("per_group", "batched"):
+            raise ValueError('sort_strategy must be "per_group" or "batched".')
+        self.sort_strategy = sort_strategy
         self._rnn = rnn
         self._network = rnn.recurrent_network
         # The trainable recurrent weights (kept in the master/fp32 dtype under mixed precision).
@@ -298,6 +336,7 @@ class EMDWeightRegularization:
             tf.convert_to_tensor(self._sorted_initial_values),
             self._group_slices,
             self._group_sensitivity_denominators,
+            self.sort_strategy,
         )
         return reg_loss * self._cost
 

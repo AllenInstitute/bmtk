@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from .._options import validate_bool_option
+from ..spike_summary import SpikeSummary
 
 
 @tf.function(jit_compile=True, reduce_retracing=True)
@@ -57,6 +58,7 @@ class TargetFiringRate:
         # mean_spike_count = tf.reduce_mean(tf.reduce_sum(spikes, axis=1), axis=0)
         # actual_fr = mean_spike_count / self.sim_time
         spike_counts = (
+            spikes.temporal_sum() if isinstance(spikes, SpikeSummary) else
             _compiled_fp32_spike_counts(spikes)
             if self.compiled_spike_counts else tf.reduce_sum(spikes, axis=1)
         )

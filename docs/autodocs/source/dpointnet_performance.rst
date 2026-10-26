@@ -21,6 +21,19 @@ or set it to ``"auto"``. The resolver selects compatible paths based on the
 GPU, loaded operators, precision, batch and network structure.
 It does not change your dynamics or lower precision to fit memory.
 
+Do not combine ``"auto"`` with explicit ``use_*`` options inherited from
+older configurations: an explicit value overrides the policy, and a stale
+``false`` (or a ``true`` that no longer applies) is the usual way a run ends up
+on a slower path. The resolver records such overrides in
+``acceleration_report["explicit_deviations"]`` and emits a ``UserWarning``
+naming every explicit option that differs from the automatic choice. Keep an
+explicit option only as a deliberate, documented override;
+``bmtk.simulator.dpointnet.migration.preserve_previous_defaults(config,
+execution_policy="current")`` strips inherited execution flags from an old
+configuration. The TrainingEngine's ``stream_spike_statistics`` and
+``recorded_adjoint`` likewise default to ``"auto"`` (see the training page);
+configurations that need historical execution should not select ``"auto"``.
+
 After building a model, inspect its choices:
 
 .. code-block:: python
@@ -266,6 +279,40 @@ Implementation details are in :doc:`dpointnet_csr_masters` and
 ``rnn.cell.adaptive_routing_report()`` returns the native routing-table census per
 source (built tables, tile shapes and bytes). These describe selection and
 allocation, not proof that every kernel executed.
+
+Scalar named-input projection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``rnn_cell_params.use_scalar_input_projection`` requires the adaptive
+joint sweep, CSR masters, uint8 types and rebuilt operators advertising
+``scalar_source`` and ``scalar_target_types``. Under the automatic profile it
+resolves to ``"auto"`` whenever adaptive routing is admitted (batch 8 or more)
+and the capability is present: the cell then enables it at build for the
+largest nonempty named input with one synapse type per postsynaptic neuron and
+otherwise keeps the ordinary projection, recording the reason in
+``acceleration_report["reasons"]``. Explicit ``true``/``false`` are honored.
+
+The cell checks canonical input topology and selects the largest nonempty named
+input whose incoming edges have one synapse type per postsynaptic neuron.
+Different neurons may use different types; duplicate edges and nonbinary
+Poisson counts are retained. An explicit ``true`` without an eligible input
+raises instead of silently falling back. Recurrent projection is not scalarized.
+
+The selected source runs first using block rounds, sums scalar weighted events,
+then expands the target's four basis coefficients once. Other sources retain
+their usual traversal. The GPU validates the per-target type map against live
+CSR metadata at initialization; subsequent topology mutation remains prohibited.
+Source/weight VJPs, silent-source credit, canonical checkpoint order and separate
+trainable named inputs are unchanged.
+
+This changes FP32 multiplication and accumulation order, so it is not bitwise
+trajectory equivalence or an accuracy claim; the automatic selection rests on
+the RTX3090 full-V1 qualification, where it was part of every parity arm.
+Check ``native_execution_options["use_scalar_input_projection"]``,
+``acceleration_report["input_paths"][name]["scalar_projection"]`` and the
+reported routing plan. An actual trace must contain the scalar-specialized
+``adaptive_routing::DpointnetCombinedSweepKernel`` to establish execution.
+Benchmark full accepted updates on the intended workload before recommending it.
 
 With CSR masters, ``cell.recurrent_weight_values`` and
 ``cell.inputs[name]["input_weight_values"]`` hold live CSR-ordered rows, and so do

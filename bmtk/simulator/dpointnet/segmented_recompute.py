@@ -176,8 +176,8 @@ class SegmentedRecomputeRunner:
             sequence = tf.ensure_shape(sequence, output_shape)
         return sequence
 
-    def _forward(self, inputs, initial_state, time_check):
-        sequence_arrays = tuple(
+    def _forward(self, inputs, initial_state, time_check, collector=None):
+        sequence_arrays = collector.initialize(inputs) if collector is not None else tuple(
             tf.TensorArray(
                 dtype=spec.dtype,
                 size=self.n_chunks,
@@ -215,9 +215,12 @@ class SegmentedRecomputeRunner:
             flat_outputs = self._run_chunk(chunk, *states)
             chunk_sequences = flat_outputs[: self.n_sequence_outputs]
             next_state = tuple(flat_outputs[self.n_sequence_outputs :])
-            arrays = tuple(
-                array.write(chunk_index, value)
-                for array, value in zip(arrays, chunk_sequences)
+            arrays = (
+                collector.append(arrays, chunk_index, chunk_sequences)
+                if collector is not None else tuple(
+                    array.write(chunk_index, value)
+                    for array, value in zip(arrays, chunk_sequences)
+                )
             )
             return chunk_index + 1, arrays, next_state, history
 
@@ -254,16 +257,23 @@ class SegmentedRecomputeRunner:
             flat_outputs = self._run_chunk(chunk, *state)
             chunk_sequences = flat_outputs[: self.n_sequence_outputs]
             state = tuple(flat_outputs[self.n_sequence_outputs :])
-            sequence_arrays = tuple(
-                array.write(remainder_index, value)
-                for array, value in zip(sequence_arrays, chunk_sequences)
+            sequence_arrays = (
+                collector.append(sequence_arrays, remainder_index, chunk_sequences)
+                if collector is not None else tuple(
+                    array.write(remainder_index, value)
+                    for array, value in zip(sequence_arrays, chunk_sequences)
+                )
             )
 
-        sequences = tuple(
+        sequences = collector.finish(sequence_arrays, inputs) if collector is not None else tuple(
             self._assemble_chunks(array, spec, inputs)
             for array, spec in zip(sequence_arrays, self.sequence_specs)
         )
-        return sequences, state, state_arrays
+        cache = (
+            (state_arrays, collector.cache(sequence_arrays))
+            if collector is not None and hasattr(collector, "cache") else state_arrays
+        )
+        return sequences, state, cache
 
     def _backward(
         self,
@@ -273,6 +283,9 @@ class SegmentedRecomputeRunner:
         sequence_gradients,
         final_state_gradients,
         variables,
+        sequence_gradient_fn=None,
+        chunk_forward_fn=None,
+        chunk_vjp_fn=None,
     ):
         inputs_are_differentiable = self.differentiate_inputs and (
             inputs.dtype.is_floating or inputs.dtype.is_complex
@@ -341,20 +354,28 @@ class SegmentedRecomputeRunner:
                 boundary_state[index] for index in differentiable_state_indices
             )
 
-            with tf.GradientTape() as tape:
-                if inputs_are_differentiable:
-                    tape.watch(chunk)
-                tape.watch(differentiable_state)
-                tape.watch(variables)
-                recomputed = self._run_chunk(chunk, *boundary_state)
+            if chunk_vjp_fn is None:
+                with tf.GradientTape() as tape:
+                    if inputs_are_differentiable:
+                        tape.watch(chunk)
+                    tape.watch(differentiable_state)
+                    tape.watch(variables)
+                    recomputed = (
+                        self._run_chunk(chunk, *boundary_state)
+                        if chunk_forward_fn is None else
+                        chunk_forward_fn(chunk_index, chunk, boundary_state)
+                    )
 
-            chunk_sequence_gradients = tuple(
-                (
-                    None
-                    if gradient is None
-                    else gradient[:, start : start + chunk_length, ...]
+            chunk_sequence_gradients = (
+                sequence_gradient_fn(start, chunk_length)
+                if sequence_gradient_fn is not None else tuple(
+                    (
+                        None
+                        if gradient is None
+                        else gradient[:, start : start + chunk_length, ...]
+                    )
+                    for gradient in sequence_gradients
                 )
-                for gradient in sequence_gradients
             )
             state_output_gradients = tuple(
                 (
@@ -366,12 +387,18 @@ class SegmentedRecomputeRunner:
             )
             input_targets = (chunk,) if inputs_are_differentiable else ()
             targets = input_targets + differentiable_state + variables
-            gradients = tape.gradient(
-                recomputed,
-                targets,
-                output_gradients=(chunk_sequence_gradients + state_output_gradients),
-                unconnected_gradients=tf.UnconnectedGradients.ZERO,
-            )
+            if chunk_vjp_fn is None:
+                gradients = tape.gradient(
+                    recomputed,
+                    targets,
+                    output_gradients=(chunk_sequence_gradients + state_output_gradients),
+                    unconnected_gradients=tf.UnconnectedGradients.ZERO,
+                )
+            else:
+                gradients = chunk_vjp_fn(
+                    chunk_index, chunk, boundary_state,
+                    chunk_sequence_gradients, state_output_gradients, variables,
+                )
 
             target_offset = int(inputs_are_differentiable)
             if inputs_are_differentiable:

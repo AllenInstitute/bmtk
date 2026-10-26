@@ -281,7 +281,10 @@ def build(indices, types, width, n_post):
     )
 
 
-def run_sweep(sources, conns, basis, dy, *, adaptive, tile, gather, n_post, eager=False):
+def run_sweep(
+    sources, conns, basis, dy, *, adaptive, tile, gather, n_post, eager=False,
+    scalar_source=None,
+):
     layouts = [CsrMasterLayout(conn, host_lifecycle=True) for conn in conns]
     zs = [tf.Variable(source[3]) for source in sources]
     ws = [tf.Variable(layout.host_to_live(source[2])) for layout, source in zip(layouts, sources)]
@@ -300,6 +303,7 @@ def run_sweep(sources, conns, basis, dy, *, adaptive, tile, gather, n_post, eage
                 zs, ws, conns, coefficients, proxies, target_tile_size=tile,
                 csr_master_weights=True, gather_sources=gather, fanout_rows=True,
                 cooperative_rows=True, adaptive_routing=adaptive,
+                **({"scalar_source": scalar_source} if scalar_source is not None else {}),
             )
             loss = tf.reduce_sum(tf.cast(out, tf.float32) * dy.reshape(-1, 4))
         return out, tape.gradient(loss, zs + ws)
@@ -846,7 +850,8 @@ def test_gpu_actual_cell_both_modes_replay_adam_and_report(mixed, batch):
     try:
         baseline, candidate = construct(False), construct(True)
         a, b = baseline[0], candidate[0]
-        differing = {"use_adaptive_routing", "combined_current_target_tile_size"}
+        # Scalar input projection follows adaptive routing under the automatic profile.
+        differing = {"use_adaptive_routing", "combined_current_target_tile_size", "use_scalar_input_projection"}
         assert {k: v for k, v in a.acceleration_report["selected"].items() if k not in differing} == {
             k: v for k, v in b.acceleration_report["selected"].items() if k not in differing
         }
