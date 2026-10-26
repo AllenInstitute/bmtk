@@ -412,10 +412,18 @@ class DriftingGratingLGN:
         if lgn_backend != "tensorflow":
             from ..custom_ops import lgn_grating_ops
 
-            # Auto needs a usable GPU library and a full LGN (duck-typed stand-ins
-            # keep the TensorFlow path); an explicit request fails loudly instead.
+            # The native coefficient operator accepts float16/float32 angles only.
+            native_dtype = self.dtype in (tf.float16, tf.float32)
+            if lgn_backend == "native" and not native_dtype:
+                raise ValueError(
+                    f'lgn_backend="native" requires dtype float16 or float32, got {self.dtype.name}.'
+                )
+            # Auto needs a usable GPU library, a supported dtype and a full LGN
+            # (duck-typed stand-ins keep the TensorFlow path); an explicit request
+            # fails loudly instead.
             if lgn_backend == "native" or (
-                lgn_grating_ops.supports_lgn(lgn_network) and lgn_grating_ops.native_grating_lgn_available()
+                native_dtype and lgn_grating_ops.supports_lgn(lgn_network)
+                and lgn_grating_ops.native_grating_lgn_available()
             ):
                 self.kernel = lgn_grating_ops.GratingLGNKernel(
                     lgn_network, seq_len=seq_len, pre_delay=pre_delay, post_delay=post_delay,
@@ -654,7 +662,14 @@ def create_drifting_gratings_generator(
     seed=None,
     phase=None,
     _error_handler=None,
+    lgn_backend=None,
+    native_chunk=None,
 ):
+    # ``lgn_backend``/``native_chunk`` select the device route's implementation;
+    # this host reference generator accepts and ignores them so one stimulus
+    # option dictionary serves both routes (host warmup uses this generator even
+    # when device generation is enabled).
+    del lgn_backend, native_chunk
 
     # lgn = LGN(
     #     network=network,

@@ -229,7 +229,6 @@ class GratingLGNKernel:
         """Spikes [batch, seq_len, units]: stateless uniforms in ``dtype`` (use float32;
         float16 uniforms have 1024 levels and bias the rate upwards) below the
         probabilities, drawn ``chunk`` samples at a time into one buffer."""
-        coefficients = self.coefficients(theta, phase)
         shape = (self.seq_len, self.units)
 
         def uniform(seed):
@@ -241,13 +240,27 @@ class GratingLGNKernel:
 
         batch = theta.shape[0]
         if batch is None:
-            uniforms = tf.map_fn(uniform, spike_seeds, fn_output_signature=tf.TensorSpec(shape, dtype))
-            return sample(tf.zeros((0,), tf.bool), [uniforms], 0)
+            # Symbolic batch: one sample at a time (its own coefficients, uniforms
+            # and spikes op), so memory stays bounded by one sample's uniforms.
+            def one(sample):
+                sample_theta, sample_phase, seed = sample
+                return self._ops.dpointnet_lgn_grating_spikes(
+                    tf.zeros((0,), tf.bool), self.coefficients(sample_theta[None], sample_phase[None]),
+                    *self._temporal, [uniform(seed)], offset=0)[0]
+
+            return tf.map_fn(
+                one, (theta, phase, spike_seeds), fn_output_signature=tf.TensorSpec(shape, tf.bool),
+                parallel_iterations=1,
+            )
         if batch == 0:
             return tf.zeros((0,) + shape, tf.bool)
+        coefficients = self.coefficients(theta, phase)
         spikes = tf.zeros((0,), tf.bool)
         for begin in range(0, batch, self.chunk):
             with tf.control_dependencies([spikes] if begin else []):
                 uniforms = [uniform(spike_seeds[b]) for b in range(begin, min(begin + self.chunk, batch))]
             spikes = sample(spikes, uniforms, begin)
+            # Release this chunk's uniforms before the next chunk is drawn so only
+            # one chunk is ever alive in eager execution.
+            del uniforms
         return spikes

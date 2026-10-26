@@ -131,3 +131,44 @@ def test_native_ops_run_inside_tf_function(small_lgn):
     eager = native.batch_spikes(theta, phase, seeds).numpy()
     compiled = tf.function(native.batch_spikes)(theta, phase, seeds).numpy()
     np.testing.assert_array_equal(compiled, eager)
+
+
+def test_native_symbolic_batch_matches_static_batch(small_lgn):
+    """A tf.function with an unknown batch dimension samples one trial at a time
+    and reproduces the statically batched spikes."""
+    if not _native_available():
+        pytest.skip("Native LGN grating operators and a compatible GPU are required.")
+    native, _ = _generators(small_lgn)
+    rng = np.random.default_rng(3)
+    theta = rng.uniform(0, 360, (3, 1)).astype(np.float32)
+    phase = rng.uniform(0, 360, 3).astype(np.float32)
+    seeds = rng.integers(0, 2**31 - 1, (3, 2)).astype(np.int32)
+    static = native.batch_spikes(tf.constant(theta), tf.constant(phase), tf.constant(seeds)).numpy()
+    symbolic = tf.function(native.batch_spikes, input_signature=(
+        tf.TensorSpec((None, 1), tf.float32), tf.TensorSpec((None,), tf.float32), tf.TensorSpec((None, 2), tf.int32),
+    ))
+    np.testing.assert_array_equal(symbolic(theta, phase, seeds).numpy(), static)
+    np.testing.assert_array_equal(symbolic(theta[:2], phase[:2], seeds[:2]).numpy(), static[:2])
+
+
+def test_unsupported_dtype_keeps_tensorflow_under_auto(small_lgn):
+    automatic = DriftingGratingLGN(small_lgn, 120, dtype=tf.float64)
+    assert automatic.backend == "tensorflow"
+    rates = automatic.firing_rates(tf.constant(30.0, tf.float64), tf.constant(0.0, tf.float64))
+    assert rates.shape == (120, small_lgn.n_nodes) and np.all(np.isfinite(rates.numpy()))
+    with pytest.raises(ValueError, match="float16 or float32"):
+        DriftingGratingLGN(small_lgn, 120, dtype=tf.float64, lgn_backend="native")
+
+
+def test_host_generator_accepts_device_backend_options(small_lgn):
+    """The host reference generator (initial-state warmup) tolerates the device
+    route's stimulus options so one option dictionary serves both routes."""
+    from bmtk.simulator.dpointnet.input_modules.lgn_generator import create_drifting_gratings_generator
+
+    dataset = create_drifting_gratings_generator(
+        small_lgn, 40, orientation=[90.0], phase=10.0, pre_delay=5, post_delay=5, seed=3,
+        lgn_backend="tensorflow", native_chunk=4,
+    )
+    spikes, meta = next(iter(dataset))
+    assert spikes.shape == (40, small_lgn.n_nodes) and spikes.dtype == tf.bool
+    assert float(meta["orientation"][0]) == 90.0
