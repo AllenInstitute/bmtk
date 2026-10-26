@@ -460,6 +460,10 @@ class DriftingGratingLGN:
         videos = movies_concat(
             movie[..., None], self.pre_delay, self.post_delay, self.dtype
         )
+        # The LGN's own movie route (native movie operators when available) or
+        # the TensorFlow spatial/temporal pair.
+        if hasattr(self.lgn, "firing_rates"):
+            return self.lgn.firing_rates(videos, self.bmtk_compat)
         return self.lgn.firing_rates_from_spatial(
             *self.lgn.spatial_response(videos, self.bmtk_compat)
         )
@@ -913,9 +917,12 @@ def compute_grey_screen_probabilities(
         raise ValueError('lgn_network is required when grey-screen probabilities are not already cached.')
 
     gray_screen = tf.ones((seq_len, row_size, col_size, 1), dtype=dtype)*contrast
-    spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
+    if hasattr(lgn_network, "firing_rates"):
+        firing_rates = lgn_network.firing_rates(gray_screen, bmtk_compat)
+    else:
+        spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
+        firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
+        del spatial
     del gray_screen
-    firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
-    del spatial
     probabilities = 1 - tf.exp(-firing_rates / 1000.0)
     return tf.convert_to_tensor(probabilities, dtype=dtype)
