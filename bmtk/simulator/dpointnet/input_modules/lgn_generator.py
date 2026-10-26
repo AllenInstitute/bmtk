@@ -356,7 +356,17 @@ def make_drifting_grating_stimulus(
 
 
 class DriftingGratingLGN:
-    """Graph-callable grating filtering, adapted from Javier's stim_dataset.py."""
+    """Graph-callable grating filtering, adapted from Javier's stim_dataset.py.
+
+    ``lgn_backend`` selects the implementation: ``"auto"`` (default) uses the
+    native exact-factorization grating operators
+    (``custom_ops.lgn_grating_ops``) when a GPU and the built library are
+    available and otherwise the TensorFlow movie -> spatial -> temporal path;
+    ``"native"`` requires the operators and ``"tensorflow"`` forces the
+    TensorFlow path. Both produce the same rates to float32 rounding and draw
+    the same stateless float32 uniforms, so spikes agree up to probabilities
+    within one ulp of a uniform. ``backend`` reports the resolved choice.
+    """
 
     def __init__(
         self,
@@ -374,7 +384,13 @@ class DriftingGratingLGN:
         bmtk_compat=True,
         dtype=tf.float32,
         current_input=False,
+        lgn_backend="auto",
+        native_chunk=16,
     ):
+        if lgn_backend not in ("auto", "native", "tensorflow"):
+            raise ValueError(
+                f'lgn_backend must be "auto", "native" or "tensorflow", got {lgn_backend!r}'
+            )
         self.lgn = lgn_network
         self.seq_len = seq_len
         self.pre_delay = pre_delay
@@ -392,8 +408,41 @@ class DriftingGratingLGN:
         self.bmtk_compat = bmtk_compat
         self.dtype = tf.as_dtype(dtype)
         self.current_input = current_input
+        self.kernel = None
+        if lgn_backend != "tensorflow":
+            from ..custom_ops import lgn_grating_ops
+
+            # The native coefficient operator accepts float16/float32 angles only.
+            native_dtype = self.dtype in (tf.float16, tf.float32)
+            if lgn_backend == "native" and not native_dtype:
+                raise ValueError(
+                    f'lgn_backend="native" requires dtype float16 or float32, got {self.dtype.name}.'
+                )
+            # Auto needs a usable GPU library, a supported dtype and a full LGN
+            # (duck-typed stand-ins keep the TensorFlow path); an explicit request
+            # fails loudly instead.
+            if lgn_backend == "native" or (
+                native_dtype and lgn_grating_ops.supports_lgn(lgn_network)
+                and lgn_grating_ops.native_grating_lgn_available()
+            ):
+                self.kernel = lgn_grating_ops.GratingLGNKernel(
+                    lgn_network, seq_len=seq_len, pre_delay=pre_delay, post_delay=post_delay,
+                    temporal_f=temporal_f, cpd=cpd, contrast=contrast, rows=row_size,
+                    cols=col_size, theta_sign=1.0 if rotation == "cw" else -1.0,
+                    theta_offset=180.0 if billeh_phase else 0.0, bmtk_compat=bmtk_compat,
+                    chunk=native_chunk,
+                )
+        self.backend = "native" if self.kernel is not None else "tensorflow"
+
+    def _as_batch(self, orientation, phase):
+        return tuple(
+            tf.reshape(tf.cast(value, self.dtype), (1,)) for value in (orientation, phase)
+        )
 
     def firing_rates(self, orientation, phase):
+        if self.kernel is not None:
+            rates = self.kernel.probabilities(*self._as_batch(orientation, phase), rates=True)
+            return tf.cast(rates[0], self.dtype)
         theta = orientation if self.rotation == "cw" else -orientation
         if self.billeh_phase:
             theta += 180
@@ -416,6 +465,14 @@ class DriftingGratingLGN:
         )
 
     def spikes(self, orientation, phase, spike_seed):
+        if self.kernel is not None:
+            if self.current_input:
+                return tf.cast(
+                    self.kernel.probabilities(*self._as_batch(orientation, phase))[0], self.dtype
+                ) * 1.3
+            return self.kernel.spikes(
+                *self._as_batch(orientation, phase), tf.reshape(spike_seed, (1, 2)), tf.float32
+            )[0]
         probabilities = 1 - tf.exp(-self.firing_rates(orientation, phase) / 1000.0)
         if self.current_input:
             return probabilities * 1.3
@@ -425,6 +482,13 @@ class DriftingGratingLGN:
         return uniform < probabilities
 
     def batch_spikes(self, orientation, phase, spike_seeds):
+        if self.kernel is not None:
+            theta = tf.cast(orientation[:, 0], self.dtype)
+            if self.current_input:
+                return tf.cast(self.kernel.probabilities(theta, tf.cast(phase, self.dtype)), self.dtype) * 1.3
+            # The native op compares float32 uniforms; float16 uniforms have 1024
+            # levels and would bias the spike rate upwards.
+            return self.kernel.spikes(theta, tf.cast(phase, self.dtype), spike_seeds, tf.float32)
         return tf.map_fn(
             lambda sample: self.spikes(*sample),
             (orientation[:, 0], phase, spike_seeds),
@@ -598,7 +662,14 @@ def create_drifting_gratings_generator(
     seed=None,
     phase=None,
     _error_handler=None,
+    lgn_backend=None,
+    native_chunk=None,
 ):
+    # ``lgn_backend``/``native_chunk`` select the device route's implementation;
+    # this host reference generator accepts and ignores them so one stimulus
+    # option dictionary serves both routes (host warmup uses this generator even
+    # when device generation is enabled).
+    del lgn_backend, native_chunk
 
     # lgn = LGN(
     #     network=network,

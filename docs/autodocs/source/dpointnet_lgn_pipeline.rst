@@ -61,6 +61,31 @@ unsupported strategies or host firing-rate output. Unsupported device requests
 raise instead of changing your input protocol. Gray-screen stimuli use the
 host route by default.
 
+Native grating operators
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Device generation of drifting gratings uses the native exact-factorization
+operators (``custom_ops/_lgn_grating_ops.so``, built by ``custom_ops/build.sh``
+beside the state and projection libraries) whenever a GPU and the built
+library are available. A grating frame is ``Im(e^{i(k.r + w f + phi)})`` and
+every stage before rectification is linear, so each unit's filtered response is
+``Im(A R(t))`` with a per-sample complex spatial coefficient ``A`` (computed in
+float64 on the device) and a per-unit complex temporal response ``R``
+precomputed once in float64. The resulting rates equal the movie -> spatial ->
+temporal TensorFlow path to float32 rounding, and spikes use the same stateless
+float32 uniforms, so the stimulus protocol, seeds and trial assignment are
+unchanged. On the 17,400-unit LGN at batch 32 and 500 steps an RTX 3090
+generates a batch in about 0.11 s instead of 0.88 s.
+
+The stimulus option ``lgn_backend`` selects the implementation: ``"auto"``
+(default), ``"native"`` (raises when the operators or a compatible GPU are
+missing) or ``"tensorflow"``. ``native_chunk`` (1-16, default 16) sets how many
+samples' uniforms are alive at once (about 33 MiB per sample at 17,400 units
+and 500 steps). ``DriftingGratingLGN.backend`` reports the resolved choice.
+The operators contain no architecture-specific instructions and are part of
+the fat binary (SM 6.1 upward). Structure adapted from Javier Galvan's
+``v1_model_utils/cuda_lgn`` (credit: Javier).
+
 .. _dpointnet_lgn_pipeline--seeded-sampling:
 
 Seeds and batches
