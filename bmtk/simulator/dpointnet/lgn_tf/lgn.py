@@ -652,9 +652,17 @@ class LGN:
 
             kernel = None
             if request == "native" or lgn_movie_ops.native_movie_lgn_available():
-                kernel = lgn_movie_ops.MovieLGNKernel(
-                    self, rows=self.row_size, cols=self.col_size, bmtk_compat=bool(bmtk_compat)
-                )
+                error = lgn_movie_ops.movie_support_error(self, self.row_size, self.col_size)
+                if error and request == "native":
+                    raise ValueError(f"movie_backend='native' cannot serve this LGN: {error}")
+                if error is None:
+                    # Built eagerly even from inside a tf.function so the cached
+                    # constants can be captured by any later graph or eager call.
+                    with tf.init_scope():
+                        kernel = lgn_movie_ops.MovieLGNKernel(
+                            self, rows=self.row_size, cols=self.col_size,
+                            bmtk_compat=bool(bmtk_compat),
+                        )
             cache[bmtk_compat] = kernel
         return cache[bmtk_compat]
 

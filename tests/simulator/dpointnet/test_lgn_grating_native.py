@@ -205,6 +205,42 @@ def test_movie_backend_selection_and_errors(small_lgn):
         lgn_movie_ops.MovieLGNKernel(small_lgn, rows=80, cols=120, chunk=17)
 
 
+def _with_frame(lgn, rows, cols, request="auto"):
+    import copy
+    other = copy.copy(lgn)
+    other.row_size, other.col_size = rows, cols
+    other._movie_backend_request = request
+    other._movie_kernels = {}
+    return other
+
+
+def test_unsupported_frames_keep_tensorflow_under_auto(small_lgn):
+    from bmtk.simulator.dpointnet.custom_ops import lgn_movie_ops
+    assert lgn_movie_ops.movie_support_error(small_lgn, 80, 120) is None
+    assert "120 x 120" in lgn_movie_ops.movie_support_error(small_lgn, 120, 120)
+    assert "constants" in lgn_movie_ops.movie_support_error(object(), 80, 120)
+    assert _with_frame(small_lgn, 120, 120).movie_backend == "tensorflow"
+    if _movie_available():
+        with pytest.raises(ValueError, match="cannot serve"):
+            _with_frame(small_lgn, 120, 120, "native").movie_backend
+        with pytest.raises(ValueError, match="cannot serve"):
+            lgn_movie_ops.MovieLGNKernel(small_lgn, rows=120, cols=120)
+
+
+def test_movie_kernel_built_inside_tf_function_serves_later_calls(small_lgn):
+    if not _movie_available():
+        pytest.skip("Native LGN movie operators and a compatible GPU are required.")
+    lgn = _with_frame(small_lgn, 80, 120)
+    movies = _movies(32)
+    traced = tf.function(lambda movie: lgn.firing_rates(movie))
+    expected = {name: small_lgn.firing_rates(movie).numpy() for name, movie in movies.items()}
+    np.testing.assert_array_equal(traced(movies["noise"]).numpy(), expected["noise"])
+    assert lgn.movie_backend == "native"
+    np.testing.assert_array_equal(lgn.firing_rates(movies["grating"]).numpy(), expected["grating"])
+    np.testing.assert_array_equal(
+        traced(tf.stack([movies["gray"], movies["noise"]])).numpy()[1], expected["noise"])
+
+
 @pytest.mark.parametrize("name", ["grating", "noise", "gray"])
 @pytest.mark.parametrize("bmtk_compat", [True, False])
 def test_native_movie_rates_match_tensorflow_path(small_lgn, name, bmtk_compat):
@@ -235,7 +271,8 @@ def test_native_movie_spikes_are_seeded_bounded_and_match_probabilities(small_lg
     spikes = kernel.spikes(batch, seeds).numpy()
     assert spikes.shape == (3, 60, small_lgn.n_nodes) and spikes.dtype == np.bool_
     uniforms = np.stack([
-        tf.random.stateless_uniform((60, small_lgn.n_nodes), seed=seeds[i], dtype=tf.float32).numpy() for i in range(3)])
+        tf.random.stateless_uniform((60, small_lgn.n_nodes), seed=seeds[i], dtype=tf.float32).numpy()
+        for i in range(3)])
     assert np.mean(spikes != (uniforms < probabilities)) < 1e-4
     np.testing.assert_array_equal(kernel.spikes(batch, seeds).numpy(), spikes)
     # Chunk-of-one and movie-function forms give the same samples.

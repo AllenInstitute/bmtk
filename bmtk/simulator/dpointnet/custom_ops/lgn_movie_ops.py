@@ -31,10 +31,16 @@ _OPS = None
 _LOAD_ERROR = None
 TILE = 32  # subunit columns per lag range (one warp of the temporal kernel)
 LAG_PADDING = 32  # trailing zero lags, so the op's lag blocks never check bounds
+# Limits of the spatial kernel (lgn_movie_ops.cu.cc): one block of SPATIAL_THREADS
+# threads filters a frame, each thread HORIZONTAL_COLUMNS columns of one row, and
+# the separable taps sit in registers up to MAX_TAPS wide.
+SPATIAL_THREADS = 1024
+HORIZONTAL_COLUMNS = 11
+MAX_TAPS = 27
 
 __all__ = [
     "MovieLGNKernel", "native_movie_lgn_available", "lgn_movie_op_status", "supports_lgn",
-    "REQUIRED_CONSTANTS",
+    "movie_support_error", "REQUIRED_CONSTANTS",
 ]
 
 
@@ -71,6 +77,26 @@ def native_movie_lgn_available():
         warnings.warn(str(error))
         return False
     return True
+
+
+def movie_support_error(lgn, rows, cols):
+    """Why the native movie operators cannot serve ``lgn`` for ``rows`` x ``cols``
+    frames, or None when they can: the LGN must expose the required constants,
+    a frame must fit one block's horizontal work items and the spatial filters
+    must be odd, rank-one Gaussians of at most MAX_TAPS taps."""
+    if not supports_lgn(lgn):
+        return "the LGN lacks the constants the native movie operators need"
+    if rows * -(-cols // HORIZONTAL_COLUMNS) > SPATIAL_THREADS:
+        return (f"frames of {rows} x {cols} exceed the native spatial pass "
+                f"({SPATIAL_THREADS} rows x {HORIZONTAL_COLUMNS}-column groups)")
+    try:
+        filters = [_numpy(kernel).reshape(_numpy(kernel).shape[:2]) for kernel in lgn.gaussian_filters]
+        _separable_taps(filters)
+    except ValueError as exc:
+        return str(exc)
+    if max(max(kernel.shape) for kernel in filters) > MAX_TAPS:
+        return f"spatial filters wider than {MAX_TAPS} taps exceed the native spatial pass"
+    return None
 
 
 def _lag_major(kernels):
@@ -119,6 +145,9 @@ class MovieLGNKernel:
         error = _gpu_compatibility_error(_SM_ARCHITECTURES, _PTX_ARCHITECTURE, _ARCHITECTURE_PATH)
         if error:
             raise RuntimeError(str(error))
+        error = movie_support_error(lgn, rows, cols)
+        if error:
+            raise ValueError(f"Native LGN movie operators cannot serve this LGN: {error}")
         f64 = lambda value: _numpy(value).astype(np.float32).astype(np.float64)  # noqa: E731
         filters = [f64(kernel).reshape(f64(kernel).shape[:2]) for kernel in lgn.gaussian_filters]
         vertical, horizontal = _separable_taps(filters)
@@ -212,7 +241,9 @@ class MovieLGNKernel:
                     part = chunk_movie(begin, end)
                     uniforms = [uniform(spike_seeds[b], part.shape[1]) for b in range(begin, end)]
                 spikes = sample(spikes, part, uniforms, begin, batch)
-                del uniforms
+                # Eagerly, drop this chunk's movie and uniforms before the next
+                # chunk is built so only one chunk is alive at a time.
+                del part, uniforms
             return spikes
         if batch is None or steps is None:
             # Symbolic shape: one sample at a time so memory stays bounded.
