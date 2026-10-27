@@ -246,7 +246,21 @@ class LGN:
         spon_frs_path=None,
         temp_krns_path=None,
         spatial_krns_path=None,
+        movie_backend="auto",
     ):
+        """``movie_backend`` selects how :meth:`firing_rates` evaluates a movie:
+        ``"auto"`` (default) uses the native movie operators
+        (``custom_ops.lgn_movie_ops``) when a GPU and the built library are
+        available, else the TensorFlow spatial/temporal path; ``"native"``
+        requires the operators; ``"tensorflow"`` forces the TensorFlow path.
+        ``spatial_response``/``firing_rates_from_spatial`` always use TensorFlow.
+        """
+        if movie_backend not in ("auto", "native", "tensorflow"):
+            raise ValueError(
+                f'movie_backend must be "auto", "native" or "tensorflow", got {movie_backend!r}'
+            )
+        self._movie_backend_request = movie_backend
+        self.row_size, self.col_size = row_size, col_size
         # Load table of LGN nodes
         # node_types_df = pd.read_csv(node_types_file, sep=' ')
         # if 'population' in node_types_df:
@@ -623,6 +637,65 @@ class LGN:
         grouped_composite_ids = np.concatenate(grouped_composite_ids)
         self.composite_sort_indices = tf.constant(
             np.argsort(grouped_composite_ids).astype(np.int32)
+        )
+
+    def _movie_kernel(self, bmtk_compat):
+        """The native movie kernel for this edge-normalization choice, or None."""
+        request = getattr(self, "_movie_backend_request", "auto")
+        if request == "tensorflow" or not hasattr(self, "row_size"):
+            return None
+        cache = getattr(self, "_movie_kernels", None)
+        if cache is None:
+            cache = self._movie_kernels = {}
+        if bmtk_compat not in cache:
+            from ..custom_ops import lgn_movie_ops
+
+            kernel = None
+            if request == "native" or lgn_movie_ops.native_movie_lgn_available():
+                error = lgn_movie_ops.movie_support_error(self, self.row_size, self.col_size)
+                if error and request == "native":
+                    raise ValueError(f"movie_backend='native' cannot serve this LGN: {error}")
+                if error is None:
+                    # Built eagerly even from inside a tf.function so the cached
+                    # constants can be captured by any later graph or eager call.
+                    with tf.init_scope():
+                        kernel = lgn_movie_ops.MovieLGNKernel(
+                            self, rows=self.row_size, cols=self.col_size,
+                            bmtk_compat=bool(bmtk_compat),
+                        )
+            cache[bmtk_compat] = kernel
+        return cache[bmtk_compat]
+
+    @property
+    def movie_backend(self):
+        """The resolved backend of :meth:`firing_rates` under ``bmtk_compat=True``."""
+        return "native" if self._movie_kernel(True) is not None else "tensorflow"
+
+    def firing_rates(self, movie, bmtk_compat=True):
+        """Firing rates in Hz, [time, units] for a [time, rows, cols, 1] movie or
+        [batch, time, units] for a [batch, time, rows, cols(, 1)] batch of movies.
+
+        Uses the native movie operators when selected (see ``movie_backend``),
+        otherwise ``spatial_response`` followed by ``firing_rates_from_spatial``;
+        the two agree to float32 rounding.
+        """
+        movie = tf.convert_to_tensor(movie)
+        batched = movie.shape.rank == 5 or (movie.shape.rank == 4 and movie.shape[-1] != 1)
+        kernel = self._movie_kernel(bmtk_compat)
+        if kernel is not None:
+            frames = movie[..., 0] if movie.shape.rank == (5 if batched else 4) else movie
+            if not batched:
+                frames = frames[None]
+            rates = tf.cast(kernel.response(frames, output="rates"), self.dtype)
+            return rates if batched else rates[0]
+        if not batched:
+            return self.firing_rates_from_spatial(*self.spatial_response(movie, bmtk_compat))
+        if movie.shape.rank == 4:
+            movie = movie[..., None]
+        return tf.map_fn(
+            lambda sample: self.firing_rates_from_spatial(*self.spatial_response(sample, bmtk_compat)),
+            movie, fn_output_signature=tf.TensorSpec((None, self.n_nodes), self.dtype),
+            parallel_iterations=1,
         )
 
     @tf.function

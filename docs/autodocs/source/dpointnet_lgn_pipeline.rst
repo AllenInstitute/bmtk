@@ -86,6 +86,32 @@ The operators contain no architecture-specific instructions and are part of
 the fat binary (SM 6.1 upward). Structure adapted from Javier Galvan's
 ``v1_model_utils/cuda_lgn`` (credit: Javier).
 
+Native movie operators
+~~~~~~~~~~~~~~~~~~~~~~
+
+Arbitrary movies (natural movies, flashes, gray screens, or gratings outside
+the sinusoidal factorization) go through ``LGN.firing_rates(movie)``, which
+evaluates the same spatial-filter -> bilinear-sample -> temporal-filter ->
+rectification pipeline with the native movie operators
+(``custom_ops/_lgn_movie_ops.so``, ``DpointnetLgnMovieResponse`` /
+``DpointnetLgnMovieSpikes``) when a GPU and the built library are available,
+and otherwise with ``spatial_response`` + ``firing_rates_from_spatial``. The
+two agree to float32 rounding. ``LGN(..., movie_backend="auto"|"native"|
+"tensorflow")`` selects the route; ``LGN.movie_backend`` reports it. ``auto``
+keeps TensorFlow for configurations outside the operators' limits (frames above
+1024 rows x 11-column groups, for example 120 x 120, or spatial filters wider
+than 27 taps; ``lgn_movie_ops.movie_support_error`` names the reason, which an
+explicit ``"native"`` request raises). The
+movie may be ``[time, rows, cols, 1]`` or a batch ``[batch, time, rows,
+cols(, 1)]`` in float16 or float32. ``custom_ops.lgn_movie_ops.MovieLGNKernel``
+also samples seeded spikes in chunks (``chunk`` 1-16 samples at a time, or a
+``movie(begin, end)`` callable so only one chunk of movie is alive). Gray-screen
+probabilities and the TensorFlow fallback of the grating generator use this
+route automatically. The spatial pass stages a frame in shared memory and, on
+devices whose opt-in shared memory holds no whole frame (V100, Pascal for 80 x
+120), filters it in bands of rows; the result is bitwise the same either way
+(``DPOINTNET_LGN_MOVIE_MAX_BAND`` caps the band for tests).
+
 .. _dpointnet_lgn_pipeline--seeded-sampling:
 
 Seeds and batches
