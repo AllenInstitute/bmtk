@@ -348,11 +348,109 @@ def _uint8_type_options(connectivity):
     return {"uint8_types": True}
 
 
+# Host connectivity construction works on chunks of this many edges where a
+# whole-array temporary would otherwise be materialized.
+_HOST_CHUNK_EDGES = 1 << 24
+# Compact (target, type) pairs use a dense key table up to this many entries
+# (or twice the edge count, if larger) instead of sorting all edge keys.
+_DENSE_PAIR_TABLE_MIN = 1 << 20
+
+
+def _narrow_integer_view(values):
+    """``values`` itself when its integer dtype is at most 32 bits or int64, else as int64.
+
+    Indices and types are validated non-negative and below int64 range, so any
+    of these dtypes holds them exactly; widening a billion-edge array to int64
+    would only add a full-size copy.
+    """
+    if values.dtype == np.int64 or (
+        np.issubdtype(values.dtype, np.integer) and values.dtype.itemsize <= 4
+    ):
+        return values
+    return values.astype(np.int64)
+
+
+def _as_index_dtype(values, dtype):
+    """``values`` in ``dtype``; a same-width signed/unsigned reinterpretation needs no copy.
+
+    Callers guarantee non-negative values, whose bits are identical in both.
+    """
+    dtype = np.dtype(dtype)
+    if values.dtype == dtype:
+        return values
+    if (
+        np.issubdtype(values.dtype, np.integer) and np.issubdtype(dtype, np.integer)
+        and values.dtype.itemsize == dtype.itemsize
+    ):
+        return values.view(dtype)
+    return values.astype(dtype)
+
+
+def _chunked_bincount(values, minlength):
+    """``np.bincount(values, minlength)`` without converting all of ``values`` to intp at once."""
+    counts = np.zeros(minlength, dtype=np.int64)
+    for start in range(0, values.size, _HOST_CHUNK_EDGES):
+        part = np.bincount(values[start:start + _HOST_CHUNK_EDGES], minlength=minlength)
+        if part.size > counts.size:
+            counts = np.concatenate((counts, np.zeros(part.size - counts.size, np.int64)))
+        counts[:part.size] += part
+    return counts
+
+
+def _composite_keys(major, minor, stride):
+    """``major * stride + minor`` as uint64 with a single full-size allocation."""
+    keys = major.astype(np.uint64)
+    keys *= np.uint64(stride)
+    np.add(keys, minor, out=keys, dtype=np.uint64, casting="unsafe")
+    return keys
+
+
+def _unique_pairs(post_ids, pair_types, n_synapse_types, numpy_index_dtype):
+    """``(pairs, pair_ids)`` equal to ``np.unique`` of ``post * types + type`` with its inverse.
+
+    When the key range is small (it is ``n_post * n_synapse_types``) the
+    distinct keys are marked in a dense table and the inverse is gathered in
+    chunks, instead of sorting a full-size key array.
+    """
+    stride = int(n_synapse_types)
+    key_range = int(post_ids.max(initial=0)) * stride + stride
+    if key_range > max(2 * post_ids.size, _DENSE_PAIR_TABLE_MIN) or key_range > np.iinfo(np.int64).max:
+        keys = _composite_keys(post_ids, pair_types, stride)
+        unique_keys, pair_ids = np.unique(keys, return_inverse=True)
+        del keys
+        pair_ids = pair_ids.reshape(-1)
+    else:
+        present = np.zeros(key_range, dtype=bool)
+        for start in range(0, post_ids.size, _HOST_CHUNK_EDGES):
+            stop = start + _HOST_CHUNK_EDGES
+            present[_composite_keys(post_ids[start:stop], pair_types[start:stop], stride)] = True
+        unique_keys = np.flatnonzero(present).astype(np.uint64)
+        del present
+        code = np.zeros(key_range, dtype=numpy_index_dtype)
+        code[unique_keys] = np.arange(unique_keys.size, dtype=numpy_index_dtype)
+        pair_ids = np.empty(post_ids.size, dtype=numpy_index_dtype)
+        for start in range(0, post_ids.size, _HOST_CHUNK_EDGES):
+            stop = start + _HOST_CHUNK_EDGES
+            pair_ids[start:stop] = code[_composite_keys(post_ids[start:stop], pair_types[start:stop], stride)]
+        del code
+    stride = np.uint64(stride)
+    pairs = np.column_stack((unique_keys // stride, unique_keys % stride)).astype(
+        numpy_index_dtype, copy=False
+    )
+    return pairs, _as_index_dtype(pair_ids, numpy_index_dtype)
+
+
 def _scalar_target_type_map(post_ids, synapse_types, n_post):
     if not post_ids.size:
         return None
     result = np.zeros(n_post, np.int64)
-    np.maximum.at(result, post_ids, synapse_types)
+    # Matching index/value dtypes keep ufunc.at on its fast path; chunks bound the casts.
+    for start in range(0, post_ids.size, _HOST_CHUNK_EDGES):
+        stop = start + _HOST_CHUNK_EDGES
+        np.maximum.at(
+            result, post_ids[start:stop].astype(np.intp, copy=False),
+            synapse_types[start:stop].astype(np.int64, copy=False),
+        )
     for start in range(0, post_ids.size, 1 << 20):
         stop = start + (1 << 20)
         if np.any(result[post_ids[start:stop]] != synapse_types[start:stop]):
@@ -409,17 +507,22 @@ def build_csr_connectivity(
             "synapse_types must contain one value per edge, got "
             f"{synapse_types.shape} for {indices.shape[0]} edges."
         )
+    int64_info = np.iinfo(np.int64)
     for values, name in ((indices, "indices"), (synapse_types, "synapse_types")):
         if not np.issubdtype(values.dtype, np.number):
             raise TypeError(f"{name} must contain numeric integer values.")
+        if np.issubdtype(values.dtype, np.integer):
+            # Integer values are finite and integral; only uint64 can leave int64 range.
+            if np.iinfo(values.dtype).max > int64_info.max and np.any(values > int64_info.max):
+                raise ValueError(f"{name} values must be within the int64 range.")
+            continue
         if not np.all(np.isfinite(values)) or not np.all(values == np.floor(values)):
             raise ValueError(f"{name} must contain finite integer values.")
-        int64_info = np.iinfo(np.int64)
         if np.any(values < int64_info.min) or np.any(values > int64_info.max):
             raise ValueError(f"{name} values must be within the int64 range.")
 
-    indices = indices.astype(np.int64, copy=False)
-    synapse_types = synapse_types.astype(np.int64, copy=False)
+    indices = _narrow_integer_view(indices)
+    synapse_types = _narrow_integer_view(synapse_types)
     pre_ids = indices[:, 1]
     if np.any(pre_ids < 0) or np.any(pre_ids >= n_source_neurons):
         raise ValueError(
@@ -457,42 +560,40 @@ def build_csr_connectivity(
             and int(n_source_neurons) * int(n_target_neurons) * int(n_synapse_types)
             <= 2**64
         ):
-            keys = pre_ids.astype(np.uint64) * np.uint64(n_target_neurons)
-            keys += post_ids.astype(np.uint64, copy=False)
+            keys = _composite_keys(pre_ids, post_ids, n_target_neurons)
             keys *= np.uint64(n_synapse_types)
-            keys += synapse_types.astype(np.uint64, copy=False)
-            edge_ids = np.argsort(keys, kind="stable").astype(
-                numpy_index_dtype, copy=False
-            )
+            np.add(keys, synapse_types, out=keys, dtype=np.uint64, casting="unsafe")
+            edge_ids = np.argsort(keys, kind="stable")
+            del keys
+            edge_ids = _as_index_dtype(edge_ids, numpy_index_dtype)
         else:
             edge_ids = np.lexsort((synapse_types, post_ids, pre_ids)).astype(
                 numpy_index_dtype, copy=False
             )
     else:
-        edge_ids = np.argsort(pre_ids, kind="stable").astype(
-            numpy_index_dtype, copy=False
-        )
-    sorted_pre_ids = pre_ids[edge_ids]
-    counts = np.bincount(sorted_pre_ids, minlength=n_source_neurons)
+        edge_ids = _as_index_dtype(np.argsort(pre_ids, kind="stable"), numpy_index_dtype)
+    counts = _chunked_bincount(pre_ids, n_source_neurons)
     row_splits = np.empty(n_source_neurons + 1, dtype=numpy_index_dtype)
     row_splits[0] = 0
     np.cumsum(counts, dtype=np.int64, out=row_splits[1:])
+    sorted_posts = post_ids[edge_ids]
     has_repeated_targets = False
     if sort_by_target and post_ids.size > 1:
-        ordered_posts_for_runs = post_ids[edge_ids]
-        has_repeated_targets = bool(
-            np.any(
-                (sorted_pre_ids[1:] == sorted_pre_ids[:-1])
-                & (ordered_posts_for_runs[1:] == ordered_posts_for_runs[:-1])
-            )
-        )
+        # Equal adjacent (pre, post) pairs in CSR order, chunk by chunk with
+        # one element of overlap; the sorted sources are re-gathered per chunk.
+        for start in range(0, post_ids.size - 1, _HOST_CHUNK_EDGES):
+            stop = min(start + _HOST_CHUNK_EDGES + 1, post_ids.size)
+            pre = pre_ids[edge_ids[start:stop]]
+            post = sorted_posts[start:stop]
+            if np.any((pre[1:] == pre[:-1]) & (post[1:] == post[:-1])):
+                has_repeated_targets = True
+                break
 
     device = "/GPU:0" if tf.config.get_visible_devices("GPU") else "/CPU:0"
     with tf.device(device):
-        post_ids = indices[edge_ids, 0].astype(numpy_index_dtype, copy=False)
-        sorted_synapse_types = synapse_types[edge_ids].astype(
-            numpy_index_dtype, copy=False
-        )
+        post_ids = _as_index_dtype(sorted_posts, numpy_index_dtype)
+        del sorted_posts
+        sorted_synapse_types = _as_index_dtype(synapse_types[edge_ids], numpy_index_dtype)
         incoming_pre_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_edge_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_types = np.empty(0, dtype=numpy_index_dtype)
@@ -528,13 +629,10 @@ def build_csr_connectivity(
                 int(n_synapse_types) < 2**64
                 and int(n_target_neurons) * int(n_synapse_types) <= 2**64
             ):
-                stride = np.uint64(n_synapse_types)
-                keys = post_ids.astype(np.uint64) * stride
-                keys += pair_types.astype(np.uint64, copy=False)
-                unique_keys, pair_ids = np.unique(keys, return_inverse=True)
-                pairs = np.column_stack(
-                    (unique_keys // stride, unique_keys % stride)
-                ).astype(numpy_index_dtype, copy=False)
+                pairs, pair_ids = _unique_pairs(
+                    post_ids, pair_types, n_synapse_types, numpy_index_dtype,
+                )
+                del pair_types
             else:
                 pairs, pair_ids = np.unique(
                     np.column_stack((post_ids, pair_types)),
@@ -554,17 +652,25 @@ def build_csr_connectivity(
         if uint8_types:
             # All index sections precede the byte tail, so no index is unaligned.
             index_parts = [metadata_parts[0], *metadata_parts[2:]]
-            wide = np.concatenate(index_parts)
-            type_byte_offset = int(wide.nbytes)
+            type_byte_offset = sum(int(part.size) for part in index_parts) * index_dtype.size
             padding_bytes = (-int(sorted_synapse_types.size)) % index_dtype.size
-            packed = np.concatenate((
-                wide.view(np.uint8),
-                sorted_synapse_types.astype(np.uint8),
-                np.zeros(padding_bytes, np.uint8),
-            ))
-            metadata = packed.view(numpy_index_dtype)
+            metadata = np.empty(
+                (type_byte_offset + sorted_synapse_types.size + padding_bytes) // index_dtype.size,
+                dtype=numpy_index_dtype,
+            )
+            offset = 0
+            for part in index_parts:
+                metadata[offset:offset + part.size] = part
+                offset += part.size
+            tail = metadata.view(np.uint8)[type_byte_offset:]
+            tail[:sorted_synapse_types.size] = sorted_synapse_types
+            tail[sorted_synapse_types.size:] = 0
         else:
-            metadata = np.concatenate(metadata_parts)
+            metadata = np.empty(sum(int(part.size) for part in metadata_parts), dtype=numpy_index_dtype)
+            offset = 0
+            for part in metadata_parts:
+                metadata[offset:offset + part.size] = part
+                offset += part.size
         metadata_schema = (
             "csr_live_uint8_type_tail_v1" if uint8_types else
             "csr_live_without_edge_ids_v1" if host_lifecycle else "canonical_edge_ids_v1"

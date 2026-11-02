@@ -24,6 +24,14 @@ reuse the arithmetic without this module's storage policy:
   the records in TensorLists, streams count/trace statistics and runs the
   full-horizon reverse loop behind a ``tf.custom_gradient``.
 
+A :class:`SpikeExchange` attached to a named spike input lets that input carry
+recurrent spikes of neurons simulated elsewhere (another process or device):
+the runner asks the exchange for the input's frame before every step, giving it
+the spikes this cell emitted on the previous step, and in the reverse loop hands
+it the complete credit of each frame, receiving the credit of the cell's own
+previous-step spikes in return. A network split by neurons across runners then
+trains exactly like the unsplit network.
+
 Structure adapted from Javier's ``v1_model_utils/recorded_adjoint.py`` reverse
 step (credit: Javier); DPointNet keeps its NEST dynamics, event map, dtype
 boundaries, independent per-source VJPs and canonical master ownership.
@@ -49,6 +57,49 @@ from .custom_ops.glif_state_ops import (
 from .spike_statistics import SpikeStatistics, _window
 
 RECORD_FORMAT = "direct_step_record_v1"
+
+
+class SpikeExchange:
+    """Transport for a named spike input fed by recurrent spikes of other runners.
+
+    The input keeps its own CSR projection, delays and (optionally trainable)
+    weights; only the source of its frames changes. With ``x(t)`` the input
+    frame projected at step ``t`` and ``z(t)`` this cell's spikes:
+
+    * ``forward(time, spikes)`` runs before step ``time`` with ``spikes =
+      z(time - 1)`` (``z(-1)`` is the newest slot of the initial spike
+      history) and returns ``x(time)``, a ``[batch, width]`` binary frame.
+    * ``reverse(time, credit)`` runs while step ``time`` is reversed, after
+      every step that projected ``x(time)``; ``credit`` is the complete FP32
+      cotangent ``[batch, width]`` of ``x(time)`` (silent sources included).
+      It returns the cotangent ``[batch, neurons]`` of this cell's ``z(time -
+      1)`` contributed by the other runners' use of it; ``time == 0`` returns
+      the credit of the initial spike history.
+    * ``begin()`` runs once before the forward loop and once before the
+      reverse loop; it may return an op/tensor to order against, or ``None``.
+
+    An exchanged input takes no columns in the runner's ``inputs``: the
+    replay holds the remaining named inputs' columns, in cell order, so a
+    partition never materializes a dense frame per remote source.
+
+    Both hooks run exactly ``sequence_length`` times per rollout in time order
+    (forward) and reverse time order (reverse), so collective transports stay
+    matched across runners. Spikes are cast to the compute dtype; frames are
+    stored bit-packed and must be 0/1. The spike-gradient scale of the
+    recurrent population (``recurrent_spike_gradient_scale``) also scales the
+    exchanged credit, as it would scale the same edges' local recurrence.
+    Frames before step 0 come from the input's initial history state (also
+    0/1); their credit is not returned, as for every named input.
+    """
+
+    def begin(self):
+        return None
+
+    def forward(self, time, spikes):
+        raise NotImplementedError
+
+    def reverse(self, time, credit):
+        raise NotImplementedError
 
 
 def direct_records_supported(cell):
@@ -165,7 +216,7 @@ class DirectRecordedStep:
     returns per-population tuples in that order.
     """
 
-    def __init__(self, cell, batch, initial_state):
+    def __init__(self, cell, batch, initial_state, exchanged=()):
         unsupported = direct_records_supported(cell)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
@@ -188,6 +239,7 @@ class DirectRecordedStep:
             "connectivity": cell._recurrent_projection_connectivity(),
             "variable": cell.recurrent_weight_values,
             "trainable": bool(cell.recurrent_weight_values.trainable),
+            "exchanged": False,
         }]
         for index, (name, net) in enumerate(cell.inputs.items()):
             width = int(net["input_dim"])
@@ -200,7 +252,11 @@ class DirectRecordedStep:
                 "trainable": bool(net["input_weight_values"].trainable),
                 "connectivity": net["fused_connectivity"],
                 "variable": net["input_weight_values"],
+                "exchanged": name in exchanged,
             })
+        unknown = set(exchanged) - set(cell.inputs)
+        if unknown:
+            raise ValueError(f"Exchanged inputs are not named inputs of the cell: {sorted(unknown)}")
         self.penalty_mode = cell._voltage_penalty_mode
         self.sweep_options = dict(
             target_tile_size=cell.combined_current_target_tile_size,
@@ -366,6 +422,8 @@ class DirectRecordedStep:
         per-population booleans requesting dense source cotangents (silent
         sources included) and ``accumulators`` the caller-owned per-population
         FP32 weight-gradient accumulators (``None`` to skip a population).
+        Exchanged populations' source cotangents carry the recurrent
+        spike-gradient scale, as the recurrent population's do.
 
         Returns ``(previous_carry, source_cotangents, accumulators)`` where the
         previous carry holds the cotangents of the step's inputs
@@ -421,7 +479,8 @@ class DirectRecordedStep:
             if credit:
                 source_grad, weight_grad = csr_spike_ops._OPS.dpointnet_csr_spike_grad_csr_master(
                     source, currents_grad, _metadata(connectivity), population["variable"],
-                    self.basis, tf.ones((), self.spike_dtype),
+                    self.basis,
+                    self.recurrent_scale if population["exchanged"] else tf.ones((), self.spike_dtype),
                     use_packed_sm120_backward=False, write_csr_weight_gradient=True,
                     use_small_batch_backward=False, use_javier_batch32_backward=False,
                     **attributes,
@@ -453,7 +512,7 @@ class DirectRecordedAdjointRunner:
     """
 
     def __init__(self, core_model, cell, sequence_length, chunk_size, count_windows=None,
-                 differentiate_inputs=False, **kwargs):
+                 differentiate_inputs=False, spike_exchanges=None, **kwargs):
         unsupported = direct_records_supported(cell)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
@@ -486,6 +545,25 @@ class DirectRecordedAdjointRunner:
         if not self.count_windows:
             raise ValueError("Statistics require at least one count window.")
         self.n_sequence_outputs = 2
+        self.spike_exchanges = dict(spike_exchanges or {})
+        for name, exchange in self.spike_exchanges.items():
+            net = cell.inputs.get(name)
+            if net is None:
+                raise ValueError(f"Spike exchange {name!r} is not a named input of the cell.")
+            if net["input_type"] != "spikes":
+                raise ValueError(f"Spike exchange {name!r} requires a 'spikes' input, not {net['input_type']!r}.")
+            for method in ("begin", "forward", "reverse"):
+                if not callable(getattr(exchange, method, None)):
+                    raise TypeError(f"Spike exchange {name!r} has no callable {method}().")
+        # Replay columns of the named inputs; exchanged inputs take none.
+        self.replay_columns, offset = {}, 0
+        for index, name in enumerate(cell.inputs):
+            if name in self.spike_exchanges:
+                continue
+            width = int(cell.inputs_idx[index + 1]) - int(cell.inputs_idx[index])
+            self.replay_columns[name] = (offset, offset + width)
+            offset += width
+        self.replay_width = offset
 
     # -- input sources --------------------------------------------------------------
 
@@ -521,10 +599,43 @@ class DirectRecordedAdjointRunner:
                     step.batch, noise_steps + tf.cast(time, noise_steps.dtype), population["net"],
                 ), step.spike_dtype)
         else:
-            start, stop = population["columns"]
+            start, stop = self.replay_columns[population["name"]]
             frame = tf.cast(inputs[:, time, start:stop], step.spike_dtype)
         # A tensor time index drops the static width the sweep validates.
         return tf.ensure_shape(frame, (step.batch, population["width"]))
+
+    def _begin_exchanges(self, after=()):
+        """Control inputs ordering every exchange's ``begin()`` after ``after`` and before a loop.
+
+        ``begin`` usually has no data inputs; without ``after`` the reverse
+        loop's call could be scheduled before the forward loop has finished.
+        """
+        started = []
+        with tf.control_dependencies(list(after)):
+            for exchange in self.spike_exchanges.values():
+                value = exchange.begin()
+                if value is not None:
+                    started.append(value)
+        return started
+
+    @staticmethod
+    def _frame_words(population):
+        return 2 * ((population["width"] + 31) // 32)
+
+    def _exchanged_source(self, step, population, frames, time):
+        """Recorded exchanged frames ``x(time), x(time - 1), ...`` as the forward projected them."""
+        history = population["history_steps"]
+        parts = []
+        for k in range(history + 1):
+            words = tf.raw_ops.TensorListGetItem(
+                input_handle=frames, index=time - k + history,
+                element_shape=tf.constant([step.batch, self._frame_words(population)], tf.int32),
+                element_dtype=tf.int32,
+            )
+            parts.append(unpack_step_record(
+                words, population["width"], step.spike_dtype, step.refractory_dtype,
+            )[0])
+        return parts[0] if len(parts) == 1 else tf.concat(parts, axis=1)
 
     def _reverse_source(self, step, population, inputs, time, tables, noise_steps, initial_state):
         """``x(time), x(time - 1), ...`` concatenated as the forward projected them."""
@@ -614,7 +725,7 @@ class DirectRecordedAdjointRunner:
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state)
+            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
             neurons = step.neurons
             tables = self._prepare_noise(step, inputs, initial_state)
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
@@ -622,6 +733,7 @@ class DirectRecordedAdjointRunner:
                 "use_prepared_cpu_poisson": bool(tables),
                 "temporal_path": "direct_recorded_forward",
                 "record_format": RECORD_FORMAT,
+                **({"spike_exchanges": tuple(self.spike_exchanges)} if self.spike_exchanges else {}),
             })
             noise_steps = initial_state[6]
             # Per-step FP32 records as separate allocations land in oversized free
@@ -657,12 +769,49 @@ class DirectRecordedAdjointRunner:
             )
             penalties = tf.TensorArray(tf.float32, size=length, element_shape=(batch,))
             trace_plan = self._trace_plan(sampled_traces, step)
+            # Exchanged frames are recorded bit-packed, indexed by time + history:
+            # the first ``history_steps`` entries hold the initial input history
+            # (oldest first), as the word records hold the initial spike history.
+            exchanged = [population["name"] for population in step.populations if population["exchanged"]]
+            frames = []
+            for population in step.populations[1:]:
+                if not population["exchanged"]:
+                    continue
+                width, history = population["width"], population["history_steps"]
+                no_blocking = tf.zeros([batch, width], step.refractory_dtype)
+                record = tf.raw_ops.EmptyTensorList(
+                    element_shape=tf.constant([batch, self._frame_words(population)], tf.int32),
+                    max_num_elements=length + history, element_dtype=tf.int32,
+                )
+                start, _ = population["history"]
+                for k in reversed(range(history)):
+                    initial_frame = tf.cast(
+                        initial_state[7][:, start + k * width:start + (k + 1) * width], step.spike_dtype,
+                    )
+                    record = tf.raw_ops.TensorListPushBack(
+                        input_handle=record, tensor=pack_step_record(initial_frame, no_blocking),
+                    )
+                frames.append(record)
+            frames = tuple(frames)
 
-            def body(time, clock, state, voltages, words, penalties):
+            def body(time, clock, state, voltages, words, penalties, frames):
                 sources = [tf.cast(state[0], step.spike_dtype)]
-                new_input_history = []
+                previous_spikes = sources[0][:, :neurons]
+                new_input_history, new_frames = [], list(frames)
                 for population in step.populations[1:]:
-                    source = self._input_frame(step, population, inputs, time, tables, noise_steps, clock)
+                    if population["exchanged"]:
+                        index = exchanged.index(population["name"])
+                        source = tf.ensure_shape(tf.cast(
+                            self.spike_exchanges[population["name"]].forward(time, previous_spikes),
+                            step.spike_dtype,
+                        ), (batch, population["width"]))
+                        new_frames[index] = tf.raw_ops.TensorListPushBack(
+                            input_handle=frames[index], tensor=pack_step_record(
+                                source, tf.zeros([batch, population["width"]], step.refractory_dtype),
+                            ),
+                        )
+                    else:
+                        source = self._input_frame(step, population, inputs, time, tables, noise_steps, clock)
                     if population["history_steps"]:
                         start, stop = population["history"]
                         source = tf.concat(
@@ -685,30 +834,30 @@ class DirectRecordedAdjointRunner:
                     voltages = tf.raw_ops.TensorListPushBack(input_handle=voltages, tensor=pre_reset)
                 words = tf.raw_ops.TensorListPushBack(input_handle=words, tensor=record)
                 penalties = penalties.write(time, penalty)
-                return time + 1, clock + 1, new_state, voltages, words, penalties
+                return time + 1, clock + 1, new_state, voltages, words, penalties, tuple(new_frames)
 
-            def chunk(index, clock, state, voltages, words, penalties):
+            def chunk(index, clock, state, voltages, words, penalties, frames):
                 tf.raw_ops.ResourceScatterUpdate(
                     resource=asc_snapshots.handle, indices=(clock // self.chunk_size)[None],
                     updates=state[3][None],
                 )
                 stop = tf.minimum((index + 1) * self.chunk_size, length)
-                _, clock, state, voltages, words, penalties = tf.while_loop(
+                _, clock, state, voltages, words, penalties, frames = tf.while_loop(
                     lambda time, *_: time < stop, body,
-                    (index * self.chunk_size, clock, state, voltages, words, penalties),
+                    (index * self.chunk_size, clock, state, voltages, words, penalties, frames),
                     parallel_iterations=1,
                 )
-                return index + 1, clock, state, voltages, words, penalties
+                return index + 1, clock, state, voltages, words, penalties, frames
 
-            with tf.control_dependencies([time_check]):
+            with tf.control_dependencies([time_check, *self._begin_exchanges()]):
                 state = tuple(tf.identity(value) for value in initial_state)
             # Device-resident int64 step clock beside the host loop counter: device
             # index consumers read it without a per-step host-to-device upload.
             with step.device_scope():
                 clock = tf.identity(tf.zeros([], tf.int64))
-            _, _, state, voltages, words, penalties = tf.while_loop(
+            _, _, state, voltages, words, penalties, frames = tf.while_loop(
                 lambda index, *_: index < self.n_chunks, chunk,
-                (tf.constant(0), clock, state, voltages, words, penalties),
+                (tf.constant(0), clock, state, voltages, words, penalties, frames),
                 parallel_iterations=1,
             )
             # Statistics come from the packed records after the loop: a stacked
@@ -738,7 +887,7 @@ class DirectRecordedAdjointRunner:
                         trace_outputs += (tf.cast(traces[offset:offset + extent], step.spike_dtype),)
                         offset += extent
         penalty_sequence = tf.transpose(penalties.stack())
-        records = (scratch if buffered else voltages, words, asc_snapshots, tables, noise_steps, buffered)
+        records = (scratch if buffered else voltages, words, asc_snapshots, tables, noise_steps, buffered, frames)
         return counts, trace_outputs, (penalty_sequence,), tuple(state), records
 
     # -- reverse driver ------------------------------------------------------------------
@@ -747,9 +896,9 @@ class DirectRecordedAdjointRunner:
                   count_gradients, trace_gradients, penalty_gradient, state_gradients, variables):
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
-        voltages, words, asc_snapshots, tables, noise_steps, buffered = records
+        voltages, words, asc_snapshots, tables, noise_steps, buffered, frames = records
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state)
+            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
             neurons, delay, S, T = step.neurons, step.delay, step.spike_dtype, step.state_dtype
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
                 "temporal_path": "direct_recorded_vjp",
@@ -825,8 +974,12 @@ class DirectRecordedAdjointRunner:
                 return step.unpack(words_at(time))[0]
 
             populations = step.populations
-            source_credit = tuple(population["recurrent"] for population in populations)
+            source_credit = tuple(population["recurrent"] or population["exchanged"] for population in populations)
             accumulate = tuple(population["trainable"] for population in populations)
+            exchanged = [
+                (index, population) for index, population in enumerate(populations) if population["exchanged"]
+            ]
+            exchanged_names = [population["name"] for _, population in exchanged]
 
             block = self.asc_block
             blocks_per_chunk = -(-self.chunk_size // block)
@@ -854,28 +1007,46 @@ class DirectRecordedAdjointRunner:
                 )
                 return tf.reshape(row, [batch, 2 * neurons])
 
-            def reverse_step(time, carry, window, accumulators, asc_buffer, block_start):
+            def reverse_step(time, carry, window, accumulators, asc_buffer, block_start, pending):
                 sources = [window]
                 for population, keep in zip(populations[1:], accumulate[1:]):
-                    sources.append(
-                        self._reverse_source(step, population, inputs, time, tables, noise_steps, initial_state)
-                        if keep else tf.zeros([batch, 0], S)
-                    )
+                    if population["exchanged"]:
+                        sources.append(self._exchanged_source(
+                            step, population, frames[exchanged_names.index(population["name"])], time,
+                        ))
+                    else:
+                        sources.append(
+                            self._reverse_source(step, population, inputs, time, tables, noise_steps, initial_state)
+                            if keep else tf.zeros([batch, 0], S)
+                        )
                 carry, credit, accumulators = step.reverse(
                     voltage_record(time), asc_buffer.read(time - block_start), carry,
                     spike_base(time), penalty_gradient[:, time], sources, source_credit,
                     tuple(acc if keep else None for acc, keep in zip(accumulators, accumulate)),
                     trace=trace_at(time),
                 )
-                carry = carry + (credit[0],)
+                history_credit = credit[0]
+                new_pending = []
+                for (index, population), frame_credit in zip(exchanged, pending):
+                    # Frame x(time) was projected by steps time..time+history; all are
+                    # reversed now, so its credit is complete.
+                    width = population["width"]
+                    frame_credit = frame_credit + tf.cast(credit[index], tf.float32)
+                    received = self.spike_exchanges[population["name"]].reverse(time, frame_credit[:, :width])
+                    received = tf.ensure_shape(tf.cast(received, history_credit.dtype), (batch, neurons))
+                    history_credit = history_credit + tf.pad(received, ((0, 0), (0, step.history_width - neurons)))
+                    new_pending.append(tf.concat(
+                        [frame_credit[:, width:], tf.zeros([batch, width], tf.float32)], axis=1,
+                    ))
+                carry = carry + (history_credit,)
                 accumulators = tuple(
                     tf.zeros([0], tf.float32) if acc is None else acc for acc in accumulators
                 )
                 # At time 0 the shifted-in frame is never read; clamp it to the oldest record.
                 window = step.shift_history(window, words_at(tf.maximum(time - 1 - delay, -delay)))
-                return time - 1, carry, window, accumulators, asc_buffer, block_start
+                return time - 1, carry, window, accumulators, asc_buffer, block_start, tuple(new_pending)
 
-            def reverse_block(block_index, carry, window, accumulators, coarse, chunk_start, chunk_stop):
+            def reverse_block(block_index, carry, window, accumulators, pending, coarse, chunk_start, chunk_stop):
                 block_start = chunk_start + block_index * block
                 block_stop = tf.minimum(block_start + block, chunk_stop)
                 # The last block's value at block_stop - 1 is written by the walk's
@@ -884,14 +1055,14 @@ class DirectRecordedAdjointRunner:
                     block_start, block_stop - 1, coarse.read(block_index),
                     tf.TensorArray(T, size=block, element_shape=(batch, 2 * neurons)), 1,
                 )
-                _, carry, window, accumulators, _, _ = tf.while_loop(
+                _, carry, window, accumulators, _, _, pending = tf.while_loop(
                     lambda time, *_: time >= block_start, reverse_step,
-                    (block_stop - 1, carry, window, accumulators, fine, block_start),
+                    (block_stop - 1, carry, window, accumulators, fine, block_start, pending),
                     parallel_iterations=1,
                 )
-                return block_index - 1, carry, window, accumulators, coarse, chunk_start, chunk_stop
+                return block_index - 1, carry, window, accumulators, pending, coarse, chunk_start, chunk_stop
 
-            def reverse_chunk(chunk_index, carry, window, accumulators):
+            def reverse_chunk(chunk_index, carry, window, accumulators, pending):
                 start = chunk_index * self.chunk_size
                 stop = tf.minimum(start + self.chunk_size, length)
                 last_block = (stop - start - 1) // block
@@ -900,24 +1071,25 @@ class DirectRecordedAdjointRunner:
                     start, start + last_block * block, chunk_snapshot(chunk_index),
                     tf.TensorArray(T, size=blocks_per_chunk + 1, element_shape=(batch, 2 * neurons)), block,
                 )
-                _, carry, window, accumulators, _, _, _ = tf.while_loop(
+                _, carry, window, accumulators, pending, _, _, _ = tf.while_loop(
                     lambda block_index, *_: block_index >= 0, reverse_block,
-                    (last_block, carry, window, accumulators, coarse, start, stop),
+                    (last_block, carry, window, accumulators, pending, coarse, start, stop),
                     parallel_iterations=1,
                 )
-                return chunk_index - 1, carry, window, accumulators
+                return chunk_index - 1, carry, window, accumulators, pending
 
             def floating_gradient(gradient, value):
                 return tf.zeros_like(value) if gradient is None else tf.cast(gradient, value.dtype)
 
-            carry = (
-                floating_gradient(state_gradients[1], final_state[1]),
-                floating_gradient(state_gradients[3], final_state[3]),
-                floating_gradient(state_gradients[4], final_state[4]),
-                floating_gradient(state_gradients[5], final_state[5]),
-                floating_gradient(state_gradients[0], final_state[0]),
-                tf.zeros_like(final_state[0]),
-            )
+            with tf.control_dependencies(self._begin_exchanges(after=final_state)):
+                carry = tuple(tf.identity(value) for value in (
+                    floating_gradient(state_gradients[1], final_state[1]),
+                    floating_gradient(state_gradients[3], final_state[3]),
+                    floating_gradient(state_gradients[4], final_state[4]),
+                    floating_gradient(state_gradients[5], final_state[5]),
+                    floating_gradient(state_gradients[0], final_state[0]),
+                    tf.zeros_like(final_state[0]),
+                ))
             # The delay window of the last step as one [batch, neurons * delay] tensor
             # (newest slot first), as the forward's history state holds it.
             window = tf.concat(
@@ -927,9 +1099,15 @@ class DirectRecordedAdjointRunner:
                 tf.zeros_like(population["variable"]) if keep else tf.zeros([0], tf.float32)
                 for population, keep in zip(populations, accumulate)
             )
-            _, carry, _, accumulators = tf.while_loop(
+            # Pending FP32 credit of exchanged frames x(time), ..., x(time - history).
+            with step.device_scope():
+                pending = tuple(
+                    tf.zeros([batch, population["width"] * (population["history_steps"] + 1)], tf.float32)
+                    for _, population in exchanged
+                )
+            _, carry, _, accumulators, _ = tf.while_loop(
                 lambda chunk_index, *_: chunk_index >= 0, reverse_chunk,
-                (tf.constant(self.n_chunks - 1), carry, window, accumulators),
+                (tf.constant(self.n_chunks - 1), carry, window, accumulators, pending),
                 parallel_iterations=1,
             )
         grad_v, grad_asc, grad_rise, grad_psc, grad_history, history_credit = carry
@@ -969,6 +1147,11 @@ class DirectRecordedAdjointRunner:
             raise ValueError(
                 "Direct recorded adjoint requires a static batch and input length equal to sequence_length."
             )
+        if self.spike_exchanges and inputs.shape[2] != self.replay_width:
+            raise ValueError(
+                f"With spike exchanges the inputs hold only the {self.replay_width} replay columns of "
+                f"the non-exchanged named inputs, got {inputs.shape[2]}."
+            )
         output_count = len(self.count_windows) + len(sampled_traces) + 1
         checks = (
             tf.debugging.assert_equal(tf.shape(inputs)[1], self.sequence_length),
@@ -976,6 +1159,14 @@ class DirectRecordedAdjointRunner:
                 tf.reduce_all((initial_state[0] == 0) | (initial_state[0] == 1)), True,
                 message="Recorded adjoints require binary initial spike history.",
             ),
+        ) + tuple(
+            tf.debugging.assert_equal(
+                tf.reduce_all((history == 0) | (history == 1)), True,
+                message=f"Spike exchange {name!r} requires a binary initial input history.",
+            )
+            for name, net in self.cell.inputs.items() if name in self.spike_exchanges
+            for history in [initial_state[7][:, int(net["history_start"]):int(net["history_stop"])]]
+            if int(net["history_stop"]) > int(net["history_start"])
         )
 
         @tf.custom_gradient
