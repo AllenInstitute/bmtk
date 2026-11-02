@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import numpy as np
 import pandas as pd
@@ -144,6 +145,26 @@ class RNN:
 
         self.batch_size = batch_size
         self._adjusted_batch_size = None
+
+        # Neuron partitioning (plain mpirun, or run.distribution.strategy="neurons") gives each
+        # rank one network part and one device; it must pick the device before TF uses one.
+        self.neuron_partition = None
+        from bmtk.utils.io.ioutils import bmtk_world_comm
+        from .neuron_partition import PartitionContext, mpi_launch_size, neuron_partition_requested
+
+        # Consult MPI only under an MPI launch: single-process runs never initialize it.
+        world = bmtk_world_comm.comm if mpi_launch_size() > 1 else None
+        world_size = world.Get_size() if world is not None else 1
+        launched = os.environ.get("BMTK_DPOINTNET_MPI_LAUNCH") in ("cpu", "gpu")
+        if neuron_partition_requested(distribution, world_size, launched):
+            if not issubclass(self.cell_cls, GLIF3Cell):
+                raise ValueError("Neuron partitioning requires a GLIF3Cell model.")
+            if world_size > 1:
+                self.neuron_partition = PartitionContext(
+                    world, distribution if isinstance(distribution, dict) else None
+                )
+                io.log_info(f"DPointNet neuron partition: {self.neuron_partition.describe()}")
+            distribution = None
 
         tf_utils.enable_gpu_memory_growth()
         tf_utils.enable_tensorflow_optimizations()
@@ -334,6 +355,11 @@ class RNN:
 
     def get_model_weights(self, trainable_only=False, deep_copy=True):
         # TODO: Check that model is built
+        if getattr(self, "neuron_partition", None) is not None:
+            from .weights import PartitionedModelWeights
+
+            # Collective: every rank contributes its edges; the root holds the network's weights.
+            return PartitionedModelWeights(rnn=self, cell=self.cell, trainable_only=trainable_only)
         return ModelWeights(
             rnn=self, 
             cell=self.cell,
@@ -483,10 +509,29 @@ class RNN:
 
         # Force rebuild of recurrent network dict (don't use cached version)
         self._built_recurrent_net = None
-        network = self.recurrent_network
         external_input_networks = [i for i in self._input_networks.values() if i.n_spiking_nodes > 0]
         n_spiking_inputs = sum(i.n_spiking_nodes for i in external_input_networks)
-        inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
+        if getattr(self, "neuron_partition", None) is not None:
+            from .neuron_partition import PARTITION_INPUT
+
+            if len(self._recurrent_networks) != 1:
+                raise ValueError("Neuron partitioning supports exactly one recurrent network.")
+            network, inputs_dicts = self.neuron_partition.build_network_dicts(
+                next(iter(self._recurrent_networks.values())),
+                list(self._input_networks.values()),
+                {
+                    "trainable": bool(cell_params.get("train_recurrent", True)),
+                    "weight_scale": cell_params.get("recurrent_weight_scale", 1.0),
+                },
+            )
+            self._built_recurrent_net = network
+            io.log_info(f"DPointNet neuron partition: {self.neuron_partition.describe()}")
+            # The partition input's columns exist only in the symbolic model; the direct runner
+            # takes the remaining replay columns and fills the partition input by exchange.
+            n_spiking_inputs += inputs_dicts[PARTITION_INPUT]["n_inputs"]
+        else:
+            network = self.recurrent_network
+            inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
         has_external_continuous_inputs = any(
             item.get("options", {}).get("input_type", item["input_type"]) == "current"
             and item["n_inputs"] > 0
@@ -787,6 +832,11 @@ class RNN:
         return ((flat_output[0], flat_output[1]),) + flat_output[2:]
 
     def run_extractor(self, spikes, initial_state):
+        if getattr(self, "neuron_partition", None) is not None:
+            raise ValueError(
+                "A neuron-partitioned model runs only through its training engine; the "
+                "plain extractor would ignore the other ranks' spikes."
+            )
         if self.extractor_model is None:
             with self.strategy.scope():
                 self.extractor_model = self._build_extractor_model()
@@ -977,6 +1027,11 @@ class RNN:
             raise ValueError(
                 "MPI preview supports training only; run inference separately to "
                 "avoid duplicate output ownership."
+            )
+        if getattr(self, "neuron_partition", None) is not None and (self._inferences or not self.training_engine):
+            raise ValueError(
+                "Neuron-partitioned runs support training only; run inference in a single "
+                "process (without mpirun) on the trained weights."
             )
         if not self._model_built:
             io.log_info('Building Model.')

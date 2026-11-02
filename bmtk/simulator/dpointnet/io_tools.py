@@ -10,6 +10,19 @@ from bmtk.simulator.core.io_tools import IOUtils
 from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
+# World-size variables set by common MPI launchers (Open MPI, MPICH/Hydra, PMIx, MVAPICH).
+_MPI_SIZE_VARIABLES = ("OMPI_COMM_WORLD_SIZE", "PMI_SIZE", "PMIX_SIZE", "MV2_COMM_WORLD_SIZE")
+
+
+def mpi_launch_size():
+    """Process count of an MPI launch from the launcher's environment, without initializing MPI."""
+    for name in _MPI_SIZE_VARIABLES:
+        value = os.environ.get(name)
+        if value and value.isdigit():
+            return int(value)
+    return 1
+
+
 class RNNIOUtils(IOUtils):
     _logger = None
 
@@ -24,7 +37,11 @@ class RNNIOUtils(IOUtils):
         mode = os.environ.get("BMTK_DPOINTNET_MPI_LAUNCH")
         if mode is not None and mode not in ("cpu", "gpu"):
             raise ValueError("Unknown DPointNet MPI launcher mode.")
-        self._comm = bmtk_world_comm.comm if mode is not None else None
+        # A plain multi-process launch (neuron partitioning) shares output ownership too;
+        # MPI is consulted only when a launcher started several processes.
+        world = bmtk_world_comm.comm if mode is not None or mpi_launch_size() > 1 else None
+        multi_process = world is not None and world.Get_size() > 1
+        self._comm = world if mode is not None or multi_process else None
         if mode is not None and self._comm is None:
             raise RuntimeError("DPointNet MPI launch requires an MPI communicator.")
         self.mpi_rank = self._comm.Get_rank() if self._comm is not None else 0

@@ -744,14 +744,36 @@ class TrainingEngine:
                 result = self._extractor_forward(
                     x, init_state, sampled_traces=tuple(traces)
                 )
+                counts, sequences = result.counts, result.sequences
+                partition = getattr(self.rnn, "neuron_partition", None)
+                if partition is not None:
+                    if traces:
+                        raise ValueError("Sampled spike traces are not neuron-partition aware.")
+                    # Global view: every rank evaluates the same losses on all neurons.
+                    counts = tuple(partition.global_counts(value) for value in counts)
+                    sequences = tuple(partition.global_mean(value) for value in sequences)
                 spikes = SpikeSummary(
-                    result.counts, self._extractor_forward.count_windows,
+                    counts, self._extractor_forward.count_windows,
                     x.shape[1], result.traces, tuple(keys),
                 )
-                return ((spikes, *result.sequences), *result.final_state)
+                return ((spikes, *sequences), *result.final_state)
             flat_output = self._extractor_forward(x, init_state)
             return self.rnn._unpack_extractor_output(flat_output)
         return self.rnn.run_extractor(x, init_state)
+
+    def _partition_validation_extractor(self, x, init_state):
+        """Forward-only partitioned rollout for validation; the training noise stream is untouched."""
+        if x.dtype == tf.bool:
+            x = tf.cast(x, self.rnn.dtype)
+        init_state = self.rnn.cell.reset_voltage_penalty_state(init_state)
+        result = self._extractor_forward(x, init_state)
+        partition = self.rnn.neuron_partition
+        spikes = SpikeSummary(
+            tuple(partition.global_counts(value) for value in result.counts),
+            self._extractor_forward.count_windows, x.shape[1], result.traces, (),
+        )
+        sequences = tuple(partition.global_mean(value) for value in result.sequences)
+        return ((spikes, *sequences), *result.final_state)
 
     def _run_parameter_extractor(self, x, init_state, parameter):
         if self.stream_spike_statistics:
@@ -899,6 +921,9 @@ class TrainingEngine:
         cell = getattr(self.rnn, "cell", None)
         if self._extractor_forward is None:
             self._resolve_training_route(cell)
+        partition = getattr(self.rnn, "neuron_partition", None)
+        if partition is not None and self._extractor_forward is None:
+            self._validate_neuron_partition_training()
         if self.stream_spike_statistics:
             self._validate_spike_statistics()
         if getattr(cell, "temporal_gradient_precision", "compute") == "float32":
@@ -945,6 +970,8 @@ class TrainingEngine:
             from .direct_recorded_adjoint import DirectRecordedAdjointRunner
             runner_type = DirectRecordedAdjointRunner
             output_options = {"cell": cell}
+            if partition is not None:
+                output_options["spike_exchanges"] = partition.spike_exchanges(self.adjusted_batch_size)
         elif self.recorded_adjoint:
             from .recorded_adjoint import RecordedAdjointRunner
             runner_type = RecordedAdjointRunner
@@ -969,6 +996,37 @@ class TrainingEngine:
             f"chunk_size={self.gradient_checkpoint_chunk_size}, "
             f"pack_spike_checkpoints={self.pack_spike_checkpoints}."
         )
+
+    # Losses whose inputs are spike counts or the per-step voltage penalty, which a
+    # neuron-partitioned run presents as a global view on every rank.
+    _PARTITION_LOSSES = (
+        "SpikeRateDistributionTarget", "TargetFiringRate", "LowRateFloor", "VoltageRegularization",
+    )
+
+    def _validate_neuron_partition_training(self):
+        """Neuron partitioning trains through the direct recorded adjoint with streamed statistics."""
+        unmet = []
+        if self.recorded_adjoint != "direct" or not self.stream_spike_statistics:
+            reasons = self.training_route_report.get("reasons", {}) if self.training_route_report else {}
+            unmet.append(
+                "the direct recorded adjoint with streamed spike statistics "
+                f"(selected recorded_adjoint={self.recorded_adjoint!r}, "
+                f"stream_spike_statistics={self.stream_spike_statistics!r}; {reasons})"
+            )
+        if self.training_approach != "single" or len(self.parameters) != 1:
+            unmet.append("training_approach='single' with one parameter set")
+        if tf.as_dtype(self.rnn.dtype) != tf.float32:
+            # Dynamic loss scaling decides finiteness per rank; ranks could skip different updates.
+            unmet.append("float32 precision (mixed-precision loss scaling is not yet partition aware)")
+        for parameter in self.parameters:
+            for name, loss in parameter.loss_functions.items():
+                kind = type(loss).__name__
+                if kind == "VoltageRegularization" and getattr(loss, "_core_mask", None) is not None:
+                    unmet.append(f"loss {name!r}: core-masked voltage regularization")
+                elif kind not in self._PARTITION_LOSSES and not getattr(loss, "supports_neuron_partition", False):
+                    unmet.append(f"loss {name!r} ({kind}) is not neuron-partition aware")
+        if unmet:
+            raise ValueError("Neuron-partitioned training requires " + "; ".join(unmet) + ".")
 
     def _statistics_windows(self):
         length = self.adjusted_seq_len
@@ -1477,7 +1535,11 @@ class TrainingEngine:
             all_losses = []
             for p, x, y in zip(self.parameters, xs, ys):
                 loss_vals[p.name] = {}
-                _out = self.rnn.run_extractor(x, init_state)
+                _out = (
+                    self._partition_validation_extractor(x, init_state)
+                    if getattr(self.rnn, "neuron_partition", None) is not None
+                    else self.rnn.run_extractor(x, init_state)
+                )
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
                 if self._record_mean_rate_metrics_enabled:
@@ -1618,7 +1680,8 @@ class TrainingEngine:
     def train(self):
         data_parallel = getattr(self.rnn, "data_parallel", None)
         process_parallel = getattr(data_parallel, "process_based", False)
-        chief = not process_parallel or data_parallel.is_chief
+        partition = getattr(self.rnn, "neuron_partition", None)
+        chief = (not process_parallel or data_parallel.is_chief) and (partition is None or partition.rank == 0)
         if data_parallel is not None:
             data_parallel.validate_training(self)
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
@@ -1680,6 +1743,9 @@ class TrainingEngine:
                     if chief:
                         self.callbacks.on_step_start()
                     values = self._next_spikes_with_retry(input_itr) if chief else None
+                    if partition is not None:
+                        # Every rank trains its part of the network on the same batch.
+                        values = partition.broadcast_batch(values)
                     if data_parallel is not None:
                         spikes, ys = data_parallel.distribute_batch(values)
                     else:
@@ -1719,9 +1785,20 @@ class TrainingEngine:
                 )
                 if data_parallel is not None:
                     validation_loss = data_parallel.reduce_metrics(validation_loss)
+                if partition is not None:
+                    # Weight snapshots gather every rank's edges: decide on the chief, gather on all.
+                    store = partition.comm.bcast(
+                        self.callbacks.stores_weights(validation_loss) if chief else None, root=0,
+                    )
+                    if store:
+                        snapshot = self.rnn.get_model_weights(deep_copy=True)
+                        if chief:
+                            self.callbacks.prepared_weights = snapshot
                 stop = self.callbacks.on_epoch_end(validation_loss) if chief else None
                 if process_parallel:
                     stop = data_parallel.broadcast_stop(stop)
+                if partition is not None:
+                    stop = partition.comm.bcast(stop, root=0)
                 if stop:
                     break
 

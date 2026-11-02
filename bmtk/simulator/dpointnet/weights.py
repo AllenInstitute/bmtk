@@ -118,3 +118,76 @@ class ModelWeights:
                 edges_grp.create_dataset('edge_group_id', data=np.zeros(len(conns_df), dtype=int), compression=compression)
                 edges_grp.create_dataset('edge_group_index', data=np.arange(len(conns_df), dtype=int), compression=compression)
                 edges_grp.create_dataset('0/syn_weight', data=conns_df['syn_weight'].values, compression=compression)
+
+
+class PartitionedModelWeights(ModelWeights):
+    """Whole-network weights of a neuron-partitioned run, gathered on rank 0.
+
+    Construction is collective: every rank contributes the physical weights of
+    its edges (CSR masters converted to canonical order and multiplied by their
+    export factor, the same per-edge arithmetic as :class:`ModelWeights`).
+    Rank 0 then holds the recurrent weights in global canonical order and each
+    input's weights in file row order and exports them like an unpartitioned
+    model; other ranks hold nothing.
+    """
+
+    def __init__(self, rnn, cell, trainable_only=False, deep_copy=True):
+        from .neuron_partition import PARTITION_INPUT
+
+        partition = rnn.neuron_partition
+        self.rnn = rnn
+        self.cell = cell
+        self.trainable_only = trainable_only
+        self.deep_copy = True
+        names = ['<recurrent>'] + list(self.rnn.inputs_populations)
+        if trainable_only:
+            names = [
+                name for name in names
+                if (cell.recurrent_weight_values if name == '<recurrent>'
+                    else cell.inputs[name]['input_weight_values']).trainable
+            ]
+        self._networks = names
+        self.is_root = partition.rank == 0
+        self._network_weights = {}
+        for name in names:
+            if name == '<recurrent>':
+                values = partition.gather_canonical({
+                    master: self._physical(cell, master) for master in ('<recurrent>', PARTITION_INPUT)
+                })
+            else:
+                rows = partition.comm.gather((partition.input_rows[name], self._physical(cell, name)), root=0)
+                values = None
+                if self.is_root:
+                    values = np.empty(sum(len(r) for r, _ in rows), dtype=np.float32)
+                    for peer_rows, peer_values in rows:
+                        values[peer_rows] = peer_values
+            if self.is_root:
+                self._network_weights[name] = values
+
+    @staticmethod
+    def _physical(cell, name):
+        weights = np.asarray(cell.canonical_weight_values(name).numpy(), dtype=np.float32)
+        if name == '<recurrent>':
+            export_factor = cell._recurrent_export_factor
+            layout = getattr(cell, 'recurrent_master_layout', None)
+        else:
+            export_factor = cell.inputs[name]['export_factor']
+            layout = cell.inputs[name].get('master_layout')
+        if getattr(cell, '_csr_host_lifecycle', False) and layout is not None:
+            export_factor = layout.host_to_canonical(export_factor)
+        return weights * export_factor
+
+    def to_dataframe(self, cache=False):
+        if not self.is_root:
+            raise ValueError("Partitioned model weights are held by rank 0 only.")
+        ret_df = None
+        for netname, physical in self._network_weights.items():
+            netadaptor = self.rnn.get_network(netname)
+            netadaptor.prepare_export_tables()
+            conn_table_df = netadaptor.connection_table
+            conn_table_df['syn_weight'] = physical
+            order = netadaptor.canonical_edge_order
+            if order is not None:
+                conn_table_df = conn_table_df.iloc[order].reset_index(drop=True)
+            ret_df = conn_table_df if ret_df is None else pd.concat([ret_df, conn_table_df])
+        return ret_df
