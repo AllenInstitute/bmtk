@@ -35,6 +35,8 @@ class SpikeRateDistributionTarget:
         self._dtype = dtype
         self._seed = seed
         self._neuropixels_df = neuropixels_df
+        self._tie_seed = None
+        self._tie_counter = None
 
         # Restrict the rate-matching loss to a central core (matches the reference
         # V1_GLIF_model's loss_core_radius). With no core, the loss averages over all
@@ -123,6 +125,17 @@ class SpikeRateDistributionTarget:
 
         return target_firing_rates
 
+    def synchronize_ties(self, seed):
+        """Break rate ties with a stateless permutation drawn from ``(seed, evaluation count)``.
+
+        Processes that evaluate this loss on the same global rates (neuron-partitioned
+        ranks) then assign tied rates to the same target quantiles, so the gradient
+        slices they keep belong to one consistent permutation.
+        """
+        self._tie_seed = int(seed)
+        with tf.init_scope():
+            self._tie_counter = tf.Variable(0, dtype=tf.int64, trainable=False, name="rate_tie_counter")
+
     def __call__(self, spikes, trim=True, **kwargs):
         # if trim:
         #     if self._pre_delay is not None:
@@ -151,14 +164,19 @@ class SpikeRateDistributionTarget:
         rates = tf.reduce_mean(spike_counts, axis=0)
         rates /= duration
 
+        shuffle_seed = None
+        if getattr(self, "_tie_counter", None) is not None:
+            # One fresh, shared tie-breaking permutation per evaluation (see synchronize_ties).
+            shuffle_seed = tf.stack([tf.constant(self._tie_seed, tf.int64), self._tie_counter.assign_add(1)])
         reg_loss = loss_utils.compute_spike_rate_target_loss(
-            rates, self._target_rates, dtype=self._dtype
+            rates, self._target_rates, dtype=self._dtype, shuffle_seed=shuffle_seed,
         )
         if self._annulus_target_rates is not None:
             annulus_loss = loss_utils.compute_spike_rate_target_loss(
                 rates,
                 self._annulus_target_rates,
                 dtype=self._dtype,
+                shuffle_seed=None if shuffle_seed is None else shuffle_seed + tf.constant([1 << 20, 0], tf.int64),
             )
             reg_loss += self._annulus_loss_weight * annulus_loss
 

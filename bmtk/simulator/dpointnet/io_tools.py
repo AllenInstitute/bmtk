@@ -23,6 +23,25 @@ def mpi_launch_size():
     return 1
 
 
+def launched_world_communicator():
+    """The world communicator of a multi-process MPI launch, ``None`` for one process.
+
+    Raises when a launcher started several processes but no communicator is
+    available (for example without ``mpi4py``): each process would otherwise run
+    the whole model and write the same outputs.
+    """
+    size = mpi_launch_size()
+    if size <= 1:
+        return None
+    world = bmtk_world_comm.comm
+    if world is None or world.Get_size() != size:
+        raise RuntimeError(
+            f"An MPI launch of {size} processes was detected, but no matching MPI communicator "
+            "is available; install mpi4py built against this MPI, or run a single process."
+        )
+    return world
+
+
 class RNNIOUtils(IOUtils):
     _logger = None
 
@@ -39,7 +58,7 @@ class RNNIOUtils(IOUtils):
             raise ValueError("Unknown DPointNet MPI launcher mode.")
         # A plain multi-process launch (neuron partitioning) shares output ownership too;
         # MPI is consulted only when a launcher started several processes.
-        world = bmtk_world_comm.comm if mode is not None or mpi_launch_size() > 1 else None
+        world = bmtk_world_comm.comm if mode is not None else launched_world_communicator()
         multi_process = world is not None and world.Get_size() > 1
         self._comm = world if mode is not None or multi_process else None
         if mode is not None and self._comm is None:

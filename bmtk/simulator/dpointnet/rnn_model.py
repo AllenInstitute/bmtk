@@ -1,3 +1,4 @@
+import inspect
 import os
 import tensorflow as tf
 import numpy as np
@@ -149,11 +150,11 @@ class RNN:
         # Neuron partitioning (plain mpirun, or run.distribution.strategy="neurons") gives each
         # rank one network part and one device; it must pick the device before TF uses one.
         self.neuron_partition = None
-        from bmtk.utils.io.ioutils import bmtk_world_comm
-        from .neuron_partition import PartitionContext, mpi_launch_size, neuron_partition_requested
+        from .io_tools import launched_world_communicator
+        from .neuron_partition import PartitionContext, neuron_partition_requested
 
         # Consult MPI only under an MPI launch: single-process runs never initialize it.
-        world = bmtk_world_comm.comm if mpi_launch_size() > 1 else None
+        world = launched_world_communicator()
         world_size = world.Get_size() if world is not None else 1
         launched = os.environ.get("BMTK_DPOINTNET_MPI_LAUNCH") in ("cpu", "gpu")
         if neuron_partition_requested(distribution, world_size, launched):
@@ -381,6 +382,11 @@ class RNN:
     def recurrent_network(self):
         if self._built_recurrent_net:
             return self._built_recurrent_net
+        if getattr(self, "neuron_partition", None) is not None and len(self._recurrent_networks) == 1:
+            # Losses and normalizers read whole-network node metadata; under neuron
+            # partitioning no rank materializes the whole network's edges.
+            self._built_recurrent_net = next(iter(self._recurrent_networks.values())).node_metadata_dict()
+            return self._built_recurrent_net
 
         for network in self._recurrent_networks.values():
             self._built_recurrent_net = network.to_dict()
@@ -523,8 +529,13 @@ class RNN:
                     "trainable": bool(cell_params.get("train_recurrent", True)),
                     "weight_scale": cell_params.get("recurrent_weight_scale", 1.0),
                 },
+                dt=self.dt,
+                max_delay=cell_params.get(
+                    "max_delay", inspect.signature(self.cell_cls.__init__).parameters["max_delay"].default,
+                ),
             )
-            self._built_recurrent_net = network
+            self.partition_network = network
+            self._built_recurrent_net = None
             io.log_info(f"DPointNet neuron partition: {self.neuron_partition.describe()}")
             # The partition input's columns exist only in the symbolic model; the direct runner
             # takes the remaining replay columns and fills the partition input by exchange.

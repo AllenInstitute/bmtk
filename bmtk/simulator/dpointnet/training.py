@@ -1003,6 +1003,21 @@ class TrainingEngine:
         "SpikeRateDistributionTarget", "TargetFiringRate", "LowRateFloor", "VoltageRegularization",
     )
 
+    def _validate_neuron_partition_setup(self):
+        """Checks needed before the initial state or optimizer are first used."""
+        unmet = []
+        if type(self.init_state).__name__ != "ZeroStateModule":
+            # Other initializers draw or simulate per local neuron (or warm up the plain
+            # model without the exchange), so ranks would not reproduce one network.
+            unmet.append(f"initial_state module zero_state (got {type(self.init_state).__name__})")
+        optimizer = getattr(self.optimizer, "inner_optimizer", self.optimizer)
+        for option in ("clipnorm", "global_clipnorm"):
+            if getattr(optimizer, option, None) is not None:
+                # Norms would cover only this rank's edges; elementwise clipvalue is exact.
+                unmet.append(f"no optimizer {option} (norms are not partition aware; clipvalue is)")
+        if unmet:
+            raise ValueError("Neuron-partitioned training requires " + "; ".join(unmet) + ".")
+
     def _validate_neuron_partition_training(self):
         """Neuron partitioning trains through the direct recorded adjoint with streamed statistics."""
         unmet = []
@@ -1018,9 +1033,15 @@ class TrainingEngine:
         if tf.as_dtype(self.rnn.dtype) != tf.float32:
             # Dynamic loss scaling decides finiteness per rank; ranks could skip different updates.
             unmet.append("float32 precision (mixed-precision loss scaling is not yet partition aware)")
+        partition = self.rnn.neuron_partition
+        tie_seed = partition.comm.bcast(
+            int(np.random.SeedSequence().entropy % (1 << 31)) if partition.rank == 0 else None, root=0,
+        )
         for parameter in self.parameters:
             for name, loss in parameter.loss_functions.items():
                 kind = type(loss).__name__
+                if hasattr(loss, "synchronize_ties"):
+                    loss.synchronize_ties(tie_seed)
                 if kind == "VoltageRegularization" and getattr(loss, "_core_mask", None) is not None:
                     unmet.append(f"loss {name!r}: core-masked voltage regularization")
                 elif kind not in self._PARTITION_LOSSES and not getattr(loss, "supports_neuron_partition", False):
@@ -1682,6 +1703,8 @@ class TrainingEngine:
         process_parallel = getattr(data_parallel, "process_based", False)
         partition = getattr(self.rnn, "neuron_partition", None)
         chief = (not process_parallel or data_parallel.is_chief) and (partition is None or partition.rank == 0)
+        if partition is not None:
+            self._validate_neuron_partition_setup()
         if data_parallel is not None:
             data_parallel.validate_training(self)
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)

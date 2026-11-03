@@ -732,6 +732,16 @@ class SONATANetwork(NetworkAdaptor):
             params[name] = np.asarray(lu[name], dtype=np.float32) if name in lu else default
         return params
 
+    def node_metadata_dict(self):
+        """Whole-network node fields of the recurrent dict, without reading any edge."""
+        return {
+            'name': self.population_name,
+            'network_type': self.network_type,
+            'n_nodes': self.n_nodes,
+            'node_type_ids': self._recurrent_node_type_ids(),
+            'node_params': self._recurrent_node_params(),
+        }
+
     def partition_recurrent_dicts(self, partition, target_offset, input_options):
         """``(recurrent_dict, partition_input_dict, canonical_ids)`` of this rank's neurons.
 
@@ -757,6 +767,11 @@ class SONATANetwork(NetworkAdaptor):
         local_source = partition.owner[source] == partition.rank
         remote = ~local_source
         remote_sources = np.unique(source[remote])
+        placeholder = remote_sources.size == 0
+        if placeholder:
+            # No edges from other ranks: one edgeless placeholder column keeps this rank in
+            # every spike/credit exchange its peers need.
+            remote_sources = np.array([np.flatnonzero(partition.owner != partition.rank)[0]])
         position = partition.position
         n_local = partition.n_local
         rec_dict = {
@@ -789,6 +804,7 @@ class SONATANetwork(NetworkAdaptor):
             'syn_ids': edges["syn_ids"][remote],
             'options': dict(input_options),
             'remote_sources': remote_sources,
+            'partition_placeholder': placeholder,
         }
         canonical_ids = {'<recurrent>': canonical[local_source], PARTITION_INPUT: canonical[remote]}
         # Global (target, source) of every master edge in its canonical order.
@@ -879,6 +895,22 @@ class SONATANetwork(NetworkAdaptor):
                 yield edge_pop, population_offset, start, min(start + self._EDGE_CHUNK_ROWS, end)
             population_offset += n_rows
 
+    @staticmethod
+    def _read_dataset_rows(dataset, rows, span):
+        """``dataset[rows]`` (any order, repeats allowed) through windows of at most ``span`` rows."""
+        rows = np.asarray(rows, dtype=np.int64)
+        order = np.argsort(rows, kind="stable")
+        sorted_rows = rows[order]
+        result = np.empty(rows.size, dtype=dataset.dtype)
+        start = 0
+        while start < sorted_rows.size:
+            low = int(sorted_rows[start])
+            stop = int(np.searchsorted(sorted_rows, low + span, side="left"))
+            block = np.asarray(dataset[low:int(sorted_rows[stop - 1]) + 1])
+            result[order[start:stop]] = block[sorted_rows[start:stop] - low]
+            start = stop
+        return result
+
     def target_in_degree(self, row_slice=None):
         """Edges per target TF id (int64), optionally over a row share only."""
         counts = np.zeros(self.n_nodes, dtype=np.int64)
@@ -931,8 +963,9 @@ class SONATANetwork(NetworkAdaptor):
                 types = edge_types[in_group]
                 for column, destination in (("syn_weight", weights), ("delay", delays)):
                     if column in group.columns:
-                        low, high = int(rows.min()), int(rows.max()) + 1
-                        destination[in_group] = np.asarray(group._h5_group[column][low:high])[rows - low]
+                        destination[in_group] = self._read_dataset_rows(
+                            group._h5_group[column], rows, self._EDGE_CHUNK_ROWS,
+                        )
                     elif column in et_table.columns:
                         destination[in_group] = et_table.loc[types][column].to_numpy()
                     else:

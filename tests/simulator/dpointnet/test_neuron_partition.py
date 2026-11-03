@@ -26,6 +26,18 @@ def test_contiguous_plan_balances_edges_and_gives_every_rank_neurons():
     assert np.bincount(plan_partition(5, 5, balance="neurons")).tolist() == [1] * 5
     owner = plan_partition(4, 4, in_degree=[1000, 0, 0, 0])
     assert owner.tolist() == [0, 1, 2, 3]
+    # A heavy neuron in the middle must not leave ranks empty.
+    owner = plan_partition(10, 4, in_degree=[0, 0, 0, 1000, 0, 0, 0, 0, 0, 0])
+    assert np.all(np.diff(owner) >= 0) and set(owner) == {0, 1, 2, 3}
+    assert np.bincount(plan_partition(6, 4, balance="neurons")).max() == 2
+    for seed in range(50):
+        rng = np.random.default_rng(seed)
+        n, size = int(rng.integers(2, 40)), int(rng.integers(1, 8))
+        if size > n:
+            continue
+        degree = rng.integers(0, 5, n) * (rng.random(n) < 0.3) * 1000
+        owner = plan_partition(n, size, in_degree=degree)
+        assert np.all(np.diff(owner) >= 0) and set(owner) == set(range(size))
 
 
 def test_grouped_plan_keeps_groups_whole():
@@ -163,12 +175,67 @@ def test_mpi_transport_collectives_and_grouped_emd(ranks):
     assert f"neuron partition probe passed on {ranks} ranks" in result.stdout
 
 
+def _feedforward_network(directory):
+    """Excitatory/inhibitory network without inhibitory-to-excitatory edges, 1-4 ms delays.
+
+    Split by ``ei``, the excitatory rank receives no edges from the other rank.
+    """
+    from bmtk.builder import NetworkBuilder
+
+    rng = np.random.default_rng(8)
+    net = NetworkBuilder("glifs")
+    for ei, count, pop, params in (("e", 60, "e4Nr5a1", "354833767_glif_lif_asc_config.json"),
+                                   ("i", 30, "i4Vip", "501570114_glif_lif_asc_config.json")):
+        net.add_nodes(N=count, ei=ei, pop_name=pop, model_type="point_neuron",
+                      model_template="glif_psc_double_alpha", dynamics_params=params)
+    for source, target, params, sign in (("e", "e", "glif_e2e.json", 1), ("e", "i", "glif_e2i.json", 1),
+                                         ("i", "i", "glif_i2i.json", -1)):
+        edges = net.add_edges(source={"ei": source}, target={"ei": target},
+                              connection_rule=lambda s, t: int(s.node_id != t.node_id and rng.random() < 0.5),
+                              dynamics_params=params, model_template="static_synapse")
+        edges.add_properties(names=["syn_weight", "delay"],
+                             rule=lambda *_, sign=sign: (sign * rng.uniform(2.0, 12.0), float(rng.integers(1, 5))),
+                             dtypes=[float, float])
+    net.build()
+    net.save(str(directory))
+    virts = NetworkBuilder("virts")
+    virts.add_nodes(N=40, ei="e", model_type="virtual")
+    for target, params in (("e", "virt_e2e.json"), ("i", "virt_e2i.json")):
+        edges = virts.add_edges(target=net.nodes(ei=target), connection_rule=lambda *_: int(rng.random() < 0.5),
+                                dynamics_params=params, model_template="static_synapse", delay=2.0)
+        edges.add_properties(names="syn_weight", rule=lambda *_: rng.uniform(10.0, 40.0), dtypes=float)
+    virts.build()
+    virts.save(str(directory))
+
+
+def _partition_config(tmp_path, variant):
+    import json
+
+    example = Path(__file__).resolve().parents[3] / "examples"
+    config = json.loads((example / "dpointnet_mpi" / "config.partition.json").read_text())
+    config["manifest"]["$ASSET_DIR"] = str(example / "dpointnet_all2all")
+    if variant == "feedforward":
+        network = tmp_path / "network"
+        _feedforward_network(network)
+        config["manifest"]["$NETWORK_DIR"] = str(network)
+        config["rnn_cell_params"]["max_delay"] = 2.5  # clips the 3-4 ms edges, local and remote
+        config["run"]["distribution"] = {"strategy": "neurons", "group_by": "ei"}
+    path = tmp_path / f"config.{variant}.json"
+    path.write_text(json.dumps(config))
+    return path
+
+
 @pytest.mark.skipif(
     os.environ.get("BMTK_RUN_MPI_TESTS") != "1",
     reason="Real MPI subprocess tests require explicit BMTK_RUN_MPI_TESTS=1.",
 )
-def test_partitioned_training_matches_single_process_on_gpu(tmp_path):
-    """The example trained under mpiexec -n 2 equals one process: losses and exported weights."""
+@pytest.mark.parametrize("variant", ["example", "feedforward"])
+def test_partitioned_training_matches_single_process_on_gpu(tmp_path, variant):
+    """Training under mpiexec -n 2 equals one process: losses and exported SONATA weights.
+
+    ``feedforward`` also covers a rank without remote sources, grouped planning and
+    delays clipped by ``max_delay`` on both local and remote edges.
+    """
     pytest.importorskip("mpi4py")
     import h5py
     import pandas as pd
@@ -178,8 +245,8 @@ def test_partitioned_training_matches_single_process_on_gpu(tmp_path):
         pytest.skip("Neuron-partitioned training uses the GPU direct recorded adjoint.")
     launcher = shutil.which("mpiexec")
     assert launcher, "MPI tests require mpiexec."
-    example = Path(__file__).resolve().parents[3] / "examples" / "dpointnet_mpi"
-    config, script = example / "config.partition.json", example / "run_training.py"
+    config = _partition_config(tmp_path, variant)
+    script = Path(__file__).resolve().parents[3] / "examples" / "dpointnet_mpi" / "run_training.py"
     outputs = {}
     for ranks in (1, 2):
         output = tmp_path / f"ranks{ranks}"
@@ -199,3 +266,92 @@ def test_partitioned_training_matches_single_process_on_gpu(tmp_path):
                 np.testing.assert_array_equal(a["edges"][group][key][()], b["edges"][group][key][()])
             np.testing.assert_allclose(b["edges"][group]["0/syn_weight"][()], a["edges"][group]["0/syn_weight"][()],
                                        rtol=1e-4, atol=1e-6)
+
+
+def test_dataset_rows_are_read_through_bounded_windows():
+    from bmtk.simulator.dpointnet.network_adaptor import SONATANetwork
+
+    class Dataset:
+        dtype = np.float32
+
+        def __init__(self, values):
+            self.values, self.spans = values, []
+
+        def __getitem__(self, item):
+            self.spans.append(item.stop - item.start)
+            return self.values[item]
+
+    values = np.arange(1000, dtype=np.float32)
+    rows = np.random.default_rng(4).permutation(1000)[:300]
+    rows = np.r_[rows, rows[:7]]  # repeats
+    dataset = Dataset(values)
+    np.testing.assert_array_equal(SONATANetwork._read_dataset_rows(dataset, rows, 64), values[rows])
+    assert max(dataset.spans) <= 64
+
+
+def test_detected_mpi_launch_without_matching_communicator_fails(monkeypatch):
+    from bmtk.simulator.dpointnet import io_tools
+    from bmtk.utils.io.ioutils import bmtk_world_comm
+
+    monkeypatch.setenv("PMI_SIZE", "3")
+    monkeypatch.setattr(bmtk_world_comm, "_comm", None)
+    monkeypatch.setattr(type(bmtk_world_comm), "comm", property(lambda self: None))
+    with pytest.raises(RuntimeError, match="MPI launch of 3 processes"):
+        io_tools.launched_world_communicator()
+    monkeypatch.setenv("PMI_SIZE", "1")
+    assert io_tools.launched_world_communicator() is None
+
+
+def test_seeded_rate_ties_give_one_shared_permutation():
+    import tensorflow as tf
+    from bmtk.simulator.dpointnet.loss_functions.loss_utils import compute_spike_rate_distribution_loss
+
+    rates = tf.constant(np.r_[np.zeros(40), np.full(20, 3.0), np.linspace(1, 9, 40)], tf.float32)
+    target = tf.constant(np.sort(np.random.default_rng(1).uniform(0, 10, 100)), tf.float32)
+
+    def gradient(seed):
+        with tf.GradientTape() as tape:
+            tape.watch(rates)
+            loss = tf.reduce_sum(compute_spike_rate_distribution_loss(rates, target, seed=seed))
+        return tf.convert_to_tensor(tape.gradient(loss, rates)).numpy()
+
+    seed = tf.constant([7, 1], tf.int64)
+    np.testing.assert_array_equal(gradient(seed), gradient(seed))
+    assert not np.array_equal(gradient(seed), gradient(tf.constant([7, 2], tf.int64)))
+
+
+def test_partitioned_recurrent_network_is_edge_free_metadata(example_networks, monkeypatch):
+    from bmtk.simulator.dpointnet.rnn_model import RNN
+
+    recurrent, _, reference, _ = example_networks
+    rnn = RNN.__new__(RNN)
+    rnn._built_recurrent_net = None
+    rnn._recurrent_networks = {recurrent.name: recurrent}
+    rnn.neuron_partition = object()
+    monkeypatch.setattr(type(recurrent), "read_edges", lambda *a, **k: pytest.fail("edges were read"))
+    monkeypatch.setattr(type(recurrent), "to_dict", lambda *a, **k: pytest.fail("edges were read"))
+    metadata = rnn.recurrent_network
+    assert "synapses" not in metadata and metadata["n_nodes"] == reference["n_nodes"]
+    np.testing.assert_array_equal(metadata["node_type_ids"], reference["node_type_ids"])
+
+
+@pytest.mark.parametrize("state,clip,error", [
+    ("ZeroStateModule", {}, None),
+    ("RandomizedStateModule", {}, "initial_state module zero_state"),
+    ("ZeroStateModule", {"clipnorm": 1.0}, "clipnorm"),
+    ("ZeroStateModule", {"global_clipnorm": 1.0}, "global_clipnorm"),
+    ("ZeroStateModule", {"clipvalue": 1.0}, None),
+])
+def test_partition_setup_rejects_rank_local_state_and_norm_clipping(state, clip, error):
+    from types import SimpleNamespace
+    from bmtk.simulator.dpointnet.training import TrainingEngine
+
+    engine = SimpleNamespace(
+        init_state=type(state, (), {})(),
+        optimizer=SimpleNamespace(**{"clipnorm": None, "global_clipnorm": None, "clipvalue": None, **clip}),
+    )
+    if error is None:
+        TrainingEngine._validate_neuron_partition_setup(engine)
+    else:
+        with pytest.raises(ValueError, match=error):
+            TrainingEngine._validate_neuron_partition_setup(engine)

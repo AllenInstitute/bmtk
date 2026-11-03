@@ -54,12 +54,17 @@ def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges"):
         load = np.ones(n_nodes, dtype=np.float64)
     owner = np.empty(n_nodes, dtype=np.int32)
     if groups is None:
+        # Boundary k (neurons before rank k) is the number of neurons whose load midpoint
+        # lies below k/size of the total, then made strictly increasing while reserving
+        # one neuron for every later rank.
         cumulative = np.cumsum(load)
-        bounds = np.searchsorted(cumulative, cumulative[-1] * np.arange(1, size) / size, side="left")
-        # Every rank owns at least one neuron.
-        bounds = np.maximum(bounds, np.arange(1, size))
-        bounds = np.minimum(bounds, n_nodes - size + np.arange(1, size))
-        bounds = np.maximum.accumulate(bounds)
+        midpoints = cumulative - load / 2
+        targets = cumulative[-1] * np.arange(1, size) / size
+        bounds = np.searchsorted(midpoints, targets, side="left")
+        previous = 0
+        for k in range(1, size):
+            previous = int(np.clip(bounds[k - 1], previous + 1, n_nodes - (size - k)))
+            bounds[k - 1] = previous
         for rank, (start, stop) in enumerate(zip(np.r_[0, bounds], np.r_[bounds, n_nodes])):
             owner[start:stop] = rank
         return owner
@@ -354,6 +359,23 @@ def select_rank_gpu(comm):
     return report
 
 
+def _abort_on_uncaught_exception(comm):
+    """End every rank when one raises: its peers would otherwise wait in a collective forever."""
+    import sys
+
+    previous = sys.excepthook
+    if getattr(previous, "_neuron_partition_abort", False):
+        return
+
+    def abort(kind, value, traceback):
+        previous(kind, value, traceback)
+        sys.stderr.flush()
+        comm.Abort(1)
+
+    abort._neuron_partition_abort = True
+    sys.excepthook = abort
+
+
 class PartitionContext:
     """Per-rank state of a neuron-partitioned run (plan, ownership, transport, statistics)."""
 
@@ -364,6 +386,7 @@ class PartitionContext:
             raise ValueError(f"Unknown neuron-partition options: {sorted(unknown)}")
         self.comm = comm
         self.rank, self.size = comm.rank, comm.size
+        _abort_on_uncaught_exception(comm)
         self.balance = options.get("balance", "edges")
         self.group_by = options.get("group_by")
         self.device = select_rank_gpu(comm)
@@ -376,11 +399,14 @@ class PartitionContext:
 
     # -- planning and loading -------------------------------------------------------------
 
-    def build_network_dicts(self, recurrent, input_networks, partition_input_options):
+    def build_network_dicts(self, recurrent, input_networks, partition_input_options, dt=1.0, max_delay=None):
         """Plan the partition (once) and build this rank's recurrent and input dicts.
 
         The partition input is appended last, so the remaining inputs keep their
-        replay columns.
+        replay columns. Its delays are clipped as GLIF3Cell clips recurrent delays
+        (NEST): to ``[dt, limit]`` with ``limit`` the whole network's largest
+        recurrent delay, capped by ``max_delay`` when positive, so remote and local
+        edges keep the delays they have in the unsplit network.
         """
         if self.partition is None:
             in_degree = allreduce_sum(self.comm, recurrent.target_in_degree((self.rank, self.size)))
@@ -402,6 +428,12 @@ class PartitionContext:
         network, partition_input, self.canonical_ids = recurrent.partition_recurrent_dicts(
             self.partition, self.target_offset, partition_input_options,
         )
+        local_max = max(np.max(network["synapses"]["delays"], initial=dt),
+                        np.max(partition_input["delays"], initial=dt))
+        network_max = float(self.comm.allreduce(float(local_max), op=_mpi().MAX))
+        limit = network_max if max_delay is None or max_delay <= 0 else min(network_max, max_delay)
+        partition_input["delays"] = np.clip(partition_input["delays"], dt, limit)
+        self.delay_limit_ms = limit
         inputs = {}
         for adaptor in input_networks:
             inputs[adaptor.name], self.input_rows[adaptor.name] = adaptor.partition_input_dict(self.partition)
