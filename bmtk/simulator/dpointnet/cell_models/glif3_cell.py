@@ -86,6 +86,20 @@ def _synapse_type_range(glif_network, inputs):
     return int(min(array.min() for array in arrays)), int(max(array.max() for array in arrays))
 
 
+def _input_index_dtype(indices, bound):
+    """int32 for small signed (or narrow unsigned) input indices whose delayed range fits, else int64.
+
+    The host copy of a large input's ``[edges, 2]`` indices is then half the
+    size; CSR construction and the canonical int64 index variable accept both.
+    """
+    dtype = np.asarray(indices).dtype
+    narrow = (
+        np.issubdtype(dtype, np.signedinteger) and dtype.itemsize <= 4
+        or np.issubdtype(dtype, np.unsignedinteger) and dtype.itemsize <= 2
+    )
+    return np.int32 if narrow and int(bound) <= np.iinfo(np.int32).max else np.int64
+
+
 def _canonical_index_variable(indices, prepared=None):
     if prepared is None:
         return tf.Variable(indices, dtype=tf.int64, trainable=False)
@@ -2209,7 +2223,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_dense_shape = (self._n_neurons, n_input_nodes)
 
             input_props["input_dim"] = n_input_nodes
-            input_indices = np.array(input_network["indices"], dtype=np.int64)
+            input_index_dtype = np.int64
             input_props["history_start"] = self._input_history_size
             input_props["uniform_delay_steps"] = None
             if dynamics_mode == "nest":
@@ -2220,6 +2234,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     )
                 input_steps = time_steps(input_delays, dt)
                 history_steps = int(input_steps.max(initial=1)) - 1
+                input_index_dtype = _input_index_dtype(
+                    input_network["indices"], max(self._n_neurons, n_input_nodes * (history_steps + 1)),
+                )
+            input_indices = np.array(input_network["indices"], dtype=input_index_dtype)
+            if dynamics_mode == "nest":
                 uniform_delay = (
                     input_steps.size > 0
                     and np.all(input_steps == input_steps.flat[0])

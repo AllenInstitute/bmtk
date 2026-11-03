@@ -354,6 +354,37 @@ module's storage policy. ``DirectRecordedAdjointRunner`` is that storage policy
 for one replica. The route needs the rebuilt record/reverse operators and the
 same GPU conditions as the recorded route; unsupported requests raise.
 
+Spike exchanges (neuron-partitioned networks)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A network too large for one device can be split by neurons: each runner owns
+some neurons, their incoming edges and the masters of those edges. Edges whose
+source neuron belongs to another runner become a named ``"spikes"`` input of
+the target's cell, keeping their weights, delays and synapse types, and
+``DirectRecordedAdjointRunner(..., spike_exchanges={name: exchange})`` feeds
+that input from a :class:`~bmtk.simulator.dpointnet.direct_recorded_adjoint.SpikeExchange`:
+
+* ``forward(time, spikes)`` runs before every step with this cell's spikes of
+  the previous step (step ``0`` receives the newest initial-history slot) and
+  returns the input's binary frame for the step, i.e. the other runners'
+  previous-step spikes;
+* ``reverse(time, credit)`` runs while every step is reversed with the
+  complete FP32 credit of that step's frame (silent sources included) and
+  returns the credit of this cell's previous-step spikes contributed by the
+  other runners; it is added to the recurrent history credit;
+* ``begin()`` runs once before the forward loop and once, after the forward,
+  before the reverse loop.
+
+Both hooks run once per step, in time order and reverse time order, so a
+collective transport (for example MPI ``Alltoallv``) stays matched across
+runners; the transport itself is the caller's. Exchanged inputs take no
+columns in the runner's ``inputs``, the recurrent spike-gradient scale applies
+to the exchanged credit and exchanged frames are recorded bit-packed. With a
+transport that delivers every owner's spikes and credit, the split network's
+spikes and per-edge master gradients equal the unsplit network's up to FP32
+summation order; ``tests/simulator/dpointnet/test_direct_spike_exchange.py``
+checks this with a loopback exchange.
+
 This is different from **saved checkpoints**, which store weights and, when
 explicitly included, optimizer/state variables for later restoration.
 

@@ -402,6 +402,16 @@ lexicographic permutation, including duplicates.
 ``lex_sort_order_np`` similarly packs nonnegative integer pairs; signed, floating,
 empty or overflowing cases retain the original lexsort.
 
+Host construction keeps integer indices and types in their own width (int32
+indices are not widened to int64), validates integer inputs without float
+copies, builds sort keys with one allocation, counts and scans edges in chunks
+and marks compact pairs in a dense ``n_post * n_synapse_types`` table when that
+table is small, writing metadata sections directly into the final buffer. On a
+23M-edge recurrent rank this lowered the transient host peak from about 110 to
+39 bytes per edge, with byte-identical metadata;
+``tests/simulator/dpointnet/test_csr_host_build.py`` compares every output with
+the whole-array int64 construction across dtypes, chunk sizes and pair paths.
+
 Use unsigned integer arithmetic, never float64 keys or approximate ordering.
 Compare packed-key paths with independent tuple/lexsort references and test
 overflow, signed, floating and empty cases. These optimizations require no user
