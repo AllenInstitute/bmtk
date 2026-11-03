@@ -1099,12 +1099,23 @@ class DirectRecordedAdjointRunner:
                 tf.zeros_like(population["variable"]) if keep else tf.zeros([0], tf.float32)
                 for population, keep in zip(populations, accumulate)
             )
-            # Pending FP32 credit of exchanged frames x(time), ..., x(time - history).
-            with step.device_scope():
-                pending = tuple(
-                    tf.zeros([batch, population["width"] * (population["history_steps"] + 1)], tf.float32)
-                    for _, population in exchanged
-                )
+            # Pending FP32 credit of exchanged frames x(time), ..., x(time - history). The
+            # final input-history state holds x(L-1), ..., x(L-history): its cotangent seeds
+            # the first frames (as the recurrent history cotangent seeds the carry), and
+            # x(L-1-history) starts empty.
+            history_gradient = state_gradients[7] if step.has_input_history else None
+            seeds = []
+            for _, population in exchanged:
+                width, history = population["width"], population["history_steps"]
+                with step.device_scope():
+                    seed = tf.zeros([batch, width], tf.float32)
+                    if history and history_gradient is not None and final_state[7].dtype.is_floating:
+                        start, stop = population["history"]
+                        seed = tf.concat([tf.cast(history_gradient[:, start:stop], tf.float32), seed], axis=1)
+                    elif history:
+                        seed = tf.zeros([batch, width * (history + 1)], tf.float32)
+                seeds.append(seed)
+            pending = tuple(seeds)
             _, carry, _, accumulators, _ = tf.while_loop(
                 lambda chunk_index, *_: chunk_index >= 0, reverse_chunk,
                 (tf.constant(self.n_chunks - 1), carry, window, accumulators, pending),
@@ -1164,9 +1175,10 @@ class DirectRecordedAdjointRunner:
                 tf.reduce_all((history == 0) | (history == 1)), True,
                 message=f"Spike exchange {name!r} requires a binary initial input history.",
             )
-            for name, net in self.cell.inputs.items() if name in self.spike_exchanges
+            for name, net in self.cell.inputs.items()
+            if name in self.spike_exchanges and int(net["history_stop"]) > int(net["history_start"])
+            # Only inputs with history reach here; a cell without any has no eighth state.
             for history in [initial_state[7][:, int(net["history_start"]):int(net["history_stop"])]]
-            if int(net["history_stop"]) > int(net["history_start"])
         )
 
         @tf.custom_gradient

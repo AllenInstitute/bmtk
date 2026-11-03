@@ -58,7 +58,7 @@ class Loopback(SpikeExchange):
         return credit
 
 
-def _spec(batch, scale):
+def _spec(batch, scale, one_step=False):
     network, _, arguments = make_cell(
         "nest", selective=False, batch_size=batch, hard_reset_gradient_mode="soft_surrogate",
         return_spec=True, **DIRECT_OPTIONS,
@@ -83,7 +83,7 @@ def _spec(batch, scale):
         "n_inputs": DRIVES,
         "indices": np.stack([rng.integers(0, NEURONS, drive_edges), rng.integers(0, DRIVES, drive_edges)], axis=1),
         "weights": rng.uniform(800.0, 2000.0, drive_edges),
-        "delays": rng.integers(1, 3, drive_edges).astype(np.float64),
+        "delays": (np.ones(drive_edges) if one_step else rng.integers(1, 3, drive_edges).astype(np.float64)),
         "syn_ids": np.zeros(drive_edges, np.int64),
         "input_type": "spikes",
         "options": {"trainable": True},
@@ -92,11 +92,14 @@ def _spec(batch, scale):
     return network, drive, arguments
 
 
-def _cells(batch, scale, moved_sources):
-    network, drive, arguments = _spec(batch, scale)
-    reference = GLIF3Cell(copy.deepcopy(network), {"drive": copy.deepcopy(drive)}, **arguments)
+def _cells(batch, scale, moved_sources, one_step=False):
+    """Unsplit reference and loopback candidate; ``one_step`` gives moved edges and drive delay 1."""
+    network, drive, arguments = _spec(batch, scale, one_step)
     indices = network["synapses"]["indices"]
     moved = np.isin(indices[:, 1], moved_sources)
+    if one_step:
+        network["synapses"]["delays"][moved] = 1.0
+    reference = GLIF3Cell(copy.deepcopy(network), {"drive": copy.deepcopy(drive)}, **arguments)
     local = copy.deepcopy(network)
     for key in ("indices", "weights", "delays", "syn_ids"):
         local["synapses"][key] = network["synapses"][key][~moved]
@@ -119,8 +122,8 @@ def _initial(cell, batch, history_slots):
     state[0] = tf.cast(history_slots, state[0].dtype)
     rng = np.random.default_rng(11)
     state[1] = tf.cast(rng.uniform(0.2, 1.0, state[1].shape), state[1].dtype)
-    if EXCHANGED in cell.inputs:
-        net = cell.inputs[EXCHANGED]
+    net = cell.inputs.get(EXCHANGED)
+    if net is not None and int(net["history_stop"]) > int(net["history_start"]):
         start, stop = int(net["history_start"]), int(net["history_stop"])
         history = state[7].numpy()
         slots = (stop - start) // NEURONS
@@ -131,7 +134,7 @@ def _initial(cell, batch, history_slots):
     return tuple(state)
 
 
-def _rollout(cell, batch, history_slots, drive, exchanges=None):
+def _rollout(cell, batch, history_slots, drive, exchanges=None, final_term=None):
     initial = _initial(cell, batch, history_slots)
     # The exchanged input takes no replay columns; "drive" is declared first in both cells.
     inputs = drive
@@ -153,6 +156,8 @@ def _rollout(cell, batch, history_slots, drive, exchanges=None):
                 tf.reduce_sum(tf.square(tf.cast(value, tf.float32)) * (index + 1) * 1e-3)
                 for index, value in enumerate(values)
             ])
+            if final_term is not None:
+                loss += final_term(output.final_state)
         return values, tape.gradient(loss, (*floating, *variables),
                                      unconnected_gradients=tf.UnconnectedGradients.ZERO)
 
@@ -169,9 +174,26 @@ def _canonical(cell, gradients, name):
     return layout.host_to_canonical(gradients[variable.name].numpy())
 
 
+def _history_terms(candidate, batch):
+    """Equal losses on the exchanged frames x(L-k) of the candidate's final input history and
+    on the reference's final recurrent history slots k, which hold the same spikes z(L-1-k)."""
+    net = candidate.inputs[EXCHANGED]
+    start, stop = int(net["history_start"]), int(net["history_stop"])
+    weights = tf.constant(np.random.default_rng(13).standard_normal((batch, stop - start)), tf.float32)
+
+    def candidate_term(final_state):
+        return tf.reduce_sum(weights * tf.cast(final_state[7][:, start:stop], tf.float32))
+
+    def reference_term(final_state):
+        return tf.reduce_sum(weights * tf.cast(final_state[0][:, NEURONS:NEURONS + stop - start], tf.float32))
+
+    return reference_term, candidate_term
+
+
+@pytest.mark.parametrize("history_loss", [False, True])
 @pytest.mark.parametrize("scale", [1.0, 0.5])
 @pytest.mark.parametrize("batch", [2, 3])
-def test_loopback_exchange_reproduces_unsplit_network(batch, scale):
+def test_loopback_exchange_reproduces_unsplit_network(batch, scale, history_loss):
     if not fused_cuda_available():
         pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
     reference, candidate, moved = _cells(batch, scale, np.arange(NEURONS // 2, NEURONS))
@@ -182,10 +204,13 @@ def test_loopback_exchange_reproduces_unsplit_network(batch, scale):
         rng = np.random.default_rng(3)
         history = (rng.random((batch, NEURONS * MAX_DELAY)) < 0.3).astype(np.float32)
         drive = tf.constant((rng.random((batch, LENGTH, DRIVES)) < 0.4).astype(np.float32))
-        expected, expected_initial, expected_masters = _rollout(reference, batch, history, drive)
+        reference_term, candidate_term = _history_terms(candidate, batch) if history_loss else (None, None)
+        expected, expected_initial, expected_masters = _rollout(
+            reference, batch, history, drive, final_term=reference_term,
+        )
         log = []
         observed, observed_initial, observed_masters = _rollout(
-            candidate, batch, history, drive, {EXCHANGED: Loopback(log)},
+            candidate, batch, history, drive, {EXCHANGED: Loopback(log)}, final_term=candidate_term,
         )
         counts = expected[0].numpy()
         assert counts.sum() > 0 and (counts < LENGTH).any()
@@ -228,4 +253,29 @@ def test_spike_exchange_validation():
         with pytest.raises(ValueError, match="replay columns"):
             runner(full, candidate.zero_state(2, candidate.compute_dtype))
     finally:
+        candidate.close_fused_cuda()
+
+
+def test_loopback_exchange_without_input_history():
+    """One-step exchanged edges and drive: the cell has no input-history state at all."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    batch = 2
+    reference, candidate, moved = _cells(batch, 1.0, np.arange(NEURONS // 2, NEURONS), one_step=True)
+    try:
+        assert len(candidate.zero_state(batch, candidate.compute_dtype)) == 7
+        rng = np.random.default_rng(3)
+        history = (rng.random((batch, NEURONS * MAX_DELAY)) < 0.3).astype(np.float32)
+        drive = tf.constant((rng.random((batch, LENGTH, DRIVES)) < 0.4).astype(np.float32))
+        expected, _, expected_masters = _rollout(reference, batch, history, drive)
+        observed, _, observed_masters = _rollout(candidate, batch, history, drive, {EXCHANGED: Loopback()})
+        np.testing.assert_array_equal(observed[0].numpy(), expected[0].numpy())
+        assert expected[0].numpy().sum() > 0
+        whole = _canonical(reference, expected_masters, "<recurrent>")
+        np.testing.assert_allclose(_canonical(candidate, observed_masters, "<recurrent>"), whole[~moved],
+                                   rtol=1e-4, atol=1e-6)
+        np.testing.assert_allclose(_canonical(candidate, observed_masters, EXCHANGED), whole[moved],
+                                   rtol=1e-4, atol=1e-6)
+    finally:
+        reference.close_fused_cuda()
         candidate.close_fused_cuda()
