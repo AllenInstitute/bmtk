@@ -109,7 +109,7 @@ def temporal_mean(
     return tf.reduce_sum(counts_per_sample) / tf.cast(element_count, dtype)
 
 
-def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32):
+def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32, shuffle_seed=None):
     # TODO: define this function
     # target_rates is a dictionary that contains all the cell types.
     # I should iterate on them, and add the cost for each one at the end.
@@ -120,7 +120,7 @@ def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32):
     # if core_mask is not None:
     #     core_neurons_ids = np.where(core_mask)[0]
 
-    for key, value in target_rates.items():
+    for type_index, (key, value) in enumerate(target_rates.items()):
         neuron_ids = value["neuron_ids"]
         if len(neuron_ids) != 0:
             _rate_type = tf.gather(rates, neuron_ids)
@@ -134,7 +134,10 @@ def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32):
             #     _rate_type = tf.gather(rates, value["neuron_ids"])
             #     target_rate = value["sorted_target_rates"]
 
-            loss_type = compute_spike_rate_distribution_loss(_rate_type, target_rate, dtype=dtype)
+            loss_type = compute_spike_rate_distribution_loss(
+                _rate_type, target_rate, dtype=dtype,
+                seed=None if shuffle_seed is None else shuffle_seed + tf.constant([type_index, 0], tf.int64),
+            )
             total_loss += tf.reduce_sum(loss_type)
             num_neurons += tf.size(neuron_ids)
 
@@ -143,10 +146,14 @@ def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32):
     return total_loss
 
 
-def compute_spike_rate_distribution_loss(_rates, target_rate, dtype=tf.float32):
+def compute_spike_rate_distribution_loss(_rates, target_rate, dtype=tf.float32, seed=None):
     # Firstly we shuffle the current model rates to avoid bias towards a particular tuning angles (inherited from neurons ordering in the network)
     ind = tf.range(target_rate.shape[0])
-    rand_ind = tf.random.shuffle(ind)
+    if seed is None:
+        rand_ind = tf.random.shuffle(ind)
+    else:
+        # A stateless permutation: processes sharing ``seed`` break rate ties identically.
+        rand_ind = tf.argsort(tf.random.stateless_uniform([target_rate.shape[0]], seed=seed), stable=True)
     _rates = tf.gather(_rates, rand_ind)
     sorted_rate = tf.sort(_rates)
     # u = target_rate - sorted_rate

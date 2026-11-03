@@ -228,6 +228,7 @@ class EMDWeightRegularization:
     """
 
     _deduplicate_within_graph = False
+    supports_neuron_partition = True
 
     def __init__(
         self,
@@ -252,6 +253,13 @@ class EMDWeightRegularization:
         self._dtype = dtype or self._weights.dtype
         self._cost = tf.constant(cost, dtype=self._dtype)
         self._deduplicate_within_graph = bool(deduplicate_within_graph)
+        self._partitioned = None
+        partition = getattr(rnn, "neuron_partition", None)
+        if partition is not None:
+            self._partitioned = self._partitioned_emd(rnn, partition, data_dir)
+            self._n_groups = self._partitioned.n_groups
+            self.num_unique = tf.constant(self._n_groups, dtype=tf.int32)
+            return
 
         # Capture the initial weights directly from the cell variable. These are already in the
         # normalized (weights / voltage_scale) space the reference EMD uses, and guarantee the
@@ -304,6 +312,30 @@ class EMDWeightRegularization:
             for start, end in self._group_slices
         )
 
+    def _partitioned_emd(self, rnn, partition, data_dir):
+        """The exact grouped EMD over the rank-split recurrent masters (see neuron_partition)."""
+        from ..neuron_partition import PARTITION_INPUT, PartitionedGroupedEMD
+
+        # Connection type of each edge exactly as _connection_type_ids: (target, source) cell types.
+        pop_names = loss_utils.get_pop_names(self._network, data_dir=data_dir)
+        cell_types = np.array([loss_utils.pop_name_to_cell_type(p) for p in pop_names])
+        _, pop_ids = np.unique(cell_types, return_inverse=True)
+        cell = rnn.cell
+        masters, keys = {}, {}
+        for name in ("<recurrent>", PARTITION_INPUT):
+            if name == "<recurrent>":
+                variable = cell.recurrent_weight_values
+                layout = getattr(cell, "recurrent_master_layout", None)
+            else:
+                variable = cell.inputs[name]["input_weight_values"]
+                layout = cell.inputs[name].get("master_layout")
+            if not getattr(cell, "_csr_master_weights", False):
+                layout = None
+            target, source = partition.endpoints[name]
+            masters[name] = (variable, layout)
+            keys[name] = pop_ids[target].astype(np.int64) * 1000 + pop_ids[source]
+        return PartitionedGroupedEMD(partition, masters, keys, dtype=self._dtype)
+
     @staticmethod
     def module():
         return "EMDWeightRegularization"
@@ -343,6 +375,8 @@ class EMDWeightRegularization:
     def __call__(self, **kwargs):
         # Weight regularizer: independent of activity (spikes/voltages). Reads the current
         # trainable recurrent weights so gradients flow back to them.
+        if self._partitioned is not None:
+            return self._partitioned() * self._cost
         scope = _weight_regularization_scope.get()
         if self._deduplicate_within_graph and scope is not None and tf.inside_function():
             graph = tf.compat.v1.get_default_graph()

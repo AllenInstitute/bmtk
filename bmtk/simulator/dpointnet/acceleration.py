@@ -34,7 +34,9 @@ def performance_projection_context(
         "spike_inputs": 1 <= len(inputs) <= 7 and all(
             item.get("options", {}).get("input_type", item["input_type"])
             in ("spikes", "poisson_spikes_internal")
-            and item["n_inputs"] > 0 and len(item["indices"]) > 0
+            and item["n_inputs"] > 0
+            # A neuron-partition placeholder carries no edges but keeps its rank in the exchange.
+            and (len(item["indices"]) > 0 or item.get("partition_placeholder", False))
             for item in inputs.values()
         ),
         "n_post": int(network["n_nodes"]),

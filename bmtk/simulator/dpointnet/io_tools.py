@@ -10,6 +10,38 @@ from bmtk.simulator.core.io_tools import IOUtils
 from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
+# World-size variables set by common MPI launchers (Open MPI, MPICH/Hydra, PMIx, MVAPICH).
+_MPI_SIZE_VARIABLES = ("OMPI_COMM_WORLD_SIZE", "PMI_SIZE", "PMIX_SIZE", "MV2_COMM_WORLD_SIZE")
+
+
+def mpi_launch_size():
+    """Process count of an MPI launch from the launcher's environment, without initializing MPI."""
+    for name in _MPI_SIZE_VARIABLES:
+        value = os.environ.get(name)
+        if value and value.isdigit():
+            return int(value)
+    return 1
+
+
+def launched_world_communicator():
+    """The world communicator of a multi-process MPI launch, ``None`` for one process.
+
+    Raises when a launcher started several processes but no communicator is
+    available (for example without ``mpi4py``): each process would otherwise run
+    the whole model and write the same outputs.
+    """
+    size = mpi_launch_size()
+    if size <= 1:
+        return None
+    world = bmtk_world_comm.comm
+    if world is None or world.Get_size() != size:
+        raise RuntimeError(
+            f"An MPI launch of {size} processes was detected, but no matching MPI communicator "
+            "is available; install mpi4py built against this MPI, or run a single process."
+        )
+    return world
+
+
 class RNNIOUtils(IOUtils):
     _logger = None
 
@@ -24,7 +56,11 @@ class RNNIOUtils(IOUtils):
         mode = os.environ.get("BMTK_DPOINTNET_MPI_LAUNCH")
         if mode is not None and mode not in ("cpu", "gpu"):
             raise ValueError("Unknown DPointNet MPI launcher mode.")
-        self._comm = bmtk_world_comm.comm if mode is not None else None
+        # A plain multi-process launch (neuron partitioning) shares output ownership too;
+        # MPI is consulted only when a launcher started several processes.
+        world = bmtk_world_comm.comm if mode is not None else launched_world_communicator()
+        multi_process = world is not None and world.Get_size() > 1
+        self._comm = world if mode is not None or multi_process else None
         if mode is not None and self._comm is None:
             raise RuntimeError("DPointNet MPI launch requires an MPI communicator.")
         self.mpi_rank = self._comm.Get_rank() if self._comm is not None else 0

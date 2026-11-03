@@ -607,11 +607,6 @@ class SONATANetwork(NetworkAdaptor):
         # dict = super().to_dict()
         n_nodes = len(self._sonata_node_pop.node_ids)
 
-        ntids_lu = pd.DataFrame({
-            'node_type_ids': self._dynamics_params_lu['node_type_id'],
-            'order': range(len(self._dynamics_params_lu['node_type_id']))
-        }).set_index('node_type_ids')
-
         n_edges = 0
         for edge_pop in self._sonata_edge_pops:
             n_edges += len(edge_pop)
@@ -689,17 +684,8 @@ class SONATANetwork(NetworkAdaptor):
             'name': self.population_name,
             'network_type': self.network_type,
             'n_nodes': n_nodes,
-            'node_type_ids': np.array(ntids_lu.loc[self._sonata_node_pop.type_ids], dtype=np.int32).flatten(),
-            'node_params': {
-                'V_th': np.array(self._dynamics_params_lu['V_th'], dtype=np.float32),
-                'g': np.array(self._dynamics_params_lu['g'], dtype=np.float32), 
-                'E_L': np.array(self._dynamics_params_lu['E_L'], dtype=np.float32), 
-                'k': np.array(self._dynamics_params_lu['asc_decay'], dtype=np.float32), 
-                'C_m': np.array(self._dynamics_params_lu['C_m'], dtype=np.float32), 
-                'V_reset': np.array(self._dynamics_params_lu['V_reset'], dtype=np.float32), 
-                't_ref': np.array(self._dynamics_params_lu['t_ref'], dtype=np.float32), 
-                'asc_amps': np.array(self._dynamics_params_lu['asc_amps'], dtype=np.float32)
-            },
+            'node_type_ids': self._recurrent_node_type_ids(),
+            'node_params': self._recurrent_node_params(),
             'synapses': {
                 'indices': indices,
                 'weights': weights.astype(np.float32),
@@ -710,23 +696,164 @@ class SONATANetwork(NetworkAdaptor):
             }
         }
 
-        for name, default in (
-            ("V_m", rec_dict["node_params"]["E_L"]),
-            ("asc_init", np.zeros_like(rec_dict["node_params"]["k"])),
-            ("asc_r", np.ones_like(rec_dict["node_params"]["k"])),
-        ):
-            rec_dict["node_params"][name] = (
-                np.asarray(self._dynamics_params_lu[name], dtype=np.float32)
-                if name in self._dynamics_params_lu
-                else default
-            )
-
         if self._cache_file and not Path(self._cache_file).exists():
             Path(self._cache_file).parent.mkdir(exist_ok=True, parents=True)
             with open(self._cache_file, 'wb') as f:
                 pkl.dump(rec_dict, f)
 
         return rec_dict
+
+    def _recurrent_node_type_ids(self):
+        """Per-neuron index into the node-type parameter tables, in TF order."""
+        ntids_lu = pd.DataFrame({
+            'node_type_ids': self._dynamics_params_lu['node_type_id'],
+            'order': range(len(self._dynamics_params_lu['node_type_id']))
+        }).set_index('node_type_ids')
+        return np.array(ntids_lu.loc[self._sonata_node_pop.type_ids], dtype=np.int32).flatten()
+
+    def _recurrent_node_params(self):
+        """Per-node-type GLIF parameter tables."""
+        lu = self._dynamics_params_lu
+        params = {
+            'V_th': np.array(lu['V_th'], dtype=np.float32),
+            'g': np.array(lu['g'], dtype=np.float32),
+            'E_L': np.array(lu['E_L'], dtype=np.float32),
+            'k': np.array(lu['asc_decay'], dtype=np.float32),
+            'C_m': np.array(lu['C_m'], dtype=np.float32),
+            'V_reset': np.array(lu['V_reset'], dtype=np.float32),
+            't_ref': np.array(lu['t_ref'], dtype=np.float32),
+            'asc_amps': np.array(lu['asc_amps'], dtype=np.float32)
+        }
+        for name, default in (
+            ("V_m", params["E_L"]),
+            ("asc_init", np.zeros_like(params["k"])),
+            ("asc_r", np.ones_like(params["k"])),
+        ):
+            params[name] = np.asarray(lu[name], dtype=np.float32) if name in lu else default
+        return params
+
+    def node_metadata_dict(self):
+        """Whole-network node fields of the recurrent dict, without reading any edge."""
+        return {
+            'name': self.population_name,
+            'network_type': self.network_type,
+            'n_nodes': self.n_nodes,
+            'node_type_ids': self._recurrent_node_type_ids(),
+            'node_params': self._recurrent_node_params(),
+        }
+
+    def partition_recurrent_dicts(self, partition, target_offset, input_options):
+        """``(recurrent_dict, partition_input_dict, canonical_ids)`` of this rank's neurons.
+
+        Edges into the rank's neurons are read in chunks and ordered as the
+        global canonical order (target, source, file row); those from local
+        neurons form the rank's recurrence, those from other ranks' neurons the
+        partition input (one column per remote source neuron, ascending).
+        ``canonical_ids`` maps each master (``"<recurrent>"`` and the partition
+        input) to the global canonical edge index of its edges:
+        ``target_offset[target]`` plus the edge's position among its target's
+        edges, all of which live on the target's owner.
+        """
+        from .neuron_partition import PARTITION_INPUT
+
+        syn_dyn_params, _ = self._synaptic_dyn_params()
+        edges = self.read_edges(keep_target=partition.owner == partition.rank)
+        order = np.lexsort((edges["rows"], edges["source"], edges["target"]))
+        edges = {name: values[order] for name, values in edges.items()}
+        target, source = edges["target"], edges["source"]
+        first = np.r_[0, np.flatnonzero(np.diff(target)) + 1]
+        within = np.arange(target.size) - np.repeat(first, np.diff(np.r_[first, target.size]))
+        canonical = np.asarray(target_offset, dtype=np.int64)[target] + within
+        local_source = partition.owner[source] == partition.rank
+        remote = ~local_source
+        remote_sources = np.unique(source[remote])
+        placeholder = remote_sources.size == 0
+        if placeholder:
+            # No edges from other ranks: one edgeless placeholder column keeps this rank in
+            # every spike/credit exchange its peers need.
+            remote_sources = np.array([np.flatnonzero(partition.owner != partition.rank)[0]])
+        position = partition.position
+        n_local = partition.n_local
+        rec_dict = {
+            'name': self.population_name,
+            'network_type': self.network_type,
+            'n_nodes': n_local,
+            'node_type_ids': self._recurrent_node_type_ids()[partition.local_nodes],
+            'node_params': self._recurrent_node_params(),
+            'synapses': {
+                'indices': np.column_stack((position[target[local_source]], position[source[local_source]])),
+                'weights': edges["weights"][local_source],
+                'delays': edges["delays"][local_source],
+                'dense_shape': (n_local, n_local),
+                'syn_ids': edges["syn_ids"][local_source],
+                'dynamics_params': syn_dyn_params,
+            },
+            'tf_id_to_global': partition.local_nodes,
+        }
+        input_dict = {
+            'name': PARTITION_INPUT,
+            'network_type': 'input',
+            'input_type': 'spikes',
+            'node_params': {},
+            'n_inputs': int(remote_sources.size),
+            'indices': np.column_stack(
+                (position[target[remote]], np.searchsorted(remote_sources, source[remote]))
+            ),
+            'weights': edges["weights"][remote],
+            'delays': edges["delays"][remote],
+            'syn_ids': edges["syn_ids"][remote],
+            'options': dict(input_options),
+            'remote_sources': remote_sources,
+            'partition_placeholder': placeholder,
+        }
+        canonical_ids = {'<recurrent>': canonical[local_source], PARTITION_INPUT: canonical[remote]}
+        # Global (target, source) of every master edge in its canonical order.
+        self._partition_endpoints = {
+            '<recurrent>': (target[local_source], source[local_source]),
+            PARTITION_INPUT: (target[remote], source[remote]),
+        }
+        self._partition_edge_types = {
+            '<recurrent>': edges["edge_type_ids"][local_source], PARTITION_INPUT: edges["edge_type_ids"][remote],
+        }
+        return rec_dict, input_dict, canonical_ids
+
+    def prepare_export_tables(self):
+        """Whole-network edge tables for weight export when this rank built only a partition.
+
+        Sets the canonical-ordered (recurrent) or file-ordered (input) endpoint and
+        edge-type arrays and the canonical order that :class:`ModelWeights` uses.
+        """
+        if getattr(self, "_export_tables_ready", False):
+            return
+        edges = self.read_edges()
+        if self.network_type == 'recurrent':
+            order = np.lexsort((edges["rows"], edges["source"], edges["target"]))
+            self._canonical_edge_order = np.empty(len(order), dtype=order.dtype)
+            self._canonical_edge_order[order] = np.arange(len(order))
+        else:
+            order = np.arange(len(edges["rows"]))
+        self._source_tf_ids = edges["source"][order].astype(np.uint32)
+        self._target_tf_ids = edges["target"][order].astype(np.uint32)
+        self._edge_type_ids = edges["edge_type_ids"][order]
+        self._export_tables_ready = True
+
+    def partition_input_dict(self, partition):
+        """``(input_dict, global_rows)``: this input's edges into the rank's neurons, file order."""
+        edges = self.read_edges(keep_target=partition.owner == partition.rank)
+        net_dict = {
+            'name': self.name,
+            'network_type': self.network_type,
+            'input_type': self.input_type,
+            'node_params': self._sonata_node_pop.to_dataframe().to_dict('list'),
+            'n_inputs': len(self._sonata_node_pop.node_ids),
+            'indices': np.column_stack((partition.position[edges["target"]], edges["source"])),
+            'weights': edges["weights"],
+            'delays': edges["delays"],
+            'syn_ids': edges["syn_ids"],
+            'options': dict(self.input_options),
+        }
+        net_dict['options'] = self.options
+        return net_dict, edges["rows"]
 
     @staticmethod
     def _edge_group_rows(edge_pop, model_grp):
@@ -746,6 +873,122 @@ class SONATANetwork(NetworkAdaptor):
             else np.empty(0, dtype=np.int64)
         )
         return rows, group_indices
+
+    # -- rank-local (neuron-partitioned) edge reading ------------------------------------
+
+    _EDGE_CHUNK_ROWS = 1 << 22
+
+    def _iter_edge_chunks(self, row_slice=None):
+        """Yield ``(edge_pop, population_offset, start, stop)`` row chunks of every edge population.
+
+        ``row_slice=(index, count)`` restricts to that share of each population's
+        rows (used to split one scan across ranks).
+        """
+        population_offset = 0
+        for edge_pop in self._sonata_edge_pops:
+            n_rows = len(edge_pop)
+            begin, end = 0, n_rows
+            if row_slice is not None:
+                index, count = row_slice
+                begin, end = n_rows * index // count, n_rows * (index + 1) // count
+            for start in range(begin, end, self._EDGE_CHUNK_ROWS):
+                yield edge_pop, population_offset, start, min(start + self._EDGE_CHUNK_ROWS, end)
+            population_offset += n_rows
+
+    @staticmethod
+    def _read_dataset_rows(dataset, rows, span):
+        """``dataset[rows]`` (any order, repeats allowed) through windows of at most ``span`` rows."""
+        rows = np.asarray(rows, dtype=np.int64)
+        order = np.argsort(rows, kind="stable")
+        sorted_rows = rows[order]
+        result = np.empty(rows.size, dtype=dataset.dtype)
+        start = 0
+        while start < sorted_rows.size:
+            low = int(sorted_rows[start])
+            stop = int(np.searchsorted(sorted_rows, low + span, side="left"))
+            block = np.asarray(dataset[low:int(sorted_rows[stop - 1]) + 1])
+            result[order[start:stop]] = block[sorted_rows[start:stop] - low]
+            start = stop
+        return result
+
+    def target_in_degree(self, row_slice=None):
+        """Edges per target TF id (int64), optionally over a row share only."""
+        counts = np.zeros(self.n_nodes, dtype=np.int64)
+        for edge_pop, _, start, stop in self._iter_edge_chunks(row_slice):
+            targets = self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[
+                edge_pop._target_node_id_ds[start:stop]
+            ]
+            counts += np.bincount(np.asarray(targets, dtype=np.int64), minlength=self.n_nodes)
+        return counts
+
+    def read_edges(self, keep_target=None):
+        """Edges whose target TF id satisfies ``keep_target`` (boolean array by TF id; ``None``: all).
+
+        Returns a dict of arrays in global row order: ``rows`` (global row over the
+        concatenated edge populations), ``source``/``target`` TF ids,
+        ``edge_type_ids``, ``weights``, ``delays`` and ``syn_ids``, with the values
+        :meth:`_build_recurrent_dict` / :meth:`_build_input_dict` read. Rows are
+        read in chunks, so only kept edges are held.
+        """
+        _, syn_dyn_parms_lu = self._synaptic_dyn_params()
+        parts = {name: [] for name in ("rows", "source", "target", "edge_type_ids", "weights", "delays", "syn_ids")}
+        groups_by_population = {}
+        for edge_pop, offset, start, stop in self._iter_edge_chunks():
+            key = id(edge_pop)
+            if key not in groups_by_population:
+                groups_by_population[key] = (
+                    {group.group_id: group for group in edge_pop.groups},
+                    edge_pop.types_table.to_dataframe(),
+                )
+            groups, et_table = groups_by_population[key]
+            targets = np.asarray(
+                self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[edge_pop._target_node_id_ds[start:stop]]
+            )
+            keep = np.ones(targets.size, dtype=bool) if keep_target is None else keep_target[targets]
+            if not keep.any():
+                continue
+            selected = np.flatnonzero(keep)
+            sources = np.asarray(
+                self.id_maps.bmtk2tf_id_map(edge_pop.source_population)[edge_pop._source_node_id_ds[start:stop]]
+            )[selected]
+            edge_types = np.asarray(edge_pop._type_id_ds[start:stop])[selected]
+            group_ids = np.asarray(edge_pop._group_id_ds[start:stop])[selected]
+            group_rows = np.asarray(edge_pop._group_index_ds[start:stop])[selected]
+            weights = np.empty(selected.size, dtype=np.float32)
+            delays = np.empty(selected.size, dtype=np.float32)
+            for group_id in np.unique(group_ids):
+                in_group = group_ids == group_id
+                group = groups[group_id]
+                rows = group_rows[in_group]
+                types = edge_types[in_group]
+                for column, destination in (("syn_weight", weights), ("delay", delays)):
+                    if column in group.columns:
+                        destination[in_group] = self._read_dataset_rows(
+                            group._h5_group[column], rows, self._EDGE_CHUNK_ROWS,
+                        )
+                    elif column in et_table.columns:
+                        destination[in_group] = et_table.loc[types][column].to_numpy()
+                    else:
+                        raise ValueError(f"Edges of {edge_pop.name} have no {column!r} values.")
+                if "dynamics_params" in group.columns:
+                    raise NotImplementedError()
+            if "dynamics_params" not in et_table.columns:
+                raise ValueError(f"Edges of {edge_pop.name} have no dynamics_params.")
+            parts["rows"].append(offset + start + selected)
+            parts["source"].append(sources.astype(np.int64))
+            parts["target"].append(targets[selected].astype(np.int64))
+            parts["edge_type_ids"].append(edge_types.astype(np.uint32))
+            parts["weights"].append(weights)
+            parts["delays"].append(delays)
+            parts["syn_ids"].append(
+                syn_dyn_parms_lu[edge_pop.name].loc[edge_types]["dyn_params_idx"].to_numpy().astype(np.uint8)
+            )
+        empty = {"rows": np.int64, "source": np.int64, "target": np.int64, "edge_type_ids": np.uint32,
+                 "weights": np.float32, "delays": np.float32, "syn_ids": np.uint8}
+        return {
+            name: np.concatenate(values) if values else np.empty(0, dtype=empty[name])
+            for name, values in parts.items()
+        }
 
     def _build_input_dict(self):
         # if self._cache_file and Path(self._cache_file).exists():

@@ -484,24 +484,44 @@ class Callbacks:
             )
         return mem_info
 
+    def stores_weights(self, validation_losses):
+        """Whether ``on_epoch_end(validation_losses)`` will snapshot the model weights.
+
+        Neuron-partitioned runs use it to gather the weights from every rank
+        (a collective) before the chief's epoch-end callbacks.
+        """
+        if self.epoch_store_weights in ("all", "latest"):
+            return True
+        if self.epoch_store_weights == "best":
+            val_loss = self._detach_loss_values(validation_losses)["__total_loss"]
+            return bool(val_loss < self.epoch_vallosses_best)
+        return False
+
+    def _model_weights(self):
+        prepared = getattr(self, "prepared_weights", None)
+        if prepared is not None:
+            self.prepared_weights = None
+            return prepared
+        return self.rnn.get_model_weights(deep_copy=True)
+
     def _store_weights(self, val_loss):
         current_weights = None
         if self.epoch_store_weights == "all":
             # If set to 'all' store model weights after each epoch. After full training
             # teh _saved_weights list will be of size n_epochs.
-            current_weights = self.rnn.get_model_weights(deep_copy=True)
+            current_weights = self._model_weights()
             self._saved_weights.append(current_weights)
 
         elif self.epoch_store_weights == "latest":
             # Only store the weights for the latest epoch, no matter the results
-            current_weights = self.rnn.get_model_weights(deep_copy=True)
+            current_weights = self._model_weights()
             self._saved_weights = [current_weights]
 
         elif self.epoch_store_weights == "best":
             # Only store model weights if the validation loss is smallest value.
             if val_loss < self.epoch_vallosses_best:
                 self.epoch_vallosses_best = val_loss
-                current_weights = self.rnn.get_model_weights(deep_copy=True)
+                current_weights = self._model_weights()
                 self._saved_weights = [current_weights]
 
         elif self.epoch_store_weights == "skip":
