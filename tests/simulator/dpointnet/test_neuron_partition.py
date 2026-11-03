@@ -167,9 +167,16 @@ def test_mpi_transport_collectives_and_grouped_emd(ranks):
     assert launcher, "MPI tests require mpiexec."
     probe = Path(__file__).with_name("neuron_partition_probe.py")
     command = [launcher, "-n", str(ranks), sys.executable, str(probe)]
-    if "Open MPI" in subprocess.run([launcher, "--version"], capture_output=True, text=True).stdout:
+    version = subprocess.run([launcher, "--version"], capture_output=True, text=True)
+    if any(name in version.stdout + version.stderr for name in ("Open MPI", "OpenRTE", "open-mpi")):
+        # Hosted runners have fewer cores than ranks; Open MPI 4 prints "OpenRTE" here.
         command.insert(1, "--oversubscribe")
-    environment = {**os.environ, "CUDA_VISIBLE_DEVICES": ""}
+    environment = {
+        **os.environ, "CUDA_VISIBLE_DEVICES": "",
+        # Also via the environment (Open MPI 4 and 5); MPICH ignores these.
+        "OMPI_MCA_rmaps_base_oversubscribe": "1",
+        "PRTE_MCA_rmaps_default_mapping_policy": ":oversubscribe",
+    }
     result = subprocess.run(command, capture_output=True, text=True, timeout=600, env=environment)
     assert result.returncode == 0, result.stdout + result.stderr
     assert f"neuron partition probe passed on {ranks} ranks" in result.stdout
