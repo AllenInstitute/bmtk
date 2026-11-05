@@ -22,6 +22,83 @@ def weight_regularization_scope():
         _weight_regularization_scope.reset(token)
 
 
+GROUP_BY_PARTS = ("target", "source", "edge")
+
+
+def _normalize_group_by(group_by):
+    """``{"target": [...], "source": [...], "edge": [...]}`` with only known parts."""
+    if group_by is None:
+        return None
+    if not isinstance(group_by, dict) or set(group_by) - set(GROUP_BY_PARTS):
+        raise ValueError('group_by must map "target", "source" and/or "edge" to attribute lists.')
+    result = {part: [str(column) for column in group_by.get(part, ())] for part in GROUP_BY_PARTS}
+    if not any(result.values()):
+        raise ValueError("group_by must name at least one attribute.")
+    return result
+
+
+def _codes(values):
+    import pandas as pd
+
+    code, unique = pd.factorize(np.asarray(values).astype(str))
+    return code.astype(np.int64), len(unique)
+
+
+def _edge_type_column_codes(adaptor, columns):
+    """``(codes_by_type_id, radix)`` per edge-types column across the network's edge files."""
+    tables = [pop.types_table.to_dataframe() for pop in adaptor._sonata_edge_pops]
+    result = []
+    for column in columns:
+        values = {}
+        for table in tables:
+            if column not in table.columns:
+                raise ValueError(f"Edge attribute {column!r} is not an edge-types column.")
+            for type_id, value in table[column].items():
+                if values.setdefault(int(type_id), str(value)) != str(value):
+                    raise ValueError(f"Edge type {type_id} has conflicting {column!r} values.")
+        type_ids = np.array(sorted(values), dtype=np.int64)
+        codes, radix = _codes([values[t] for t in type_ids])
+        lookup = np.full(int(type_ids.max()) + 1, -1, dtype=np.int64)
+        lookup[type_ids] = codes
+        result.append((lookup, radix))
+    return result
+
+
+def attribute_group_keys(adaptor, group_by, edges):
+    """Integer connection-group key of each edge from node and edge-type attributes.
+
+    ``edges`` maps master names to ``(targets, sources, edge_type_ids)`` (TF ids). Keys
+    combine the codes of the target and source node attributes and edge-type columns
+    named in ``group_by``; equal keys form one weight-distribution group.
+    """
+    node_columns = sorted(set(group_by["target"]) | set(group_by["source"]))
+    node_codes = {column: _codes(values)
+                  for column, values in adaptor.node_attribute_values(node_columns).items()}
+
+    def combine(columns):
+        table, radix = np.zeros(int(adaptor.n_nodes), dtype=np.int64), 1
+        for column in columns:
+            codes, size = node_codes[column]
+            table = table * size + codes
+            radix *= size
+        return table, radix
+
+    target_table, target_radix = combine(group_by["target"])
+    source_table, source_radix = combine(group_by["source"])
+    edge_columns = _edge_type_column_codes(adaptor, group_by["edge"]) if group_by["edge"] else []
+    edge_radix = int(np.prod([size for _, size in edge_columns], dtype=np.int64))
+    if float(target_radix) * source_radix * edge_radix >= 2.0**62:
+        raise ValueError("Too many attribute combinations for weight-distribution group keys.")
+    keys = {}
+    for name, (targets, sources, edge_types) in edges.items():
+        key = target_table[np.asarray(targets)] * source_radix + source_table[np.asarray(sources)]
+        for lookup, size in edge_columns:
+            key *= size
+            key += lookup[np.asarray(edge_types)]
+        keys[name] = key
+    return keys
+
+
 def _connection_type_ids(network, data_dir=''):
     """Per-synapse connection-type id, replicating other_v1_utils.connection_type_ids.
 
@@ -241,6 +318,7 @@ class EMDWeightRegularization(StreamingSpikeLoss):
         dtype=None,
         deduplicate_within_graph=False,
         sort_strategy="per_group",
+        group_by=None,
         **kwargs
     ):
         for option in ("use_grouped_custom_gradient", "use_javier_grouped_emd"):
@@ -249,6 +327,7 @@ class EMDWeightRegularization(StreamingSpikeLoss):
         if sort_strategy not in ("per_group", "batched"):
             raise ValueError('sort_strategy must be "per_group" or "batched".')
         self.sort_strategy = sort_strategy
+        self._group_by = _normalize_group_by(group_by)
         self._rnn = rnn
         self._network = rnn.recurrent_network
         # The trainable recurrent weights (kept in the master/fp32 dtype under mixed precision).
@@ -269,9 +348,18 @@ class EMDWeightRegularization(StreamingSpikeLoss):
         # loss is 0 at init regardless of any weight/lr scaling applied in the cell.
         initial_value_np = self._weights.numpy().astype(np.float32).copy()
 
-        group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(
-            np.int64, copy=False
-        )
+        if self._group_by is None:
+            group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(
+                np.int64, copy=False
+            )
+        else:
+            from .grouped_rate_cdf import recurrent_network_adaptor
+
+            adaptor = recurrent_network_adaptor(rnn)
+            keys = attribute_group_keys(adaptor, self._group_by, {"<recurrent>": (
+                adaptor._target_tf_ids, adaptor._source_tf_ids, adaptor._edge_type_ids,
+            )})["<recurrent>"]
+            group_ids = np.unique(keys, return_inverse=True)[1].reshape(-1).astype(np.int64)
         layout = None
         if getattr(rnn.cell, "_csr_master_weights", False):
             layout = rnn.cell.recurrent_master_layout
@@ -319,10 +407,19 @@ class EMDWeightRegularization(StreamingSpikeLoss):
         """The exact grouped EMD over the rank-split recurrent masters (see neuron_partition)."""
         from ..neuron_partition import PARTITION_INPUT, PartitionedGroupedEMD
 
-        # Connection type of each edge exactly as _connection_type_ids: (target, source) cell types.
-        pop_names = loss_utils.get_pop_names(self._network, data_dir=data_dir)
-        cell_types = np.array([loss_utils.pop_name_to_cell_type(p) for p in pop_names])
-        _, pop_ids = np.unique(cell_types, return_inverse=True)
+        if self._group_by is None:
+            # Connection type of each edge exactly as _connection_type_ids: (target, source) cell types.
+            pop_names = loss_utils.get_pop_names(self._network, data_dir=data_dir)
+            cell_types = np.array([loss_utils.pop_name_to_cell_type(p) for p in pop_names])
+            _, pop_ids = np.unique(cell_types, return_inverse=True)
+        else:
+            from .grouped_rate_cdf import recurrent_network_adaptor
+
+            adaptor = recurrent_network_adaptor(rnn)
+            attribute_keys = attribute_group_keys(adaptor, self._group_by, {
+                name: (*partition.endpoints[name], adaptor._partition_edge_types[name])
+                for name in ("<recurrent>", PARTITION_INPUT)
+            })
         cell = rnn.cell
         masters, keys = {}, {}
         for name in ("<recurrent>", PARTITION_INPUT):
@@ -336,7 +433,8 @@ class EMDWeightRegularization(StreamingSpikeLoss):
                 layout = None
             target, source = partition.endpoints[name]
             masters[name] = (variable, layout)
-            keys[name] = pop_ids[target].astype(np.int64) * 1000 + pop_ids[source]
+            keys[name] = (pop_ids[target].astype(np.int64) * 1000 + pop_ids[source]
+                          if self._group_by is None else attribute_keys[name])
         return PartitionedGroupedEMD(partition, masters, keys, dtype=self._dtype)
 
     @staticmethod

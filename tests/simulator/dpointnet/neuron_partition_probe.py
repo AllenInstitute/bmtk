@@ -89,13 +89,18 @@ def main():
     np.testing.assert_allclose(mean.numpy(), expected_mean, rtol=1e-6)
     np.testing.assert_allclose(tape.gradient(total, local_mean).numpy(), shares[rank], rtol=1e-6)
     check_grouped_emd(comm, partition, owner)
+    check_grouped_emd(comm, partition, owner, rank_local_groups=True)
     comm.Barrier()
     if rank == 0:
         print(f"neuron partition probe passed on {size} ranks")
 
 
-def check_grouped_emd(comm, partition, owner):
-    """The rank-split grouped EMD equals the single-process grouped EMD (value and gradient)."""
+def check_grouped_emd(comm, partition, owner, rank_local_groups=False):
+    """The rank-split grouped EMD equals the single-process grouped EMD (value and gradient).
+
+    With ``rank_local_groups`` every group's edges share a target owner, so the device
+    evaluation of rank-local groups is used instead of the exchange route.
+    """
     from types import SimpleNamespace
 
     from bmtk.simulator.dpointnet.loss_functions.weight_regularization import (
@@ -110,6 +115,8 @@ def check_grouped_emd(comm, partition, owner):
     target, source = target[order], source[order]  # canonical order
     pop = rng.integers(0, 3, n_nodes)
     keys = pop[target] * 1000 + pop[source]
+    if rank_local_groups:
+        keys = keys + owner[target].astype(np.int64) * 1_000_000
     initial = np.round(rng.standard_normal(edges), 1).astype(np.float32)  # ties
     current = np.round(initial + rng.standard_normal(edges) * 0.3, 1).astype(np.float32)
 
@@ -141,6 +148,8 @@ def check_grouped_emd(comm, partition, owner):
         endpoints[name] = (target[selected], source[selected])
     context = SimpleNamespace(comm=comm, partition=partition, canonical_ids=canonical_ids, endpoints=endpoints)
     emd = PartitionedGroupedEMD(context, masters, group_keys)
+    expected_mode = "local" if rank_local_groups or partition.size == 1 else "exchange"
+    assert emd.report["mode"] == expected_mode, emd.report
     for variable, live, selected in variables:
         values = np.empty(selected.size, np.float32)
         values[live] = current[selected]
@@ -152,6 +161,17 @@ def check_grouped_emd(comm, partition, owner):
     for gradient, (_, live, selected) in zip(gradients, variables):
         np.testing.assert_allclose(gradient.numpy()[live], reference_gradient[selected], rtol=1e-6, atol=1e-9)
     assert np.allclose(comm.allgather(float(value)), float(value)), "EMD value differs across ranks"
+
+    @tf.function
+    def compiled():
+        with tf.GradientTape() as tape:
+            result = emd()
+        return result, tape.gradient(result, [v for v, _, _ in variables])
+
+    value, gradients = compiled()
+    np.testing.assert_allclose(float(value), float(reference), rtol=1e-6)
+    for gradient, (_, live, selected) in zip(gradients, variables):
+        np.testing.assert_allclose(gradient.numpy()[live], reference_gradient[selected], rtol=1e-6, atol=1e-9)
 
 
 if __name__ == "__main__":

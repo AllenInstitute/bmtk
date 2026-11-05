@@ -191,3 +191,113 @@ class PartitionedModelWeights(ModelWeights):
                 conn_table_df = conn_table_df.iloc[order].reset_index(drop=True)
             ret_df = conn_table_df if ret_df is None else pd.concat([ret_df, conn_table_df])
         return ret_df
+
+
+class RankModelWeights:
+    """This rank's part of a neuron-partitioned network's weights (``weights_export="per_rank"``).
+
+    Construction is local: no rank gathers another rank's edges. :meth:`to_sonata`
+    writes one SONATA edges file per network on every rank (population
+    ``{source}_to_{target}_rank{r}``), holding the edges into the rank's neurons with
+    their physical ``syn_weight``, edge type and the source files' ``delay``; recurrent
+    edges are in canonical (target, source) order. Together the ranks' files hold the
+    whole network, and they can be listed as ``edges`` of a BMTK config with the
+    original edge-types tables. Rank 0 also writes ``weights_parts.json``.
+    """
+
+    preserves_canonical_edge_order = True
+
+    def __init__(self, rnn, cell, trainable_only=False, deep_copy=True):
+        from .neuron_partition import PARTITION_INPUT
+
+        partition = rnn.neuron_partition
+        self.rnn, self.cell = rnn, cell
+        self.rank, self.size = partition.rank, partition.size
+        names = ['<recurrent>'] + list(rnn.inputs_populations)
+        if trainable_only:
+            names = [
+                name for name in names
+                if (cell.recurrent_weight_values if name == '<recurrent>'
+                    else cell.inputs[name]['input_weight_values']).trainable
+            ]
+        self._networks = names
+        self._parts = {}
+        for name in names:
+            adaptor = rnn.get_network(name)
+            if name == '<recurrent>':
+                masters = ('<recurrent>', PARTITION_INPUT)
+                ids = np.concatenate([partition.canonical_ids[m] for m in masters])
+                order = np.argsort(ids, kind='stable')
+                part = {
+                    'target': np.concatenate([adaptor._partition_endpoints[m][0] for m in masters])[order],
+                    'source': np.concatenate([adaptor._partition_endpoints[m][1] for m in masters])[order],
+                    'edge_type_id': np.concatenate([adaptor._partition_edge_types[m] for m in masters])[order],
+                    'delay': np.concatenate([adaptor._partition_delays[m] for m in masters])[order],
+                    'syn_weight': np.concatenate(
+                        [PartitionedModelWeights._physical(cell, m) for m in masters])[order],
+                }
+                source_pop = target_pop = adaptor.population_name
+            else:
+                edges = adaptor.read_edges(keep_target=partition.partition.owner == partition.rank)
+                if not np.array_equal(edges['rows'], partition.input_rows[name]):
+                    raise ValueError(f'Input {name!r} edges changed since the partition was built.')
+                part = {'target': edges['target'], 'source': edges['source'],
+                        'edge_type_id': edges['edge_type_ids'], 'delay': edges['delays'],
+                        'syn_weight': PartitionedModelWeights._physical(cell, name)}
+                source_pop, target_pop = adaptor.population_name, rnn.recurrent_network['name']
+            self._parts[name] = (source_pop, target_pop, part)
+
+    @property
+    def networks(self):
+        return self._networks
+
+    @staticmethod
+    def file_name(source_pop, target_pop, rank):
+        return f'{source_pop}_{target_pop}_edges.rank{rank}.h5'
+
+    def to_pickle(self, path):
+        raise NotImplementedError('Per-rank partition weights are exported with to_sonata().')
+
+    def to_sonata(self, output_dir='.', single_file=False, overwrite=False, compression='gzip'):
+        """Collective-free: every rank writes its own files; rank 0 also writes the manifest."""
+        import json
+        from .id_maps import TFIDMap
+
+        compression = normalize_sonata_compression(compression)
+        output_dir = Path(output_dir)
+        output_dir.mkdir(exist_ok=True, parents=True)
+        id_map = TFIDMap()
+        manifest = []
+        for name, (source_pop, target_pop, part) in self._parts.items():
+            h5_path = output_dir / self.file_name(source_pop, target_pop, self.rank)
+            if h5_path.exists() and not overwrite:
+                raise ValueError(f'SONATA file {h5_path} already exists. Please delete or set overwrite=True.')
+            target_ids = id_map.tf2bmtk_id_map(populations=[target_pop])['node_id'].to_numpy()
+            source_ids = id_map.tf2bmtk_id_map(populations=[source_pop])['node_id'].to_numpy()
+            target_offset = id_map._bmtk_populations[target_pop]['tf_ids'][0]
+            source_offset = id_map._bmtk_populations[source_pop]['tf_ids'][0]
+            n = len(part['target'])
+            population = f'{source_pop}_to_{target_pop}_rank{self.rank}'
+            with h5py.File(h5_path, 'w') as h5_out:
+                add_hdf5_magic(h5_out)
+                add_hdf5_version(h5_out)
+                group = h5_out.create_group(f'/edges/{population}')
+                options = dict(compression=compression)
+                group.create_dataset('source_node_id', data=source_ids[np.asarray(part['source']) - source_offset]
+                                     .astype(np.uint64), **options)
+                group['source_node_id'].attrs['node_population'] = source_pop
+                group.create_dataset('target_node_id', data=target_ids[np.asarray(part['target']) - target_offset]
+                                     .astype(np.uint64), **options)
+                group['target_node_id'].attrs['node_population'] = target_pop
+                group.create_dataset('edge_type_id', data=np.asarray(part['edge_type_id'], np.uint32), **options)
+                group.create_dataset('edge_group_id', data=np.zeros(n, dtype=np.uint32), **options)
+                group.create_dataset('edge_group_index', data=np.arange(n, dtype=np.uint64), **options)
+                group.create_dataset('0/syn_weight', data=np.asarray(part['syn_weight'], np.float32), **options)
+                group.create_dataset('0/delay', data=np.asarray(part['delay'], np.float32), **options)
+            manifest.append({'network': name, 'source_population': source_pop,
+                             'target_population': target_pop})
+        if self.rank == 0:
+            files = [{**item, 'files': [self.file_name(item['source_population'], item['target_population'], r)
+                                        for r in range(self.size)]} for item in manifest]
+            (output_dir / 'weights_parts.json').write_text(
+                json.dumps({'ranks': self.size, 'networks': files}, indent=1) + '\n')

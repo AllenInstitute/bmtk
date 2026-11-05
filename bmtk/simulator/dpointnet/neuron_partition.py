@@ -323,7 +323,7 @@ def allreduce_sum(comm, value):
     return result
 
 
-PARTITION_OPTIONS = ("strategy", "balance", "group_by")
+PARTITION_OPTIONS = ("strategy", "balance", "group_by", "weights_export")
 
 
 def neuron_partition_requested(distribution, world_size, launched_for_samples):
@@ -389,6 +389,9 @@ class PartitionContext:
         _abort_on_uncaught_exception(comm)
         self.balance = options.get("balance", "edges")
         self.group_by = options.get("group_by")
+        self.weights_export = options.get("weights_export", "gather")
+        if self.weights_export not in ("gather", "per_rank"):
+            raise ValueError('weights_export must be "gather" or "per_rank".')
         self.device = select_rank_gpu(comm)
         self.partition = None
         self.canonical_ids = {}
@@ -507,7 +510,7 @@ class PartitionedGroupedEMD:
     in canonical order; ``masters`` maps each master to ``(variable, layout)``.
     """
 
-    def __init__(self, context, masters, group_keys, dtype=tf.float32):
+    def __init__(self, context, masters, group_keys, dtype=tf.float32, local_groups="auto"):
         comm, partition = context.comm, context.partition
         self.comm, self.size, self.dtype = comm, partition.size, tf.as_dtype(dtype)
         names = list(masters)
@@ -515,9 +518,22 @@ class PartitionedGroupedEMD:
         keys = {name: np.asarray(group_keys[name], dtype=np.int64) for name in names}
         unique = np.unique(np.concatenate(comm.allgather(np.unique(np.concatenate(list(keys.values()))))))
         self.n_groups = int(unique.size)
-        groups = {name: np.searchsorted(unique, keys[name]) for name in names}
+        group_dtype = np.uint16 if self.n_groups <= np.iinfo(np.uint16).max else np.int32
+        groups = {name: np.searchsorted(unique, keys[name]).astype(group_dtype) for name in names}
+        del keys
         local_counts = np.bincount(np.concatenate(list(groups.values())), minlength=self.n_groups)
         counts = np.stack(comm.allgather(local_counts))
+        if local_groups not in ("auto", True, False):
+            raise ValueError('local_groups must be "auto", True or False.')
+        all_local = bool(np.all((counts > 0).sum(axis=0) == 1))
+        if local_groups is True and not all_local:
+            raise ValueError("local_groups=True requires every weight group on a single rank.")
+        self._local = None
+        if all_local and local_groups != False:
+            self._local = _LocalGroupedEMD(context, masters, groups, self.n_groups, counts.sum(axis=0))
+            self.report = {"groups": self.n_groups, "owned_groups": int(np.sum(local_counts > 0)),
+                           "sent_elements": 0, "mode": "local"}
+            return
         group_owner = np.argmax(counts, axis=0)
         group_size = counts.sum(axis=0)
         # Elements: (live row in the concatenated live masters, group, canonical id).
@@ -558,7 +574,8 @@ class PartitionedGroupedEMD:
         self.sorted_initial = received_initial[order]
         self.scale = (1.0 / (group_size[self.arranged_groups] * float(self.n_groups))).astype(np.float32)
         self.report = {"groups": self.n_groups, "owned_groups": int(np.sum(group_owner == partition.rank)),
-                       "sent_elements": int(self.send_counts.sum() - self.send_counts[partition.rank])}
+                       "sent_elements": int(self.send_counts.sum() - self.send_counts[partition.rank]),
+                       "mode": "exchange"}
 
     def _exchange(self, chunks, dtype):
         MPI = _mpi()
@@ -598,6 +615,8 @@ class PartitionedGroupedEMD:
         return np.float32(total[0]), derivative
 
     def __call__(self):
+        if self._local is not None:
+            return tf.cast(self._local(), self.dtype)
         sizes = [int(v.shape[0]) for v in self.variables]
 
         @tf.custom_gradient
@@ -614,5 +633,124 @@ class PartitionedGroupedEMD:
                 return [tf.cast(part, v.dtype) for part, v in zip(parts, values)]
 
             return tf.cast(loss, self.dtype), gradient
+
+        return emd(*[tf.convert_to_tensor(v) for v in self.variables])
+
+
+class _LocalGroupedEMD:
+    """:class:`PartitionedGroupedEMD` when every group lies on one rank, evaluated on device.
+
+    Each rank sorts only its own groups, one group at a time inside the graph, so
+    live memory is bounded by the largest group rather than the rank's edge count.
+    Host setup keeps a compact (int32 where possible) group-ordered row list and the
+    sorted initial values; derivatives go to per-master credit variables. The value
+    and derivative equal the exchange route's: per-group mean absolute deviation of
+    sorted current from sorted initial weights, ties by canonical edge index, divided
+    by the global number of groups.
+    """
+
+    def __init__(self, context, masters, groups, n_groups, group_sizes):
+        names = list(masters)
+        self.comm = context.comm
+        self.variables = [masters[name][0] for name in names]
+        self.sizes = [int(v.shape[0]) for v in self.variables]
+        n_live = sum(self.sizes)
+        index_dtype = np.int32 if n_live < np.iinfo(np.int32).max else np.int64
+        live_rows, element_groups, element_ids, offset = [], [], [], 0
+        for name, size in zip(names, self.sizes):
+            layout = masters[name][1]
+            canonical_to_live = (np.arange(size, dtype=index_dtype) if layout is None
+                                 else np.asarray(layout.canonical_to_csr).astype(index_dtype))
+            live_rows.append(canonical_to_live + index_dtype(offset))
+            element_groups.append(groups[name])
+            element_ids.append(np.asarray(context.canonical_ids[name], dtype=np.int64))
+            offset += size
+        live_rows = np.concatenate(live_rows)
+        element_groups = np.concatenate(element_groups)
+        by_id = np.argsort(np.concatenate(element_ids), kind="stable")
+        del element_ids
+        order = by_id[np.argsort(element_groups[by_id], kind="stable")]
+        del by_id
+        self.order = live_rows[order]
+        local_groups = element_groups[order]
+        del order, live_rows, element_groups
+        owned = np.flatnonzero(np.bincount(local_groups, minlength=n_groups))
+        bounds = np.searchsorted(local_groups, owned, side="left")
+        ends = np.searchsorted(local_groups, owned, side="right")
+        del local_groups
+        initial = np.concatenate([np.asarray(v.numpy(), np.float32).reshape(-1) for v in self.variables])
+        self.sorted_initial = np.empty(len(self.order), dtype=np.float32)
+        for start, stop in zip(bounds, ends):
+            self.sorted_initial[start:stop] = np.sort(initial[self.order[start:stop]])
+        del initial
+        self.scales = (1.0 / (np.asarray(group_sizes, np.float64)[owned] * n_groups)).astype(np.float32)
+        self.starts, self.stops = bounds.astype(np.int64), ends.astype(np.int64)
+        with tf.device("/CPU:0"):
+            self._order = tf.constant(self.order)
+            self._initial = tf.constant(self.sorted_initial)
+            self._starts = tf.constant(self.starts)
+            self._stops = tf.constant(self.stops)
+            self._scales = tf.constant(self.scales)
+        with tf.init_scope():
+            self.credits = [tf.Variable(tf.zeros(v.shape, tf.float32), trainable=False,
+                                        name="emd_prior_credit") for v in self.variables]
+
+    def _allreduce(self, value):
+        return np.float32(self.comm.allreduce(float(value)))
+
+    def __call__(self):
+        sizes, credits = self.sizes, self.credits
+        boundaries = np.cumsum([0] + sizes)
+        n_owned = len(self.scales)
+
+        @tf.custom_gradient
+        def emd(*values):
+            values = [tf.reshape(tf.cast(v, tf.float32), [-1]) for v in values]
+            resets = [credit.assign(tf.zeros_like(credit)) for credit in credits]
+
+            def body(i, total):
+                with tf.device("/CPU:0"):
+                    start, stop = self._starts[i], self._stops[i]
+                    positions = self._order[start:stop]
+                    initial = self._initial[start:stop]
+                    scale = self._scales[i]
+                positions = tf.cast(positions, tf.int64)
+                current = None
+                masks = []
+                for k, value in enumerate(values):
+                    low, high = int(boundaries[k]), int(boundaries[k + 1])
+                    if high == low:
+                        continue
+                    inside = (positions >= low) & (positions < high)
+                    local = tf.clip_by_value(positions - low, 0, high - low - 1)
+                    gathered = tf.gather(value, local)
+                    current = gathered if current is None else tf.where(inside, gathered, current)
+                    masks.append((k, inside, local))
+                order = tf.math.top_k(-current, k=tf.size(current), sorted=True).indices
+                deviation = tf.gather(current, order) - initial
+                derivative = tf.sign(deviation) * scale
+                for k, inside, local in masks:
+                    chosen = tf.gather(inside, order)
+                    tf.raw_ops.ResourceScatterUpdate(
+                        resource=credits[k].handle,
+                        indices=tf.boolean_mask(tf.gather(local, order), chosen),
+                        updates=tf.boolean_mask(derivative, chosen),
+                    )
+                return i + 1, total + tf.reduce_sum(tf.abs(deviation)) * scale
+
+            with tf.control_dependencies(resets):
+                _, local_total = tf.while_loop(
+                    lambda i, _: i < n_owned, body, (tf.constant(0), tf.constant(0.0, tf.float32)),
+                    parallel_iterations=1,
+                )
+            total = tf.numpy_function(self._allreduce, [local_total], tf.float32, stateful=True)
+            total = tf.reshape(total, [])
+
+            def gradient(upstream):
+                with tf.control_dependencies([total]):
+                    return [tf.cast(credit.read_value() * tf.cast(upstream, tf.float32), v.dtype)
+                            for credit, v in zip(credits, values)]
+
+            return total, gradient
 
         return emd(*[tf.convert_to_tensor(v) for v in self.variables])

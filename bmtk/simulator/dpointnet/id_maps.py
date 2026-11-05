@@ -90,9 +90,15 @@ class TFIDMap:
         ret_df = None
         for pop in pop_list:
             pop_props = self._bmtk_populations[pop]
+            tf_beg, tf_end = pop_props['tf_ids']
+            # Invert node_id -> tf_id: node IDs may have gaps and need not follow tf order.
+            bmtk2tf = pop_props['bmtk2tf_id_map']
+            node_ids = np.flatnonzero(bmtk2tf >= 0)
+            tf2node = np.empty(tf_end - tf_beg, dtype=np.int64)
+            tf2node[bmtk2tf[node_ids] - tf_beg] = node_ids
             tmp_df = pd.DataFrame({
-                'tf_ids': range(pop_props['tf_ids'][0], pop_props['tf_ids'][1]),
-                'node_id': pop_props['bmtk2tf_id_map'],
+                'tf_ids': range(tf_beg, tf_end),
+                'node_id': tf2node,
                 'population': pop
             })
             if ret_df is None:

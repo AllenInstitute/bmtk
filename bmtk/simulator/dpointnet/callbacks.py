@@ -190,7 +190,10 @@ class Callbacks:
     def on_train_end(self, metrics=None, normalizers=None):
         self.training_time = time() - self.train_start_time
         self._append_performance_to_csv("training_time", None, None, self.training_time)
+        self.export_saved_weights()
 
+    def export_saved_weights(self):
+        """Write the stored weight snapshots as SONATA (per epoch when several are kept)."""
         if len(self._saved_weights) > 1:
             for epoch_num, epoch_weights in self._saved_weights:
                 output_dir = f"{self.sonata_output_dir}.epoch_{epoch_num}"
@@ -198,7 +201,7 @@ class Callbacks:
                     output_dir=output_dir, overwrite=True, compression=self.sonata_compression
                 )
         elif len(self._saved_weights) == 1:
-            self._saved_weights[0].to_sonata(
+            self._saved_weights[0][1].to_sonata(
                 output_dir=self.sonata_output_dir, overwrite=True,
                 compression=self.sonata_compression,
             )
@@ -539,19 +542,19 @@ class Callbacks:
             # If set to 'all' store model weights after each epoch. After full training
             # teh _saved_weights list will be of size n_epochs.
             current_weights = self._model_weights()
-            self._saved_weights.append(current_weights)
+            self._saved_weights.append((self.epoch_num, current_weights))
 
         elif self.epoch_store_weights == "latest":
             # Only store the weights for the latest epoch, no matter the results
             current_weights = self._model_weights()
-            self._saved_weights = [current_weights]
+            self._saved_weights = [(self.epoch_num, current_weights)]
 
         elif self.epoch_store_weights == "best":
             # Only store model weights if the validation loss is smallest value.
             if val_loss < self.epoch_vallosses_best:
                 self.epoch_vallosses_best = val_loss
                 current_weights = self._model_weights()
-                self._saved_weights = [current_weights]
+                self._saved_weights = [(self.epoch_num, current_weights)]
 
         elif self.epoch_store_weights == "skip":
             # Don't store weights

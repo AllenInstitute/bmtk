@@ -159,6 +159,7 @@ def create_optimizer(optimizer, learning_rate, optimizer_params=None):
 
     factories = {
         'adam': (tf.keras.optimizers.Adam, {'epsilon': 1.0e-11}),
+        'chunked_adam': (ChunkedAdam, {'epsilon': 1.0e-11, 'update_chunk_size': ChunkedAdam.DEFAULT_CHUNK}),
         'exp_adam': (ExponentiatedAdam, {'epsilon': 1.0e-11, 'jit_compile': True}),
         'sgd': (tf.keras.optimizers.SGD, {'momentum': 0.0, 'nesterov': False}),
     }
@@ -188,6 +189,125 @@ def create_optimizer(optimizer, learning_rate, optimizer_params=None):
 
     params.update({key: value for key, value in optimizer_params.items() if key != 'name'})
     return optimizer_cls(learning_rate=learning_rate, **params)
+
+
+def _keras_major_version():
+    return int(str(getattr(tf.keras, '__version__', '2')).split('.')[0])
+
+
+def _variable_storage(variable):
+    """The ``tf.Variable`` behind a Keras variable (its ``value``) or the variable itself."""
+    value = getattr(variable, 'value', None)
+    return variable if value is None or callable(value) else value
+
+
+class ChunkedAdam(tf.keras.optimizers.Adam):
+    """Keras Adam that updates large one-dimensional variables in bounded chunks.
+
+    ``Adam.update_step`` materializes several full-size temporaries per variable
+    (``g - m``, ``g * g``, ``sqrt(v) + epsilon`` and the update), and the base
+    optimizer then reassigns every constrained variable whole. For billion-edge
+    weight vectors each temporary is gigabytes. This optimizer applies the same
+    per-element arithmetic, in the same order and dtype, to contiguous slices of
+    the same slot variables, and applies a :class:`SignedConstraint` per slice, so
+    results and checkpoints equal plain Adam while live temporaries are bounded by
+    ``update_chunk_size`` elements. Variables at most one chunk long, sparse
+    gradients and other shapes use the plain Adam update.
+    """
+
+    DEFAULT_CHUNK = 1 << 23
+
+    def __init__(self, *args, update_chunk_size=DEFAULT_CHUNK, **kwargs):
+        if _keras_major_version() < 3:
+            raise NotImplementedError('chunked_adam requires Keras 3.')
+        super().__init__(*args, **kwargs)
+        if isinstance(update_chunk_size, bool) or int(update_chunk_size) < 1:
+            raise ValueError('update_chunk_size must be a positive integer.')
+        if self.amsgrad:
+            raise ValueError('chunked_adam does not support amsgrad.')
+        self.update_chunk_size = int(update_chunk_size)
+
+    def _chunks(self, gradient, variable):
+        if isinstance(gradient, tf.IndexedSlices) or len(variable.shape) != 1:
+            return False
+        size = variable.shape[0]
+        return size is not None and size > self.update_chunk_size
+
+    @staticmethod
+    def _sign_condition(variable):
+        constraint = getattr(variable, 'constraint', None)
+        condition = getattr(constraint, 'condition', None)
+        if type(constraint).__name__ != 'SignedConstraint' or condition is None:
+            return None
+        condition = tf.convert_to_tensor(condition)
+        return condition if condition.shape == variable.shape else None
+
+    def update_step(self, gradient, variable, learning_rate):
+        if not self._chunks(gradient, variable):
+            return super().update_step(gradient, variable, learning_rate)
+        dtype = variable.dtype
+        lr = tf.cast(learning_rate, dtype)
+        gradient = tf.cast(gradient, dtype)
+        local_step = tf.cast(self.iterations + 1, dtype)
+        beta_1_power = tf.pow(tf.cast(self.beta_1, dtype), local_step)
+        beta_2_power = tf.pow(tf.cast(self.beta_2, dtype), local_step)
+        index = self._get_variable_index(variable)
+        momentum = _variable_storage(self._momentums[index])
+        velocity = _variable_storage(self._velocities[index])
+        weights = _variable_storage(variable)
+        alpha = lr * tf.sqrt(1 - beta_2_power) / (1 - beta_1_power)
+        one_minus_beta_1 = tf.cast(1 - self.beta_1, dtype)
+        one_minus_beta_2 = tf.cast(1 - self.beta_2, dtype)
+        epsilon = tf.cast(self.epsilon, dtype)
+        # The backend may pass the underlying tf.Variable, which has no Keras constraint.
+        condition = getattr(self, '_chunk_conditions', {}).get(id(weights))
+        if condition is None:
+            condition = self._sign_condition(variable)
+        size = int(variable.shape[0])
+        chunk = self.update_chunk_size
+
+        def read(target, positions):
+            return tf.raw_ops.ResourceGather(resource=target.handle, indices=positions, dtype=dtype)
+
+        def body(start):
+            stop = tf.minimum(start + chunk, size)
+            positions = tf.range(start, stop, dtype=tf.int64)
+            g = gradient[start:stop]
+            m = read(momentum, positions)
+            v = read(velocity, positions)
+            w = read(weights, positions)
+            m = m + (g - m) * one_minus_beta_1
+            v = v + (tf.square(g) - v) * one_minus_beta_2
+            w = w - (m * alpha) / (tf.sqrt(v) + epsilon)
+            if condition is not None:
+                w = tf.where(condition[start:stop], tf.nn.relu(w), -tf.nn.relu(-w))
+            for target, value in ((momentum, m), (velocity, v), (weights, w)):
+                tf.raw_ops.ResourceStridedSliceAssign(
+                    ref=target.handle, begin=start[None], end=stop[None], strides=[1], value=value,
+                )
+            return (stop,)
+
+        tf.while_loop(
+            lambda start: start < size, body, (tf.constant(0, tf.int64),), parallel_iterations=1,
+        )
+
+    def apply(self, grads, trainable_variables=None):
+        # Chunked variables already received their sign constraint per chunk; hide it from
+        # the base class, which would reassign each constrained variable whole.
+        variables = trainable_variables if trainable_variables is not None else self._trainable_variables
+        hidden, self._chunk_conditions = [], {}
+        for gradient, variable in zip(grads, variables):
+            condition = self._sign_condition(variable)
+            if gradient is not None and self._chunks(gradient, variable) and condition is not None:
+                self._chunk_conditions[id(_variable_storage(variable))] = condition
+                hidden.append((variable, variable.constraint))
+                variable.constraint = None
+        try:
+            return super().apply(grads, trainable_variables)
+        finally:
+            for variable, constraint in hidden:
+                variable.constraint = constraint
+            self._chunk_conditions = {}
 
 
 class LinearWarmupCosineDecay(tf.keras.optimizers.schedules.LearningRateSchedule):

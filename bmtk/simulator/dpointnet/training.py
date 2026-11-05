@@ -1204,6 +1204,8 @@ class TrainingEngine:
             # Dynamic loss scaling decides finiteness per rank; ranks could skip different updates.
             unmet.append("float32 precision (mixed-precision loss scaling is not yet partition aware)")
         partition = self.rnn.neuron_partition
+        if partition.weights_export == "per_rank" and getattr(self.callbacks, "epoch_cache_weights", False):
+            raise ValueError('weights_export="per_rank" does not support epoch_cache_weights.')
         tie_seed = partition.comm.bcast(
             int(np.random.SeedSequence().entropy % (1 << 31)) if partition.rank == 0 else None, root=0,
         )
@@ -2049,6 +2051,13 @@ class TrainingEngine:
                         snapshot = self.rnn.get_model_weights(deep_copy=True)
                         if chief:
                             self.callbacks.prepared_weights = snapshot
+                        elif partition.weights_export == "per_rank":
+                            # Mirror the chief's store policy (losses are replicated on every rank).
+                            self.callbacks.prepared_weights = snapshot
+                            self.callbacks.epoch_num = epoch + 1
+                            self.callbacks._store_weights(
+                                self.callbacks._detach_loss_values(validation_loss)["__total_loss"]
+                            )
                 stop = self.callbacks.on_epoch_end(validation_loss) if chief else None
                 if process_parallel:
                     stop = data_parallel.broadcast_stop(stop)
@@ -2064,6 +2073,8 @@ class TrainingEngine:
                 }
             if chief:
                 self.callbacks.on_train_end(normalizers=normalizers)
+            elif partition is not None and partition.weights_export == "per_rank":
+                self.callbacks.export_saved_weights()
         finally:
             if input_itr is not None:
                 input_itr.close()

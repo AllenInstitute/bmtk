@@ -1,3 +1,4 @@
+import h5py
 import numpy as np
 from glob import glob
 from scipy import sparse
@@ -6,6 +7,31 @@ import tensorflow as tf
 from bmtk.utils.reports.spike_trains import SpikeTrains
 from bmtk.simulator.dpointnet.io_tools import io
 from .inputs_base import InputsGeneratorMod
+
+
+def _read_sonata_h5_spikes(path, population):
+    """``(node_ids, timestamps)`` of one population from a SONATA spikes HDF5 file.
+
+    Read without the collective, rank-staggered open of ``SpikeTrains.load``: DPointNet
+    draws input batches per process (only rank 0 under neuron partitioning), so a
+    world barrier there would deadlock. Returns ``None`` when the file has no
+    population subgroup (older single-population layouts).
+    """
+    with h5py.File(path, 'r') as handle:
+        root = handle.get('spikes')
+        if root is None:
+            return None
+        groups = {name: group for name, group in root.items() if isinstance(group, h5py.Group)}
+        if not groups:
+            return None
+        if population in groups:
+            group = groups[population]
+        elif len(groups) == 1:
+            name, group = next(iter(groups.items()))
+            io.log_debug(f'Unable to find population {population} in {path}. Defaulting to using {name} population.')
+        else:
+            raise ValueError(f'Unable to find appropiate spike-population in {path}.')
+        return np.asarray(group['node_ids'][()]), np.asarray(group['timestamps'][()])
 
 
 def add_background_noise(spikes_table, noise_rate, dt):
@@ -41,11 +67,25 @@ def add_dropout(spikes_table, dropout_prob):
 
 
 class SpikesFilesGenerator(InputsGeneratorMod):
+    """Spike trains from SONATA spike files, binned to ``floor(timestamp / dt)``.
+
+    By default a node spiking more than once within one step contributes a single
+    spike. Set ``count_spikes=True`` to keep the number of spikes per step (as
+    integer-valued input), e.g. for Poisson background stored at a rate where
+    several events can share a step.
+    """
+
     def __init__(self, rnn, name, input_network, spikes_paths, cache_spikes=False, 
                  background_noise_rate=0.0, dropout_prob=0.0, jitter_var=0.0, 
-                 **kwargs
+                 count_spikes=False, **kwargs
         ):
         super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
+        self.count_spikes = bool(count_spikes)
+        if self.count_spikes and (background_noise_rate or dropout_prob or jitter_var):
+            raise ValueError(
+                "count_spikes=True does not support background_noise_rate, dropout_prob "
+                "or jitter_var, which operate on binary spike tables."
+            )
         self.nodes_pop = self.input_network.population_name
         self.n_nodes = self.input_network.n_nodes
         self.input_network.options['input_type'] = 'spikes'
@@ -82,21 +122,26 @@ class SpikesFilesGenerator(InputsGeneratorMod):
                     spikes_table = self.spikes_table_cache[selected_spike_train]
                 
                 else:
-                    spikes = SpikeTrains.load(
+                    direct = None
+                    if h5py.is_hdf5(selected_spike_train):
+                        direct = _read_sonata_h5_spikes(selected_spike_train, self.nodes_pop)
+                    spikes = None if direct is not None else SpikeTrains.load(
                         selected_spike_train,
                     )
-                    if self.nodes_pop in spikes.populations:
-                        spikes_file_pop = self.nodes_pop
-                    elif len(spikes.populations) == 1:
-                        spikes_file_pop = spikes.populations[0]
-                        io.log_debug(f'Unable to find population {self.nodes_pop} in {selected_spike_train}. Defaulting to using {spikes_file_pop} population.')
+                    if direct is not None:
+                        node_ids, timestamps = direct
                     else:
-                        raise ValueError(f'Unable to find appropiate spike-population in {selected_spike_train}.')
-                        # logger.error(f'Unable to find appropiate spike-population in {selected_spike_train}.')
-                    
-                    spikes_df = spikes.to_dataframe(populations=spikes_file_pop)
-                    node_ids = spikes_df['node_ids'].values
-                    timestamps = spikes_df['timestamps'].values
+                        if self.nodes_pop in spikes.populations:
+                            spikes_file_pop = self.nodes_pop
+                        elif len(spikes.populations) == 1:
+                            spikes_file_pop = spikes.populations[0]
+                            io.log_debug(f'Unable to find population {self.nodes_pop} in {selected_spike_train}. Defaulting to using {spikes_file_pop} population.')
+                        else:
+                            raise ValueError(f'Unable to find appropiate spike-population in {selected_spike_train}.')
+
+                        spikes_df = spikes.to_dataframe(populations=spikes_file_pop)
+                        node_ids = spikes_df['node_ids'].values
+                        timestamps = spikes_df['timestamps'].values
                     
                     ids_sorted = np.all(np.diff(node_ids) >= 0)
                     if not ids_sorted:
@@ -105,7 +150,9 @@ class SpikesFilesGenerator(InputsGeneratorMod):
                         timestamps = timestamps[sort_idx]
                             
                     step_ids = np.floor(timestamps / dt).astype(int)
-                    data = np.ones(len(step_ids), dtype=bool)
+                    # Duplicate (step, node) entries are summed when converted to CSR:
+                    # counts with float data, a single spike with boolean data.
+                    data = np.ones(len(step_ids), dtype=np.float32 if self.count_spikes else bool)
 
                     spikes_table = sparse.coo_matrix(
                         (data, (step_ids, node_ids)),

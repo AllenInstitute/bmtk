@@ -39,6 +39,7 @@ boundaries, independent per-source VJPs and canonical master ownership.
 
 import math
 
+import numpy as np
 import tensorflow as tf
 from tensorflow.python.eager import record
 
@@ -1301,7 +1302,49 @@ class DirectRecordedAdjointRunner:
         if self._extension is not None:
             with tf.control_dependencies([state[1]]):
                 state = tuple(state) + tuple(self._extension.final_states())
+        # spike_events() decodes the packed on-device records; offloaded history has none.
+        self._last_record_layout = None if offload_history else (stacked, step.delay, neurons)
         return counts, trace_outputs, (penalty_sequence,), tuple(state), records
+
+    def spike_events(self, inputs, initial_state, decode_steps=64):
+        """Forward-only rollout; ``(time, batch, neuron)`` int64 arrays of this rank's spikes.
+
+        Neuron indices are the cell's (rank-local) neurons. Spikes are decoded from the
+        packed per-step records in ``decode_steps`` slices, so no dense
+        ``[time, batch, neurons]`` tensor is formed. Exchanges run as in training.
+        """
+        if int(decode_steps) < 1:
+            raise ValueError("decode_steps must be positive.")
+        if "history" in self.record_offload:
+            raise ValueError(
+                "spike_events decodes the on-device spike records; use record_offload without "
+                "'history' for inference spike output."
+            )
+        initial_state = tuple(initial_state)
+
+        @tf.function
+        def rollout(inputs, initial_state):
+            with record.stop_recording():
+                self._forward(inputs, initial_state, (), tf.constant(True))
+            stacked, delay, _ = self._last_record_layout
+            return stacked, tf.constant(delay)
+
+        stacked, delay = rollout(inputs, initial_state)
+        neurons = int(self.cell._n_neurons)
+        spike_dtype = tf.float32
+        events = []
+        for start in range(0, self.sequence_length, int(decode_steps)):
+            stop = min(start + int(decode_steps), self.sequence_length)
+            rows = tf.gather(stacked, tf.range(start, stop) + delay)
+            shape = tf.shape(rows)
+            spikes, _ = unpack_step_record(
+                tf.reshape(rows, [-1, shape[2]]), neurons, spike_dtype, tf.int8,
+            )
+            where = tf.where(tf.reshape(spikes, [stop - start, shape[1], neurons]) > 0).numpy()
+            where[:, 0] += start
+            events.append(where)
+        events = np.concatenate(events) if events else np.zeros((0, 3), np.int64)
+        return events[:, 0], events[:, 1], events[:, 2]
 
     # -- reverse driver ------------------------------------------------------------------
 

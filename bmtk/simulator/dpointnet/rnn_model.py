@@ -368,8 +368,11 @@ class RNN:
     def get_model_weights(self, trainable_only=False, deep_copy=True):
         # TODO: Check that model is built
         if getattr(self, "neuron_partition", None) is not None:
-            from .weights import PartitionedModelWeights
+            from .weights import PartitionedModelWeights, RankModelWeights
 
+            if self.neuron_partition.weights_export == "per_rank":
+                # Local: each rank keeps and later writes its own edges.
+                return RankModelWeights(rnn=self, cell=self.cell, trainable_only=trainable_only)
             # Collective: every rank contributes its edges; the root holds the network's weights.
             return PartitionedModelWeights(rnn=self, cell=self.cell, trainable_only=trainable_only)
         return ModelWeights(
@@ -986,6 +989,43 @@ class RNN:
         )
         return extractor_results
 
+    def run_partitioned_inference(self, inference=None, decode_steps=64):
+        """Forward rollout of a neuron-partitioned network on every rank.
+
+        Collective. Rank 0 draws the input batch and broadcasts it; every rank runs its
+        neurons with the spike exchange used in training and decodes its spikes; rank 0
+        returns :class:`PartitionedInferenceResults` holding the whole network's spikes
+        (other ranks return ``None``). Only spikes are recorded.
+        """
+        from .direct_recorded_adjoint import DirectRecordedAdjointRunner
+        from .results import PartitionedInferenceResults
+
+        partition = self.neuron_partition
+        if not self._model_built:
+            self.build()
+        inference_obj = self._select_inference(inference)
+        values = inference_obj.data_itr.next_spikes() if partition.rank == 0 else None
+        spikes, _ = partition.broadcast_batch(values)
+        if spikes.dtype == tf.bool:
+            spikes = tf.cast(spikes, self.dtype)
+        batch, seq_len = int(spikes.shape[0]), int(spikes.shape[1])
+        initial_state = inference_obj.get_initial_state()
+        initial_state = self.cell.reset_voltage_penalty_state(initial_state)
+        runner = DirectRecordedAdjointRunner(
+            None, self.cell, seq_len, min(seq_len, int(decode_steps)), count_windows=((0, seq_len),),
+            spike_exchanges=partition.spike_exchanges(batch),
+        )
+        steps, batch_num, local = runner.spike_events(spikes, initial_state, decode_steps=decode_steps)
+        tf_ids = np.asarray(partition.partition.local_nodes)[local]
+        gathered = partition.comm.gather((batch_num, steps, tf_ids), root=0)
+        if partition.rank != 0:
+            return None
+        batch_num, steps, tf_ids = (np.concatenate([part[k] for part in gathered]) for k in range(3))
+        return PartitionedInferenceResults(
+            seq_len, self.dt, batch, batch_num, steps, tf_ids, partition.partition.n_nodes,
+            time_offset_steps=getattr(self.cell, "spike_time_offset_steps", 0),
+        )
+
     def cleanup(self):
         for inference in self._inferences:
             inference.close()
@@ -1057,11 +1097,9 @@ class RNN:
                 "MPI preview supports training only; run inference separately to "
                 "avoid duplicate output ownership."
             )
-        if getattr(self, "neuron_partition", None) is not None and (self._inferences or not self.training_engine):
-            raise ValueError(
-                "Neuron-partitioned runs support training only; run inference in a single "
-                "process (without mpirun) on the trained weights."
-            )
+        partition = getattr(self, "neuron_partition", None)
+        if partition is not None and not (self._inferences or self.training_engine):
+            raise ValueError("A neuron-partitioned run needs a training or an inference block.")
         if not self._model_built:
             io.log_info('Building Model.')
             self.build()
@@ -1073,7 +1111,12 @@ class RNN:
         results = {} if len(self._inferences) > 1 else None
         for inference in self._inferences:
             io.log_info(f'Running Inference on Model ({inference.name}).')
-            inference_results = self.run_inference(inference=inference)
+            if partition is not None:
+                inference_results = self.run_partitioned_inference(inference=inference)
+                if partition.rank != 0:
+                    continue
+            else:
+                inference_results = self.run_inference(inference=inference)
             if inference.output_params:
                 io.log_info('Saving Results to file.')
                 inference_results.save_results(**inference.output_params)
