@@ -992,6 +992,11 @@ def fused_recurrent_weight_carry(
         raise ValueError(
             "Fused recurrent accumulation requires matching compute operands."
         )
+    # Keras 3 variables wrap a tf.Variable; eager tf.custom_gradient only
+    # exempts variables passed as arguments, so pass the backing variable.
+    backing = getattr(csr_weights, "value", None)
+    if isinstance(backing, tf.Variable):
+        csr_weights = backing
     @tf.custom_gradient
     def project(z, carrier, weights, coefficients, scale):
         currents = fused_spike_currents(
