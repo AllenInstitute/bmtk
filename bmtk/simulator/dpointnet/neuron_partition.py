@@ -26,7 +26,89 @@ from .io_tools import mpi_launch_size  # noqa: F401  (re-exported)
 PARTITION_INPUT = "__partition_recurrence__"
 
 
-def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges"):
+MAX_LOAD_RATIO = 1.05
+MAX_NEURON_RATIO = 1.10
+MAX_REFINED_GROUPS = 4096
+
+
+def cut_edges(group_edges, group_owner):
+    """Edges between groups on different ranks."""
+    group_owner = np.asarray(group_owner)
+    return int(np.asarray(group_edges)[group_owner[:, None] != group_owner[None, :]].sum())
+
+
+def refine_group_placement(group_owner, load, sizes, group_edges, size, max_load, max_neurons,
+                           max_rounds=1000):
+    """Reduce the edges cut by a group placement with single moves and pairwise swaps.
+
+    Each round applies the admissible move or swap that removes the most cut
+    edges (ties: lowest group, then moves before swaps, then lowest rank or
+    partner), keeping every rank non-empty, its load at most ``max_load`` and
+    its neurons at most ``max_neurons``; it stops when no change removes an
+    edge. Deterministic and exact (integer edge counts).
+    """
+    owner = np.array(group_owner, dtype=np.int64)
+    load = np.asarray(load, dtype=np.float64)
+    sizes = np.asarray(sizes, dtype=np.float64)
+    edges = np.asarray(group_edges, dtype=np.int64)
+    n = owner.size
+    if edges.shape != (n, n) or load.shape != (n,) or sizes.shape != (n,):
+        raise ValueError("Group placement inputs must describe the same groups.")
+    if np.any(edges < 0):
+        raise ValueError("Group edge counts must be non-negative.")
+    # Symmetric traffic between distinct groups: an edge is cut in either direction.
+    between = edges + edges.T
+    np.fill_diagonal(between, 0)
+    groups = np.arange(n)
+    ranks = np.arange(size)
+    for _ in range(int(max_rounds)):
+        members = np.zeros((n, size), dtype=np.int64)
+        members[groups, owner] = 1
+        # connection[g, r]: edges between group g and the other groups on rank r.
+        connection = between @ members
+        own = connection[groups, owner]
+        rank_load = np.bincount(owner, weights=load, minlength=size)
+        rank_neurons = np.bincount(owner, weights=sizes, minlength=size)
+        rank_groups = np.bincount(owner, minlength=size)
+        # Change in cut edges of moving g -> r (negative: fewer cut edges).
+        move_change = own[:, None] - connection
+        move_ok = ((ranks[None, :] != owner[:, None])
+                   & (rank_groups[owner] > 1)[:, None]
+                   & (rank_load[None, :] + load[:, None] <= max_load)
+                   & (rank_neurons[None, :] + sizes[:, None] <= max_neurons))
+        move_change = np.where(move_ok, move_change, 0)
+        # Swaps g <-> h (h > g, on another rank); their mutual edges stay cut.
+        across = connection[:, owner]
+        swap_change = own[:, None] + own[None, :] - across - across.T + 2 * between
+        load_delta = load[None, :] - load[:, None]
+        neuron_delta = sizes[None, :] - sizes[:, None]
+        swap_ok = ((owner[:, None] != owner[None, :]) & (groups[None, :] > groups[:, None])
+                   & (rank_load[owner][:, None] + load_delta <= max_load)
+                   & (rank_load[owner][None, :] - load_delta <= max_load)
+                   & (rank_neurons[owner][:, None] + neuron_delta <= max_neurons)
+                   & (rank_neurons[owner][None, :] - neuron_delta <= max_neurons))
+        swap_change = np.where(swap_ok, swap_change, 0)
+        best = min(move_change.min(initial=0), swap_change.min(initial=0))
+        if best >= 0:
+            break
+        # Scan order: for each group its moves (by rank), then its swaps (by partner).
+        candidates = []
+        g, r = np.nonzero(move_change == best)
+        if g.size:
+            candidates.append((g[0] * (size + n) + r[0], "move", g[0], r[0]))
+        g, h = np.nonzero(swap_change == best)
+        if g.size:
+            candidates.append((g[0] * (size + n) + size + h[0], "swap", g[0], h[0]))
+        _, kind, g, other = min(candidates)
+        if kind == "move":
+            owner[g] = other
+        else:
+            owner[g], owner[other] = owner[other], owner[g]
+    return owner.astype(np.int32)
+
+
+def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges", group_edges=None,
+                   max_load_ratio=MAX_LOAD_RATIO, max_neuron_ratio=MAX_NEURON_RATIO, report=None):
     """Owner rank of every global recurrent neuron (TF order), as int32.
 
     Without ``groups`` each rank receives one contiguous block of the TF order,
@@ -34,8 +116,13 @@ def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges"):
     (``"neurons"``); canonical edges are target-major, so each rank's edges are
     then a contiguous slice of the global canonical order. ``groups`` (one
     integer label per neuron) keeps every group on one rank; groups are placed
-    largest first on the least-loaded rank. The plan is deterministic and must
-    be computed identically on every rank.
+    largest first on the least-loaded rank. With ``group_edges`` (edges from
+    group ``s`` to group ``t`` over the sorted unique labels) that placement is
+    then refined by :func:`refine_group_placement` to cut fewer edges, within
+    ``max_load_ratio`` / ``max_neuron_ratio`` of the mean rank load / neurons
+    (or the greedy placement's maxima, if larger). ``report`` (a dict) receives
+    the cut edges. The plan is deterministic and must be computed identically
+    on every rank.
     """
     n_nodes, size = int(n_nodes), int(size)
     if size < 1 or n_nodes < size:
@@ -81,6 +168,22 @@ def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges"):
         rank = int(np.argmin(rank_load))
         group_owner[group] = rank
         rank_load[rank] += group_load[group]
+    if group_edges is not None:
+        group_edges = np.asarray(group_edges)
+        if group_edges.shape != (len(labels), len(labels)):
+            raise ValueError("group_edges must be a square matrix over the sorted unique group labels.")
+        group_sizes = np.bincount(inverse, minlength=len(labels)).astype(np.float64)
+        greedy_load = np.bincount(group_owner, weights=group_load, minlength=size)
+        greedy_neurons = np.bincount(group_owner, weights=group_sizes, minlength=size)
+        max_load = max(max_load_ratio * group_load.sum() / size, greedy_load.max())
+        max_neurons = max(max_neuron_ratio * n_nodes / size, greedy_neurons.max())
+        greedy_cut = cut_edges(group_edges, group_owner)
+        group_owner = refine_group_placement(
+            group_owner, group_load, group_sizes, group_edges, size, max_load, max_neurons,
+        )
+        if report is not None:
+            report.update(greedy_cut_edges=greedy_cut, cut_edges=cut_edges(group_edges, group_owner),
+                          edges=int(group_edges.sum()))
     owner[:] = group_owner[inverse]
     if len(np.unique(owner)) != size:
         raise ValueError("Group placement left a rank without neurons.")
@@ -323,7 +426,7 @@ def allreduce_sum(comm, value):
     return result
 
 
-PARTITION_OPTIONS = ("strategy", "balance", "group_by", "weights_export")
+PARTITION_OPTIONS = ("strategy", "balance", "group_by", "placement", "weights_export")
 
 
 def neuron_partition_requested(distribution, world_size, launched_for_samples):
@@ -389,6 +492,10 @@ class PartitionContext:
         _abort_on_uncaught_exception(comm)
         self.balance = options.get("balance", "edges")
         self.group_by = options.get("group_by")
+        self.placement = options.get("placement", "communication")
+        if self.placement not in ("communication", "greedy"):
+            raise ValueError('placement must be "communication" or "greedy".')
+        self.placement_report = None
         self.weights_export = options.get("weights_export", "gather")
         if self.weights_export not in ("gather", "per_rank"):
             raise ValueError('weights_export must be "gather" or "per_rank".')
@@ -412,16 +519,35 @@ class PartitionContext:
         edges keep the delays they have in the unsplit network.
         """
         if self.partition is None:
-            in_degree = allreduce_sum(self.comm, recurrent.target_in_degree((self.rank, self.size)))
-            in_degree = np.rint(in_degree).astype(np.int64)
-            groups = None
+            groups = codes = None
+            n_groups = 0
             if self.group_by is not None:
                 nodes = recurrent.get_nodes_df()
                 if self.group_by not in nodes.columns:
                     raise ValueError(f"Partition group_by column {self.group_by!r} is not a node attribute.")
                 groups = nodes[self.group_by].to_numpy()
+                labels, codes = np.unique(groups, return_inverse=True)
+                n_groups = len(labels)
+                refine = self.placement == "communication" and self.size > 1
+                if refine and n_groups > MAX_REFINED_GROUPS:
+                    raise ValueError(
+                        f"placement 'communication' supports at most {MAX_REFINED_GROUPS} groups, "
+                        f"group_by {self.group_by!r} has {n_groups}; use placement 'greedy'."
+                    )
+                if not refine:
+                    codes = None
+            # One scan (split across ranks) counts incoming edges and, for communication-aware
+            # placement, the edges between every pair of groups.
+            in_degree, group_edges = recurrent.partition_edge_statistics(
+                (self.rank, self.size), group_codes=codes, n_groups=n_groups,
+            )
+            in_degree = np.rint(allreduce_sum(self.comm, in_degree)).astype(np.int64)
+            if group_edges is not None:
+                group_edges = np.rint(allreduce_sum(self.comm, group_edges)).astype(np.int64)
+                self.placement_report = {}
             owner = plan_partition(recurrent.n_nodes, self.size, in_degree=in_degree, groups=groups,
-                                   balance=self.balance)
+                                   balance=self.balance, group_edges=group_edges,
+                                   report=self.placement_report)
             digests = self.comm.allgather(hashlib.sha256(owner.tobytes()).hexdigest())
             if len(set(digests)) != 1:
                 raise RuntimeError("Ranks computed different neuron partitions.")
@@ -450,6 +576,8 @@ class PartitionContext:
         if self.partition is not None:
             report.update(self.partition.describe())
             report["remote_sources"] = int(self.remote_sources.size)
+            if self.placement_report:
+                report["placement"] = dict(self.placement_report)
             report["local_edges"] = {name: int(ids.size) for name, ids in self.canonical_ids.items()}
         return report
 

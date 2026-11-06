@@ -951,13 +951,33 @@ class SONATANetwork(NetworkAdaptor):
 
     def target_in_degree(self, row_slice=None):
         """Edges per target TF id (int64), optionally over a row share only."""
+        return self.partition_edge_statistics(row_slice)[0]
+
+    def partition_edge_statistics(self, row_slice=None, group_codes=None, n_groups=0):
+        """``(in_degree, group_edges)`` from one scan, optionally over a row share only.
+
+        ``in_degree`` counts edges per target TF id (int64). With ``group_codes``
+        (one integer in ``[0, n_groups)`` per TF id) ``group_edges[s, t]`` counts
+        edges from group ``s`` to group ``t``; otherwise it is ``None``.
+        """
         counts = np.zeros(self.n_nodes, dtype=np.int64)
+        matrix = None
+        if group_codes is not None:
+            group_codes = np.asarray(group_codes, dtype=np.int64)
+            n_groups = int(n_groups)
+            matrix = np.zeros(n_groups * n_groups, dtype=np.int64)
         for edge_pop, _, start, stop in self._iter_edge_chunks(row_slice):
-            targets = self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[
+            targets = np.asarray(self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[
                 edge_pop._target_node_id_ds[start:stop]
-            ]
-            counts += np.bincount(np.asarray(targets, dtype=np.int64), minlength=self.n_nodes)
-        return counts
+            ], dtype=np.int64)
+            counts += np.bincount(targets, minlength=self.n_nodes)
+            if matrix is not None:
+                sources = np.asarray(self.id_maps.bmtk2tf_id_map(edge_pop.source_population)[
+                    edge_pop._source_node_id_ds[start:stop]
+                ], dtype=np.int64)
+                matrix += np.bincount(group_codes[sources] * n_groups + group_codes[targets],
+                                      minlength=n_groups * n_groups)
+        return counts, (None if matrix is None else matrix.reshape(n_groups, n_groups))
 
     def read_edges(self, keep_target=None):
         """Edges whose target TF id satisfies ``keep_target`` (boolean array by TF id; ``None``: all).

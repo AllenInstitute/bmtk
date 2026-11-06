@@ -64,6 +64,35 @@ def test_chunked_adam_keeps_constraint_after_apply():
     assert variables[0].constraint is constraint
 
 
+def test_chunked_adam_matches_adam_under_mirrored_strategy():
+    # The strategy hands update_step per-replica components, not the Keras variables.
+    strategy = tf.distribute.MirroredStrategy(["/cpu:0"])
+    rng = np.random.default_rng(5)
+    initial = rng.normal(size=1003).astype(np.float32)
+    gradients = [tf.constant(rng.normal(size=1003).astype(np.float32) * 5) for _ in range(4)]
+
+    class Weights(tf.keras.layers.Layer):
+        def build(self):
+            self.w = self.add_weight(shape=(1003,), initializer=tf.keras.initializers.Constant(initial),
+                                     constraint=SignedConstraint(tf.constant(initial >= 0)))
+
+    results = []
+    for chunked in (False, True):
+        with strategy.scope():
+            layer = Weights()
+            layer.build()
+            optimizer = (ChunkedAdam(learning_rate=0.05, epsilon=1e-7, update_chunk_size=128)
+                         if chunked else tf.keras.optimizers.Adam(learning_rate=0.05, epsilon=1e-7))
+
+        for gradient in gradients:
+            tf.function(lambda: strategy.run(lambda: optimizer.apply_gradients([(gradient, layer.w)])))()
+        results.append(layer.w.numpy())
+    np.testing.assert_array_equal(results[0], results[1])
+    positive = initial >= 0
+    assert np.all(results[1][positive] >= 0) and np.all(results[1][~positive] <= 0)
+    assert np.any(results[1] == 0)
+
+
 def test_create_optimizer_builds_chunked_adam():
     optimizer = create_optimizer("chunked_adam", 0.01, {"name": "chunked_adam", "update_chunk_size": 64})
     assert isinstance(optimizer, ChunkedAdam)

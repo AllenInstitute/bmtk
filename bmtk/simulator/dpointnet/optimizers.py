@@ -233,6 +233,12 @@ class ChunkedAdam(tf.keras.optimizers.Adam):
         size = variable.shape[0]
         return size is not None and size > self.update_chunk_size
 
+    def _condition_key(self, variable):
+        # Keras' strategy-aware key: a mirrored variable's per-replica component passed to
+        # update_step and the Keras variable given to apply share it, unlike their ids.
+        key = getattr(self, '_var_key', None)
+        return key(variable) if key is not None else id(_variable_storage(variable))
+
     @staticmethod
     def _sign_condition(variable):
         constraint = getattr(variable, 'constraint', None)
@@ -260,9 +266,12 @@ class ChunkedAdam(tf.keras.optimizers.Adam):
         one_minus_beta_2 = tf.cast(1 - self.beta_2, dtype)
         epsilon = tf.cast(self.epsilon, dtype)
         # The backend may pass the underlying tf.Variable, which has no Keras constraint.
-        condition = getattr(self, '_chunk_conditions', {}).get(id(weights))
+        key = self._condition_key(variable)
+        condition = getattr(self, '_chunk_conditions', {}).get(key)
         if condition is None:
             condition = self._sign_condition(variable)
+        else:
+            self._chunk_constrained.add(key)
         size = int(variable.shape[0])
         chunk = self.update_chunk_size
 
@@ -295,19 +304,25 @@ class ChunkedAdam(tf.keras.optimizers.Adam):
         # Chunked variables already received their sign constraint per chunk; hide it from
         # the base class, which would reassign each constrained variable whole.
         variables = trainable_variables if trainable_variables is not None else self._trainable_variables
-        hidden, self._chunk_conditions = [], {}
+        hidden, self._chunk_conditions, self._chunk_constrained = [], {}, set()
         for gradient, variable in zip(grads, variables):
             condition = self._sign_condition(variable)
             if gradient is not None and self._chunks(gradient, variable) and condition is not None:
-                self._chunk_conditions[id(_variable_storage(variable))] = condition
+                self._chunk_conditions[self._condition_key(variable)] = condition
                 hidden.append((variable, variable.constraint))
                 variable.constraint = None
         try:
-            return super().apply(grads, trainable_variables)
+            result = super().apply(grads, trainable_variables)
+            missed = set(self._chunk_conditions) - self._chunk_constrained
+            if missed:
+                raise RuntimeError(
+                    f"chunked_adam did not apply the sign constraint of {len(missed)} chunked variable(s)."
+                )
+            return result
         finally:
             for variable, constraint in hidden:
                 variable.constraint = constraint
-            self._chunk_conditions = {}
+            self._chunk_conditions, self._chunk_constrained = {}, set()
 
 
 class LinearWarmupCosineDecay(tf.keras.optimizers.schedules.LearningRateSchedule):
