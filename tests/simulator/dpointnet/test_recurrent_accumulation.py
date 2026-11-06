@@ -555,3 +555,24 @@ def test_subnormal_carry_and_accumulator_aliasing_weights():
         np.testing.assert_array_equal(actual_w, weights + dw)
     finally:
         conn.close()
+
+
+def test_eager_carrier_accepts_keras_master_variable(monkeypatch):
+    """Eager rollouts (e.g. InputState warm-up) pass the cell's Keras master variable."""
+    from types import SimpleNamespace
+
+    def currents(z, carrier, weights, connectivity, basis, n_post, **kwargs):
+        return tf.ones((tf.shape(z)[0], 1), z.dtype) * tf.cast(tf.reduce_sum(weights), z.dtype)
+
+    monkeypatch.setattr(ops, "_OPS", SimpleNamespace(dpointnet_csr_spike_grad_accumulate=None))
+    monkeypatch.setattr(ops, "fused_spike_currents", currents)
+    if not hasattr(tf.keras, "Variable"):
+        pytest.skip("Keras 2 masters are plain tf.Variables")
+    master = tf.keras.Variable([0.25, 0.5], dtype="float32")
+    output, carrier = ops.fused_recurrent_weight_carry(
+        tf.ones((2, 1), tf.float16), tf.identity(master), master,
+        {"metadata_handle": None}, tf.ones((1, 4), tf.float16), 1, 1.0,
+        vjp_only=True, csr_master_weights=True,
+    )
+    np.testing.assert_array_equal(output, [[0.75], [0.75]])
+    np.testing.assert_array_equal(carrier, [0.25, 0.5])
