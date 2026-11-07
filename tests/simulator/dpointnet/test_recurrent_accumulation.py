@@ -557,8 +557,11 @@ def test_subnormal_carry_and_accumulator_aliasing_weights():
         conn.close()
 
 
-def test_eager_carrier_accepts_keras_master_variable(monkeypatch):
-    """Eager rollouts (e.g. InputState warm-up) pass the cell's Keras master variable."""
+@pytest.mark.parametrize("strategy", [None, "one_device", "mirrored"])
+def test_eager_carrier_accepts_master_variables(monkeypatch, strategy):
+    """Eager rollouts (e.g. the InputState warm-up) pass the cell's master variable,
+    which RNNs build under a distribution strategy (MirroredVariable components)."""
+    from contextlib import nullcontext
     from types import SimpleNamespace
 
     def currents(z, carrier, weights, connectivity, basis, n_post, **kwargs):
@@ -566,9 +569,14 @@ def test_eager_carrier_accepts_keras_master_variable(monkeypatch):
 
     monkeypatch.setattr(ops, "_OPS", SimpleNamespace(dpointnet_csr_spike_grad_accumulate=None))
     monkeypatch.setattr(ops, "fused_spike_currents", currents)
-    if not hasattr(tf.keras, "Variable"):
-        pytest.skip("Keras 2 masters are plain tf.Variables")
-    master = tf.keras.Variable([0.25, 0.5], dtype="float32")
+    scope = {
+        None: nullcontext(),
+        "one_device": tf.distribute.OneDeviceStrategy("/cpu:0").scope(),
+        "mirrored": tf.distribute.MirroredStrategy(["/cpu:0"]).scope(),
+    }[strategy]
+    make = getattr(tf.keras, "Variable", tf.Variable)
+    with scope:
+        master = make([0.25, 0.5], dtype="float32")
     output, carrier = ops.fused_recurrent_weight_carry(
         tf.ones((2, 1), tf.float16), tf.identity(master), master,
         {"metadata_handle": None}, tf.ones((1, 4), tf.float16), 1, 1.0,
