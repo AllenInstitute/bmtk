@@ -584,3 +584,28 @@ def test_eager_carrier_accepts_master_variables(monkeypatch, strategy):
     )
     np.testing.assert_array_equal(output, [[0.75], [0.75]])
     np.testing.assert_array_equal(carrier, [0.25, 0.5])
+
+
+def test_eager_warmup_rollout_under_mirrored_strategy():
+    """The from_input InputState warm-up: an eager, non-training rollout of a real
+    direct-route cell whose CSR masters are built under MirroredStrategy."""
+    from bmtk.simulator.dpointnet.custom_ops import fused_cuda_available
+    from test_direct_recorded_adjoint import DIRECT_OPTIONS, _initial_state, _model
+
+    if not fused_cuda_available() or not tf.config.list_physical_devices("GPU"):
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    strategy = tf.distribute.MirroredStrategy(devices=["/GPU:0"])
+    with strategy.scope():
+        cell = make_cell(
+            "nest", selective=True, batch_size=32,
+            hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS,
+        )
+        initial = _initial_state(cell, 32)
+        model = _model(cell, initial)
+    try:
+        assert type(cell.recurrent_weight_values.value).__name__ == "MirroredVariable"
+        x = tf.zeros((32, 5, 0), cell.compute_dtype)
+        outputs = model((x, *initial), training=False)
+        assert all(np.all(np.isfinite(np.asarray(v, np.float32))) for v in tf.nest.flatten(outputs))
+    finally:
+        cell.close_fused_cuda()
