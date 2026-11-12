@@ -603,7 +603,9 @@ def test_eager_warmup_rollout_under_mirrored_strategy():
         initial = _initial_state(cell, 32)
         model = _model(cell, initial)
     try:
-        assert type(cell.recurrent_weight_values.value).__name__ == "MirroredVariable"
+        master = cell.recurrent_weight_values
+        backing = getattr(master, "value", master)
+        assert type(master if callable(backing) else backing).__name__ == "MirroredVariable"
         x = tf.zeros((32, 5, 0), cell.compute_dtype)
         outputs = model((x, *initial), training=False)
         assert all(np.all(np.isfinite(np.asarray(v, np.float32))) for v in tf.nest.flatten(outputs))
