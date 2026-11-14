@@ -66,9 +66,15 @@ def test_architecture_without_native_sass_keeps_existing_route(projection_hardwa
     assert not select(architecture=89)[0]
 
 
-@pytest.mark.parametrize("batch", [0, 33, 64, None, True])
-def test_unknown_or_large_batch_does_not_get_new_route(projection_hardware, batch):
+@pytest.mark.parametrize("batch", [0, None, True])
+def test_unknown_batch_does_not_get_new_route(projection_hardware, batch):
     assert not select(batch_size=batch)[0]
+
+
+@pytest.mark.parametrize("batch", [33, 64, 128])
+def test_large_batches_are_admitted(projection_hardware, batch):
+    """Backward launches above 32 samples are sliced by the wrappers; the sweep is per sample."""
+    assert select(batch_size=batch)[0]
 
 
 @pytest.mark.parametrize("option,value", [
@@ -695,7 +701,7 @@ def test_auto_omits_traversals_without_the_rebuilt_native_capability(monkeypatch
     {"options": {"use_combined_current_sweep": False}},
     {"options": {"acceleration_profile": None}},
     {"architecture": 120},
-    {"batch_size": 33},
+    {"batch_size": 0},
     {"metadata": None},
 ])
 def test_traversals_follow_the_joint_sweep_boundary(monkeypatch, boundary):

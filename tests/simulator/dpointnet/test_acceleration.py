@@ -163,10 +163,9 @@ def test_pascal_compatible_accumulator_not_packed_policy(hardware, monkeypatch, 
     )
     assert actual["use_fused_cuda"] is True
     assert actual["use_fused_state"] is True
-    assert actual["use_fused_recurrent_accumulation"] == (batch <= 32)
-    assert actual["use_javier_recurrent_vjp"] == (
-        batch <= 32 and compute_dtype == tf.float16 and temporal == "compute"
-    )
+    # Any positive batch: launches above 32 samples are sliced by the wrappers.
+    assert actual["use_fused_recurrent_accumulation"] is True
+    assert actual["use_javier_recurrent_vjp"] == (compute_dtype == tf.float16 and temporal == "compute")
     assert actual["use_packed_sm120_backward"] is False
     assert actual["use_packed_sm120_external_backward"] is False
 

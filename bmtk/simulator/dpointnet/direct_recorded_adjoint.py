@@ -529,7 +529,8 @@ class DirectRecordedStep:
                     raise ValueError("The recurrent population always receives source credit.")
                 if accumulator is None:
                     accumulator = tf.zeros_like(population["variable"])
-                source_grad, accumulated = csr_spike_ops._OPS.dpointnet_csr_spike_grad_accumulate_csr_master(
+                source_grad, accumulated = csr_spike_ops.spike_grad_accumulate_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_spike_grad_accumulate_csr_master,
                     source, currents_grad, _metadata(connectivity), population["variable"],
                     self.basis, self.recurrent_scale, accumulator,
                     use_javier_batch32_backward=self.cell.use_javier_recurrent_vjp,
@@ -539,7 +540,8 @@ class DirectRecordedStep:
                 new_accumulators.append(accumulated)
                 continue
             if credit:
-                source_grad, weight_grad = csr_spike_ops._OPS.dpointnet_csr_spike_grad_csr_master(
+                source_grad, weight_grad = csr_spike_ops.spike_grad_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_spike_grad_csr_master,
                     source, currents_grad, _metadata(connectivity), population["variable"],
                     self.basis,
                     self.recurrent_scale if population["exchanged"] else tf.ones((), self.spike_dtype),
@@ -550,7 +552,8 @@ class DirectRecordedStep:
                 source_cotangents.append(source_grad)
             else:
                 source_cotangents.append(None)
-                weight_grad = None if accumulator is None else csr_spike_ops._OPS.dpointnet_csr_weight_grad(
+                weight_grad = None if accumulator is None else csr_spike_ops.weight_grad_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_weight_grad,
                     source, currents_grad, _metadata(connectivity), self.basis,
                     use_packed_sm120_backward=csr_spike_ops._resolve_packed_sm120_backward(
                         population["net"].get("use_packed_sm120_backward", False),

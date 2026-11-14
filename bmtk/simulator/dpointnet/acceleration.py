@@ -57,8 +57,12 @@ def performance_projection_context(
 # Compute capabilities targeted by the mandatory fat binaries. The joint sweep is
 # admitted automatically on each one whose SASS the loaded library carries.
 JOINT_SWEEP_ARCHITECTURES = (61, 70, 75, 80, 86, 89, 90)
-# Native small-batch routes cap at 32 samples; larger batches keep previous routes.
-JOINT_SWEEP_MAX_BATCH = 32
+# Native backward kernels take at most 32 samples per launch (one activity bit
+# per sample); csr_spike_ops slices larger batches into such launches, so the
+# joint sweep and the fused accumulator admit any positive batch. The remaining
+# small-batch-only forward routes keep this bound.
+NATIVE_BACKWARD_BATCH = csr_spike_ops.NATIVE_BACKWARD_BATCH
+JOINT_SWEEP_MAX_BATCH = NATIVE_BACKWARD_BATCH  # historical name: the per-launch bound
 COMBINED_TARGET_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
 # Smallest batch for which automatic adaptive routing is selected. Matched full-V1
 # FR-loss arms on an RTX 3090 (20-sample medians, adaptive vs dense routing):
@@ -296,8 +300,9 @@ def select_performance_projection(
     """Choose a qualified joint-current route without changing explicit options."""
     reason = (
         "single-replica standard GLIF/NEST, fat-binary SM61/70/75/80/86/89/90 with native "
-        "SASS, FP16/FP32 with FP32 masters, batch1..32, four bases, native spike inputs and "
-        "bounded routing; joint FP32 accumulation rounds once to compute dtype"
+        "SASS, FP16/FP32 with FP32 masters, any positive batch (backward launches of at most 32 "
+        "samples), four bases, native spike inputs and bounded routing; joint FP32 accumulation "
+        "rounds once to compute dtype"
     )
     context = context or {}
     predicates = {
@@ -310,9 +315,8 @@ def select_performance_projection(
         f"SM{architecture} SASS in loaded library": architecture in csr_spike_ops._SM_ARCHITECTURES,
         "FP16/FP32 compute": tf.as_dtype(compute_dtype) in (tf.float16, tf.float32),
         "FP32 masters": tf.as_dtype(variable_dtype) == tf.float32,
-        f"batch1..32 (found {batch_size})": (
-            isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
-            and 1 <= batch_size <= JOINT_SWEEP_MAX_BATCH
+        f"positive batch (found {batch_size})": (
+            isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size >= 1
         ),
         f"four bases (found {basis_width})": basis_width == 4,
         "standard high-level cell": context.get("standard_cell", False),
@@ -770,7 +774,7 @@ def resolve_acceleration_options(
     )
     accumulator_predicates = {
         "compatible fused currents": currents,
-        f"batch1..32 (found {batch_size})": small_batch,
+        f"positive batch (found {batch_size})": known_batch,
         f"four bases (found {basis_width})": four_basis,
         "direct state loop or FP32 temporal carry": bool(carry_route),
         f"SM{architecture} admitted for accumulator": (
@@ -785,7 +789,7 @@ def resolve_acceleration_options(
     accumulator = all(accumulator_predicates.values())
     select("use_fused_recurrent_accumulation", accumulator,
            "Automatic policy SM61, SM70+ (SM75 with FP16 temporal backward) accumulator library, "
-           "batch1..32/four bases, per-edge training, direct CSR "
+           "any batch (sliced to 32-sample launches)/four bases, per-edge training, direct CSR "
            "and explicitly selected direct-loop or FP32 replay route", accumulator_predicates)
     select(
         "use_javier_recurrent_vjp",

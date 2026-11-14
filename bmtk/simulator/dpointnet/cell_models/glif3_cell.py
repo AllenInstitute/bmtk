@@ -1488,14 +1488,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if (
                 not supported_temporal_route
                 or not use_direct_csr_recurrent_gradient
-                or batch_size not in range(1, 33)
+                or not (isinstance(batch_size, int) and batch_size >= 1)
                 or not train_recurrent
                 or train_recurrent_per_type
             ):
                 raise ValueError(
                     "Fused recurrent accumulation requires FP32 temporal carry or "
-                    "the direct state RNN loop, batch1..32, direct CSR and trainable "
-                    "per-edge recurrent weights."
+                    "the direct state RNN loop, a positive static batch, direct CSR and "
+                    "trainable per-edge recurrent weights."
                 )
         if current_replay_mode not in (None, "record", "recompute"):
             raise ValueError("current_replay_mode must be None, 'record' or 'recompute'.")
