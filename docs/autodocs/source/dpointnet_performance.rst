@@ -368,7 +368,8 @@ objective. This feature does not compile the entire RNN or accelerate every loss
 Custom callers should feed compact spikes directly rather than first casting the
 entire sequence to FP32.
 
-The same admitted high-level native model prepares its live type-identity
+The admitted high-level native automatic model (TensorFlow 2.21, single replica,
+any GPU the loaded fat library supports) prepares its live type-identity
 predicate on the compute device once per rollout, outside custom-gradient
 carrier arguments. Timestep transitions reuse that predicate to select compact
 or full-coefficient execution, falling back when within-type equality is lost.

@@ -437,8 +437,9 @@ def test_gpu_auto_cell_replay_update_and_explicit_restore(
     if not ops.combined_sweep_available():
         pytest.skip("GPU and rebuilt optimized operators required")
     if guarded is False:
-        # Every architecture except SM86/TF2.21 uses the TensorFlow-conditional type
-        # dispatch; its branches must stay differentiable through replay while loops.
+        # Models outside the automatic TF2.21 route (or older libraries) use the
+        # TensorFlow-conditional type dispatch; its branches must stay differentiable
+        # through replay while loops.
         from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
         monkeypatch.setattr(GLIF3Cell, "_guarded_type_indexed_dispatch", property(lambda self: False))
     from test_precision_credit import make_cell

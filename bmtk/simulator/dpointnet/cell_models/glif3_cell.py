@@ -1063,10 +1063,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
     @property
     def _guarded_type_indexed_dispatch(self):
+        """Hoist the type-identity predicate onto the GPU for device-side dispatch.
+
+        Admitted for the standard single-replica automatic TensorFlow 2.21 model on
+        any GPU the loaded fat library supports (``fused_nest_device_dispatch_available``
+        checks the library); the conditional type-indexed path otherwise costs a host
+        round trip per time step in both the forward and the backward loop.
+        """
         return bool(
             self.acceleration_report is not None
             and self.acceleration_report["profile"] == "auto"
-            and self.acceleration_report["architecture"] == 86
+            and self.acceleration_report["architecture"] is not None
             and self.acceleration_report["tensorflow"].startswith("2.21.")
             and self.temporal_gradient_precision == "compute"
             and self._performance_auto_context is not None

@@ -242,6 +242,39 @@ def test_resolver_preserves_integer_tile_overrides(projection_hardware, tile):
     assert report["selected"]["combined_current_target_tile_size"] == tile
 
 
+@pytest.mark.parametrize("architecture", FAT_BINARY_ARCHITECTURES)
+def test_guarded_type_indexed_dispatch_admits_every_loaded_architecture(architecture):
+    """Device-side dispatch is gated on the route and the loaded library, not an SM list."""
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    metadata = context()
+    cell = SimpleNamespace(
+        acceleration_report={"profile": "auto", "architecture": architecture, "tensorflow": "2.21.1"},
+        temporal_gradient_precision="compute", _performance_auto_context=metadata,
+    )
+    guarded = GLIF3Cell._guarded_type_indexed_dispatch.fget
+    assert guarded(cell) is True
+    cell.acceleration_report["architecture"] = None
+    assert guarded(cell) is False
+    cell.acceleration_report["architecture"] = architecture
+    cell.acceleration_report["profile"] = "compatibility_v1"
+    assert guarded(cell) is False
+    cell.acceleration_report["profile"] = "auto"
+    cell.acceleration_report["tensorflow"] = "2.13.0"
+    assert guarded(cell) is False
+    cell.acceleration_report["tensorflow"] = "2.21.0"
+    cell.temporal_gradient_precision = "float32"
+    assert guarded(cell) is False
+    cell.temporal_gradient_precision = "compute"
+    metadata["single_replica"] = False
+    assert guarded(cell) is False
+    metadata["single_replica"] = True
+    metadata["standard_cell"] = False
+    assert guarded(cell) is False
+    cell._performance_auto_context = None
+    assert guarded(cell) is False
+
+
 def test_rate_count_auto_uses_declared_single_replica_boundary():
     metadata = context()
     cell = SimpleNamespace(

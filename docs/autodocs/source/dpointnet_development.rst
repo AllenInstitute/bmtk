@@ -260,9 +260,11 @@ Static dispatch is an explicit promise that within-type equality remains valid,
 not a mutation guard or a cache of initial values. Uniform type-preserving
 changes need not invalidate that representation.
 
-The single-replica SM86/TF2.21 high-level automatic route moves the live
-identity predicate out of native custom-gradient carrier arguments. With rebuilt
-device-dispatch entry points, the state kernels read that GPU predicate directly:
+The single-replica TF2.21 high-level automatic route moves the live identity
+predicate out of native custom-gradient carrier arguments on every GPU the loaded
+fat library supports (until 2026-11-14 this was admitted on SM86 only; on A100 and
+L40S the conditional path cost one host round trip per time step in both loops).
+With rebuilt device-dispatch entry points, the state kernels read that GPU predicate directly:
 true selects the compact type table, while false selects the live full AoS
 coefficient table. Forward, history and event/state VJPs share the existing
 arithmetic. Neither branch requires a per-step host predicate transfer.
@@ -271,8 +273,9 @@ assignment and restore affect the next rollout without retracing. This is not
 the static immutable-coefficient promise.
 
 All six device-dispatch entry points must be available before selecting this
-route. Older compatible libraries, other GPUs and TensorFlow versions retain the
-existing TensorFlow conditional and its full-coefficient fallback. Its forward and
+route. Older compatible libraries, GPUs the library does not cover and other
+TensorFlow versions retain the existing TensorFlow conditional and its
+full-coefficient fallback. Its forward and
 backward branches are opaque to automatic differentiation (the state transition's
 custom gradient owns the VJP), so differentiating an enclosing while loop or
 recomputation segment never reaches the forward-only native operators. Custom cells, distribution and explicit
