@@ -225,11 +225,11 @@ calculated. It is enabled by default:
        its own errors.
    * - ``record_offload``
      - ``false``
-     - Keep the direct recorded adjoint's per-step records in pinned host
-       memory instead of device memory: ``"voltage"`` (the FP32 pre-reset
-       membrane rows, the bulk of the payload), ``"history"`` (the packed
-       spike/refractory word frames) or ``true``/``"all"`` for both; a list of
-       names is accepted. Values and gradients are those of the resident
+     - Keep the direct recorded adjoint's records in pinned host memory
+       instead of device memory: ``"voltage"`` (the per-step FP32 pre-reset
+       membrane rows, the bulk of the payload), ``"history"`` (the per-chunk
+       packed spike/refractory word frames and chunk-start ASC snapshots) or
+       ``true``/``"all"`` for both; a list of names is accepted. Values and gradients are those of the resident
        route. Requires the direct route: an explicit non-direct
        ``recorded_adjoint`` fails at construction and an automatic
        non-direct resolution fails at preparation rather than silently
@@ -381,7 +381,10 @@ the reverse loop; the arithmetic is unchanged.
   chunk together with its predecessor, so delayed spikes across the chunk
   boundary need no conditional; it requires ``max_delay <= chunk_size``.
   Count windows and sampled traces are then accumulated per step (exact
-  integer FP32 sums) instead of being reduced from the stacked records.
+  integer FP32 sums) instead of being reduced from the stacked records. The
+  chunk-start ASC snapshots (``n_chunks x B x 2N`` state values, 341 MB on the
+  V1 column at batch 32) leave the device the same way, through a two-slot
+  staging ring, and come back one chunk ahead of the reverse walk.
 
 Pinned host memory equals the offloaded payload (``cudaHostAlloc``, portable,
 allocated once per store and kept for the engine's lifetime); the stores and

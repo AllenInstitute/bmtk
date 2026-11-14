@@ -37,6 +37,8 @@ step (credit: Javier); DPointNet keeps its NEST dynamics, event map, dtype
 boundaries, independent per-source VJPs and canonical master ownership.
 """
 
+import math
+
 import tensorflow as tf
 from tensorflow.python.eager import record
 
@@ -63,13 +65,18 @@ RECORD_FORMAT = "direct_step_record_v1"
 
 # Record surfaces the direct route can keep in pinned host memory instead of
 # device memory (``record_offload``): the per-step FP32 pre-reset membrane rows
-# and the per-chunk packed spike/refractory word frames. Offload moves bytes
+# ("voltage") and the per-chunk records, i.e. the packed spike/refractory word
+# frames and the chunk-start ASC snapshots ("history"). Offload moves bytes
 # only; values, gradients and their arithmetic order are unchanged.
 RECORD_OFFLOAD_CHOICES = ("voltage", "history")
 # Device staging slots the forward writes before the oldest frame must have
-# left the device: a few per-step membrane rows, three per-chunk word frames.
+# left the device: a few per-step membrane rows, three per-chunk word frames,
+# two chunk-start ASC snapshots. Per-chunk frames are read one chunk at a time
+# in reverse, so their stores prefetch one frame ahead (three resident).
 VOLTAGE_STAGING_SLOTS = 8
 HISTORY_STAGING_SLOTS = 3
+ASC_STAGING_SLOTS = 2
+CHUNK_PREFETCH = 1
 
 
 def normalize_record_offload(value):
@@ -202,7 +209,7 @@ def direct_record_bytes(cell, batch, length, chunk_size, free_bytes=None, offloa
     words = 2 * (-(-neurons // 32))
     chunk_size = max(1, min(int(chunk_size), length))
     n_chunks = -(-length // chunk_size)
-    asc_block = -(-chunk_size // 2)
+    asc_block = max(1, math.isqrt(chunk_size - 1) + 1)
     snapshots = n_chunks + asc_block + -(-chunk_size // asc_block) + 2
     membrane = length * batch * neurons * state_bytes
     history = (length + int(getattr(cell, "max_delay", 1))) * batch * words * 4
@@ -210,11 +217,13 @@ def direct_record_bytes(cell, batch, length, chunk_size, free_bytes=None, offloa
     if "voltage" in offload:
         host += membrane
         membrane = (VOLTAGE_STAGING_SLOTS + DEFAULT_PREFETCH + 2) * batch * neurons * state_bytes
+    asc_snapshot = batch * 2 * neurons * state_bytes
     if "history" in offload:
         frame = chunk_size * batch * words * 4
-        host += (n_chunks + 1) * frame
+        host += (n_chunks + 1) * frame + n_chunks * asc_snapshot
         history = (HISTORY_STAGING_SLOTS + 4) * frame
-    payload = membrane + history + snapshots * batch * 2 * neurons * state_bytes
+        snapshots += ASC_STAGING_SLOTS + CHUNK_PREFETCH + 2 - n_chunks
+    payload = membrane + history + snapshots * asc_snapshot
     offloaded = f"; {host / 2**30:.2f} GiB pinned host memory for {', '.join(offload)} offload" if offload else ""
     if free_bytes is None:
         free_bytes = device_free_bytes()
@@ -599,8 +608,9 @@ class DirectRecordedAdjointRunner:
         # sub-snapshots every ``asc_block`` steps, then one block at a time, so
         # the resident buffers hold about asc_block + chunk_size / asc_block
         # tensors instead of chunk_size, for one extra walk of the chunk's
-        # first blocks per chunk.
-        self.asc_block = -(-self.chunk_size // 2)
+        # first blocks per chunk. The block near sqrt(chunk_size) minimizes
+        # that sum (10 tensors for chunk 25 instead of 15 at chunk_size / 2).
+        self.asc_block = max(1, math.isqrt(self.chunk_size - 1) + 1)
         self.differentiate_inputs = False
         self.count_windows = tuple(
             _window(window, self.sequence_length)
@@ -783,12 +793,12 @@ class DirectRecordedAdjointRunner:
             step, "direct_recorded_voltage_scratch", [length, step.batch, step.neurons], step.state_dtype,
         )
 
-    def _store(self, role, frames, frame_shape, dtype, staging_slots):
+    def _store(self, role, frames, frame_shape, dtype, staging_slots, prefetch=DEFAULT_PREFETCH):
         """Pinned-host record store of one role, created once per (shape, dtype)."""
         key = (role, int(frames), tuple(int(size) for size in frame_shape), tf.as_dtype(dtype).name)
         store = self._stores.get(key)
         if store is None:
-            store = HostRecordStore(frames, frame_shape, dtype, staging_slots=staging_slots)
+            store = HostRecordStore(frames, frame_shape, dtype, staging_slots=staging_slots, prefetch=prefetch)
             self._stores[key] = store
         return store
 
@@ -808,7 +818,14 @@ class DirectRecordedAdjointRunner:
         # Frame 0 holds the initial delay slots (in its last rows); frame c + 1 holds chunk c.
         return self._store(
             "history", self.n_chunks + 1, (self.chunk_size, step.batch, step.words), tf.float32,
-            HISTORY_STAGING_SLOTS,
+            HISTORY_STAGING_SLOTS, prefetch=CHUNK_PREFETCH,
+        )
+
+    def _asc_store(self, step):
+        """Chunk-start ASC snapshots (frame c = ASC entering chunk c), offloaded with the history."""
+        return self._store(
+            "asc", self.n_chunks, (step.batch, 2 * step.neurons), step.state_dtype, ASC_STAGING_SLOTS,
+            prefetch=CHUNK_PREFETCH,
         )
 
     # -- forward driver ------------------------------------------------------------------
@@ -904,19 +921,48 @@ class DirectRecordedAdjointRunner:
                     words = tf.raw_ops.TensorListPushBack(
                         input_handle=words, tensor=pack_step_record(initial_slot, no_refractory),
                     )
-            # Streamed statistics (history offload): one FP32 count accumulator per
-            # window and one sampled-trace column per step; exact integer sums.
+            # Streamed statistics (history offload): counts and sampled traces are
+            # reduced per chunk from the staged word frame by the same native
+            # kernels the resident route applies to the stacked records. A window
+            # whose bounds fall inside a chunk is accumulated per step instead.
             streamed_counts = tuple(
                 tf.zeros([batch, neurons], tf.float32) for _ in self.count_windows
             ) if offload_history else ()
             streamed_traces = (
-                tf.TensorArray(tf.float32, size=length, element_shape=(trace_plan["total"],))
+                tf.TensorArray(tf.float32, size=self.n_chunks, element_shape=(trace_plan["total"], self.chunk_size))
                 if offload_history and trace_plan is not None else tf.zeros([0], tf.float32)
             )
-            asc_snapshots = self._scratch(
-                step, "direct_recorded_asc_snapshot_scratch", [self.n_chunks, batch, 2 * neurons],
-                step.state_dtype,
-            )
+            chunk_masks, stepwise_windows = [], []
+            if offload_history:
+                for index_w, (begin, end) in enumerate(self.count_windows):
+                    aligned = begin % self.chunk_size == 0 and (end % self.chunk_size == 0 or end == length)
+                    if aligned:
+                        inside = [
+                            float(c * self.chunk_size >= begin and min((c + 1) * self.chunk_size, length) <= end)
+                            for c in range(self.n_chunks)
+                        ]
+                        with step.device_scope():
+                            chunk_masks.append((index_w, tf.identity(tf.constant(inside, tf.float32))))
+                    else:
+                        stepwise_windows.append(index_w)
+
+            def staging_rows(frame):
+                """Device row indices of word frame ``frame`` in the staging variable."""
+                with step.device_scope():
+                    return tf.range(self.chunk_size, dtype=tf.int64) + tf.cast(
+                        frame % HISTORY_STAGING_SLOTS, tf.int64) * self.chunk_size
+            if offload_history:
+                asc_store = self._asc_store(step)
+                asc_snapshots = self._scratch(
+                    step, "direct_recorded_asc_staging", [ASC_STAGING_SLOTS, batch, 2 * neurons],
+                    step.state_dtype,
+                )
+            else:
+                asc_store = None
+                asc_snapshots = self._scratch(
+                    step, "direct_recorded_asc_snapshot_scratch", [self.n_chunks, batch, 2 * neurons],
+                    step.state_dtype,
+                )
             penalties = tf.TensorArray(tf.float32, size=length, element_shape=(batch,))
             # Exchanged frames are recorded bit-packed, indexed by time + history:
             # the first ``history_steps`` entries hold the initial input history
@@ -1001,19 +1047,13 @@ class DirectRecordedAdjointRunner:
                         resource=words_staging.handle, indices=staging_row[None],
                         updates=tf.bitcast(record, tf.float32)[None],
                     )
-                    spikes32 = tf.cast(spikes, tf.float32)
-                    counts = tuple(
-                        count + (spikes32 if (begin, end) == (0, length) else spikes32 * tf.cast(
-                            (clock >= begin) & (clock < end), tf.float32,
-                        ))
-                        for count, (begin, end) in zip(counts, self.count_windows)
-                    )
-                    if trace_plan is not None:
-                        column = tf.math.unsorted_segment_sum(
-                            tf.gather_nd(spikes32, trace_plan["indices"]) * trace_plan["mask32"],
-                            trace_plan["groups"], trace_plan["total"],
+                    if stepwise_windows:
+                        spikes32 = tf.cast(spikes, tf.float32)
+                        counts = tuple(
+                            count + spikes32 * tf.cast((clock >= begin) & (clock < end), tf.float32)
+                            if index_w in stepwise_windows else count
+                            for index_w, (count, (begin, end)) in enumerate(zip(counts, self.count_windows))
                         )
-                        traces = traces.write(time, column)
                 else:
                     words = tf.raw_ops.TensorListPushBack(input_handle=words, tensor=record)
                 penalties = penalties.write(time, penalty)
@@ -1022,10 +1062,25 @@ class DirectRecordedAdjointRunner:
                 return next_time, clock + 1, new_state, voltages, words, penalties, tuple(new_frames), (counts, traces, token)
 
             def chunk(index, clock, state, voltages, words, penalties, frames, extra):
-                tf.raw_ops.ResourceScatterUpdate(
-                    resource=asc_snapshots.handle, indices=(clock // self.chunk_size)[None],
+                chunk_index = clock // self.chunk_size
+                written = tf.raw_ops.ResourceScatterUpdate(
+                    resource=asc_snapshots.handle,
+                    indices=(chunk_index % ASC_STAGING_SLOTS if offload_history else chunk_index)[None],
                     updates=state[3][None],
                 )
+                if offload_history:
+                    counts, traces, token = extra
+                    with tf.control_dependencies([] if written is None else [written]):
+                        token = asc_store.offload(
+                            asc_snapshots, index % ASC_STAGING_SLOTS, index, after=tf.identity(token),
+                        )
+                    # Clear the chunk's staging slot so a short last chunk reduces
+                    # zero rows, not an older frame's.
+                    tf.raw_ops.ResourceScatterUpdate(
+                        resource=words_staging.handle, indices=staging_rows(index + 1),
+                        updates=tf.zeros([self.chunk_size, batch, step.words], tf.float32),
+                    )
+                    extra = (counts, traces, token)
                 stop = tf.minimum((index + 1) * self.chunk_size, length)
                 _, clock, state, voltages, words, penalties, frames, extra = tf.while_loop(
                     lambda time, *_: time < stop, body,
@@ -1034,10 +1089,27 @@ class DirectRecordedAdjointRunner:
                 )
                 if offload_history:
                     # The inner loop's outputs follow every body operation, the row
-                    # scatters included; the chunk's frame leaves the device now.
+                    # scatters included: reduce the chunk's statistics from its staged
+                    # frame, then let the frame leave the device.
                     counts, traces, _ = extra
+                    with tf.control_dependencies([state[1]]):
+                        frame = tf.bitcast(tf.raw_ops.ResourceGather(
+                            resource=words_staging.handle, indices=staging_rows(index + 1), dtype=tf.float32,
+                        ), tf.int32)
+                    counts = list(counts)
+                    for index_w, mask in chunk_masks:
+                        # (clock - 1) // chunk_size is this chunk's index on the device, also for a short last chunk.
+                        counts[index_w] = counts[index_w] + tf.gather(mask, (clock - 1) // self.chunk_size) * record_counts(
+                            frame, neurons, 0, self.chunk_size,
+                        )
+                    counts = tuple(counts)
+                    if trace_plan is not None:
+                        traces = traces.write(index, record_traces(
+                            frame, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
+                            neurons, trace_plan["total"], 0, self.chunk_size,
+                        ))
                     token = history_store.offload(
-                        words_staging, (index + 1) % HISTORY_STAGING_SLOTS, index + 1, after=state[1],
+                        words_staging, (index + 1) % HISTORY_STAGING_SLOTS, index + 1, after=frame,
                     )
                     extra = (counts, traces, token)
                 return index + 1, clock, state, voltages, words, penalties, frames, extra
@@ -1060,7 +1132,11 @@ class DirectRecordedAdjointRunner:
                     counts = streamed_counts
                     trace_outputs = ()
                     if trace_plan is not None:
-                        columns = tf.transpose(streamed_traces.stack())
+                        # [chunks, rows, chunk_size] -> [rows, chunks * chunk_size]; the
+                        # padded tail of a short last chunk is sliced off by the windows.
+                        columns = tf.reshape(
+                            tf.transpose(streamed_traces.stack(), [1, 0, 2]), [trace_plan["total"], -1],
+                        )
                         offset = 0
                         for spec, extent in zip(sampled_traces, trace_plan["extents"]):
                             trace_outputs += (tf.cast(
@@ -1108,7 +1184,7 @@ class DirectRecordedAdjointRunner:
         records = (
             voltage_store if offload_voltage else (scratch if buffered else voltages),
             history_store if offload_history else words,
-            asc_snapshots, tables, noise_steps, buffered, frames,
+            asc_store if offload_history else asc_snapshots, tables, noise_steps, buffered, frames,
         )
         return counts, trace_outputs, (penalty_sequence,), tuple(state), records
 
@@ -1121,6 +1197,7 @@ class DirectRecordedAdjointRunner:
         voltages, words, asc_snapshots, tables, noise_steps, buffered, frames = records
         voltage_store = voltages if isinstance(voltages, HostRecordStore) else None
         history_store = words if isinstance(words, HostRecordStore) else None
+        asc_store = asc_snapshots if isinstance(asc_snapshots, HostRecordStore) else None
         with _rollout_context(cell):
             step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
             neurons, delay, S, T = step.neurons, step.delay, step.spike_dtype, step.state_dtype
@@ -1245,6 +1322,8 @@ class DirectRecordedAdjointRunner:
                 return buffer.write((end - begin + stride - 1) // stride, asc)
 
             def chunk_snapshot(chunk_index):
+                if asc_store is not None:
+                    return asc_store.take(chunk_index, chunk_index - 1)
                 row = tf.raw_ops.ResourceGather(
                     resource=asc_snapshots.handle, indices=chunk_index[None], dtype=T,
                 )

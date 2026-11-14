@@ -199,6 +199,9 @@ def test_offload_matches_resident_direct_route(selective, mode, batch, windows, 
         assert report["surfaces"] == ("voltage", "history")
         stores = report["stores"]
         assert stores["voltage"]["frames"] == length and stores["history"]["frames"] == -(-length // chunk) + 1
+        assert stores["asc"]["frames"] == -(-length // chunk)
+        assert stores["asc"]["frame_bytes"] == batch * 2 * cell._n_neurons * tf.as_dtype(
+            cell.state_dtype if selective else cell.compute_dtype).size
         state_bytes = tf.as_dtype(cell.state_dtype if selective else cell.compute_dtype).size
         assert stores["voltage"]["host_bytes"] == length * batch * cell._n_neurons * state_bytes
     finally:
