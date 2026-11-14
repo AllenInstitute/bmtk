@@ -10,6 +10,7 @@ output="${DPOINTNET_CUSTOM_OP_OUTPUT:-$custom_ops_dir/_csr_spike_ops.so}"
 glif_output="${DPOINTNET_GLIF_OP_OUTPUT:-$custom_ops_dir/_glif_state_ops.so}"
 lgn_output="${DPOINTNET_LGN_OP_OUTPUT:-$custom_ops_dir/_lgn_grating_ops.so}"
 movie_output="${DPOINTNET_MOVIE_OP_OUTPUT:-$custom_ops_dir/_lgn_movie_ops.so}"
+store_output="${DPOINTNET_STORE_OP_OUTPUT:-$custom_ops_dir/_record_store_ops.so}"
 
 if [[ -n "${NVCC:-}" ]]; then
   nvcc="$NVCC"
@@ -144,6 +145,31 @@ mkdir -p "$build_dir"
   -Wl,-rpath,"$prefix/lib" \
   -o "$movie_output"
 
+# Host record store: CUDA runtime calls only (no device code), built with the
+# same flags so every library shares one TensorFlow/CUDA ABI.
+"$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
+  -I"$prefix/include" \
+  "${tf_compile_flags[@]}" \
+  -c "$custom_ops_dir/record_store_ops.cc" \
+  -o "$build_dir/record_store_ops.o"
+
+"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
+  --expt-relaxed-constexpr \
+  -DGOOGLE_CUDA=1 \
+  -I"$prefix/include" \
+  "${tf_compile_flags[@]}" \
+  "${gencode_flags[@]}" \
+  -c "$custom_ops_dir/record_store_ops.cu.cc" \
+  -o "$build_dir/record_store_ops.cu.o"
+
+"$cxx" -shared \
+  "$build_dir/record_store_ops.o" \
+  "$build_dir/record_store_ops.cu.o" \
+  "${tf_link_flags[@]}" \
+  -L"$prefix/lib" -lcudart \
+  -Wl,-rpath,"$prefix/lib" \
+  -o "$store_output"
+
 arch_file="${output%.so}.archs"
 {
   printf 'sm=%s\n' "${cuda_archs[*]}"
@@ -153,8 +179,10 @@ arch_file="${output%.so}.archs"
 cp "$arch_file" "${glif_output%.so}.archs"
 cp "$arch_file" "${lgn_output%.so}.archs"
 cp "$arch_file" "${movie_output%.so}.archs"
+cp "$arch_file" "${store_output%.so}.archs"
 
 echo "$output"
 echo "$glif_output"
 echo "$lgn_output"
 echo "$movie_output"
+echo "$store_output"
