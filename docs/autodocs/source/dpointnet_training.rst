@@ -223,6 +223,17 @@ calculated. It is enabled by default:
        explicit way to keep checkpointed streaming. ``true`` requests the
        tape-driven recorded route, ``"direct"`` the direct route, each with
        its own errors.
+   * - ``record_offload``
+     - ``false``
+     - Keep the direct recorded adjoint's per-step records in pinned host
+       memory instead of device memory: ``"voltage"`` (the FP32 pre-reset
+       membrane rows, the bulk of the payload), ``"history"`` (the packed
+       spike/refractory word frames) or ``true``/``"all"`` for both; a list of
+       names is accepted. Values and gradients are those of the resident
+       route. Requires the direct route: an explicit non-direct
+       ``recorded_adjoint`` fails at construction and an automatic
+       non-direct resolution fails at preparation rather than silently
+       falling back. See :ref:`dpointnet-record-offload`.
    * - ``regenerate_initial_state_each_epoch``
      - ``true``
      - Regenerate the configured initial state at epoch boundaries.
@@ -343,6 +354,45 @@ Forward values, state and history cotangents and recurrent credit are bitwise
 those of the checkpointed streaming route; named-input and recurrent master
 gradients can differ by one FP32 unit in the last place because each step
 accumulates natively instead of summing chunked tape contributions.
+
+.. _dpointnet-record-offload:
+
+Pinned-host record offload
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The direct route's device footprint is dominated by its records: ``T x B x N``
+state-dtype membrane values (3.3 GB for the 66k V1 column at batch 32 and 500
+steps, 26 GB at 204k neurons and batch 64) plus ``(T + delay) x B x 2
+ceil(N / 32)`` int32 words. ``record_offload`` moves either or both to pinned
+host memory during the forward loop and brings them back, prefetched, during
+the reverse loop; the arithmetic is unchanged.
+
+* ``"voltage"``: the state kernel writes each step's pre-reset row into a
+  small staging ring (``row = time mod 8``) and the store copies the row to
+  host frame ``time`` on its own CUDA stream. The compute stream waits for a
+  frame's copy only when the forward is about to reuse its staging slot
+  eight steps later, so the host never paces the GPU. The reverse loop takes
+  frame ``time`` and starts the upload of frame ``time - 8``; the last eight
+  frames are primed before the loop.
+* ``"history"``: each chunk's ``[chunk_size, batch, words]`` word frame is
+  staged as a float32 bit view (TensorFlow's int32 scatter, concatenation and
+  slicing GPU kernels keep their data in host memory) and offloaded at the
+  chunk end; frame 0 holds the initial delay slots. The reverse reads a
+  chunk together with its predecessor, so delayed spikes across the chunk
+  boundary need no conditional; it requires ``max_delay <= chunk_size``.
+  Count windows and sampled traces are then accumulated per step (exact
+  integer FP32 sums) instead of being reduced from the stacked records.
+
+Pinned host memory equals the offloaded payload (``cudaHostAlloc``, portable,
+allocated once per store and kept for the engine's lifetime); the stores and
+their byte counts are reported in ``training_route_report["record_offload"]``
+and the cell's ``acceleration_report["record_offload"]``, and
+``direct_record_bytes`` counts only the staging and prefetch frames for
+offloaded surfaces. Exchanged spike frames (neuron-partitioned training) stay
+resident. The feature needs the fifth operator library
+``custom_ops/_record_store_ops.so`` (CUDA runtime calls only, no device code),
+built by ``custom_ops/build.sh`` beside the four fat libraries; the design is
+adapted from Javier Galvan's ``cuda_frame_store`` raw mode, without its codec.
 
 ``bmtk.simulator.dpointnet.direct_recorded_adjoint`` separates the per-step
 arithmetic from the single-replica driver: ``DirectRecordedStep`` offers

@@ -453,9 +453,11 @@ From the intended checkout:
    nvcc --list-gpu-code
    python -m bmtk.simulator.dpointnet.custom_ops.build
 
-The build produces both ``_csr_spike_ops.so`` (synaptic-current operations)
-and ``_glif_state_ops.so`` (neuron-state operations). Inspect their
-``.archs`` manifests to check which GPU architectures were included.
+The build produces ``_csr_spike_ops.so`` (synaptic-current operations),
+``_glif_state_ops.so`` (neuron-state operations), the two LGN libraries and
+``_record_store_ops.so`` (pinned-host record offload; CUDA runtime calls only,
+so it carries no device code). Inspect the ``.archs`` manifests to check
+which GPU architectures were included.
 Use the current checkout, not an unrelated installed BMTK.
 
 For a shared installation spanning Pascal through Hopper, explicitly build
