@@ -159,6 +159,7 @@ class TrainingEngine:
     recorded_adjoint = False
     # Class-level fallbacks for engines built without __init__ (test doubles):
     # explicit dense requests, so preparation never resolves a route for them.
+    record_offload = ()
     _stream_spike_statistics_request = False
     _recorded_adjoint_request = False
     training_route_report = None

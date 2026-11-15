@@ -47,7 +47,9 @@ DEVELOP_KERNEL_BODY_SHA256 = {
     "DpointnetCombinedAccumulateEdge": "5c8b06047cf6c019955e8273304e396d9f0161cecba8eff4ab75bf76c972d318",
     "CsrSpikeGradKernel": "d198f35b5d318dfa1fb5805e940ef1cda8bbfb81027bb2424cfd251ad2e84ecb",
     "CsrSpikeGradSmallBatchKernel": "da5a7c598d17606718a80b110347544e81f321c23d04b23cc8d77c284f62dfa3",
-    "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel": "c70c68fee148ce16ccddf26d0258da60759262526d1471acbaae4748abb89984",
+    # 64-sample slice with partial accumulators (bitwise the 32-slice result; qualified in
+    # test_batched_native_backward.test_wide_fp16_slice_matches_two_32_slices).
+    "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel": "5690d03404ec96247911424c2e1529a6e0e04b57519649da3cb09532889739fd",
     "CsrSpikeGradPairBatch32Kernel": "c8bd5f8cd60f647bb12a80b7f6bdd532acad3b3ffced9fd31c9480f92d3fdc65",
     "CsrSpikeGradPairVariableBatchKernel": "6a43a98be599d50c274861cc1ef8f557e51cfb687fc948f9e1862a4d7e579172",
     "CsrSpikeGradPairPackedBatch32Kernel": "9ea22f9248ff0a78fd86590983f69d4552318d2719a656e403ba6bf237caf727",
