@@ -2,6 +2,7 @@
 #define EIGEN_USE_GPU
 
 #include <algorithm>
+#include <limits>
 #include <type_traits>
 
 #include "tensorflow/core/framework/op_kernel.h"
@@ -80,6 +81,62 @@ struct NestTypeCoefficients {
 // the 32-padded ``batch * words * 32`` index space so every word lies in one
 // warp; ``threshold`` then points at the record row that receives the pre-reset
 // membrane. Padding lanes skip the arithmetic but join the ballots.
+// Aligned vector loads/stores of a neuron-sample's four basis values or two
+// ASC values (TensorFlow buffers are 256-byte aligned and the rows are
+// contiguous), so the type-indexed kernels issue one memory instruction per
+// row instead of one per element. Values and arithmetic are unchanged.
+template <typename S>
+__device__ __forceinline__ void LoadRow4(const S* source, S (&out)[4]) {
+  if constexpr (sizeof(S) == 2) {
+    const ::uint2 raw = *reinterpret_cast<const ::uint2*>(source);
+    const S* packed = reinterpret_cast<const S*>(&raw);
+    out[0] = packed[0]; out[1] = packed[1]; out[2] = packed[2]; out[3] = packed[3];
+  } else {
+    const ::float4 raw = *reinterpret_cast<const ::float4*>(source);
+    out[0] = Eigen::numext::bit_cast<S>(raw.x); out[1] = Eigen::numext::bit_cast<S>(raw.y);
+    out[2] = Eigen::numext::bit_cast<S>(raw.z); out[3] = Eigen::numext::bit_cast<S>(raw.w);
+  }
+}
+
+template <typename S>
+__device__ __forceinline__ void StoreRow4(S* target, const S (&in)[4]) {
+  if constexpr (sizeof(S) == 2) {
+    ::uint2 raw;
+    S* packed = reinterpret_cast<S*>(&raw);
+    packed[0] = in[0]; packed[1] = in[1]; packed[2] = in[2]; packed[3] = in[3];
+    *reinterpret_cast<::uint2*>(target) = raw;
+  } else {
+    *reinterpret_cast<::float4*>(target) = ::make_float4(
+        Eigen::numext::bit_cast<float>(in[0]), Eigen::numext::bit_cast<float>(in[1]),
+        Eigen::numext::bit_cast<float>(in[2]), Eigen::numext::bit_cast<float>(in[3]));
+  }
+}
+
+template <typename T>
+__device__ __forceinline__ void LoadRow2(const T* source, T (&out)[2]) {
+  if constexpr (sizeof(T) == 2) {
+    const unsigned raw = *reinterpret_cast<const unsigned*>(source);
+    const T* packed = reinterpret_cast<const T*>(&raw);
+    out[0] = packed[0]; out[1] = packed[1];
+  } else {
+    const ::float2 raw = *reinterpret_cast<const ::float2*>(source);
+    out[0] = Eigen::numext::bit_cast<T>(raw.x); out[1] = Eigen::numext::bit_cast<T>(raw.y);
+  }
+}
+
+template <typename T>
+__device__ __forceinline__ void StoreRow2(T* target, const T (&in)[2]) {
+  if constexpr (sizeof(T) == 2) {
+    unsigned raw;
+    T* packed = reinterpret_cast<T*>(&raw);
+    packed[0] = in[0]; packed[1] = in[1];
+    *reinterpret_cast<unsigned*>(target) = raw;
+  } else {
+    *reinterpret_cast<::float2*>(target) = ::make_float2(
+        Eigen::numext::bit_cast<float>(in[0]), Eigen::numext::bit_cast<float>(in[1]));
+  }
+}
+
 template <typename T, typename R, typename S, bool SoA = false,
           bool EmitPreResetVoltage = false, bool History = false, bool Record = false>
 __global__ void NestForwardKernel(
@@ -180,14 +237,17 @@ __global__ void NestForwardKernel(
 template <typename T, typename R, typename S, bool EmitPreResetVoltage = false,
           bool History = false, bool Record = false>
 __global__ void NestForwardTypeIndexedKernel(
-    int64 count, int neurons, int type_count, const T* voltage, const R* refractory,
-    const T* asc, const S* rise, const S* psc, const S* currents,
-    const T* type_coefficients, const int64* type_indices, const R* t_ref,
-    const T* dt, const T* v_th, bool hard_reset, T* threshold, T* new_v,
-    R* new_r, T* new_asc, S* new_rise, S* new_psc,
-    int64 history_width, const S* history, S* spikes, S* new_history,
-    const T* fallback_coefficients, const bool* type_identity,
-    int words = 0, int32* record_words = nullptr) {
+    int64 count, int neurons, int type_count, const T* __restrict__ voltage,
+    const R* __restrict__ refractory, const T* __restrict__ asc, const S* __restrict__ rise,
+    const S* __restrict__ psc, const S* __restrict__ currents,
+    const T* __restrict__ type_coefficients, const int64* __restrict__ type_indices,
+    const R* __restrict__ t_ref, const T* __restrict__ dt, const T* __restrict__ v_th,
+    bool hard_reset, T* __restrict__ threshold, T* __restrict__ new_v,
+    R* __restrict__ new_r, T* __restrict__ new_asc, S* __restrict__ new_rise,
+    S* __restrict__ new_psc, int64 history_width, const S* __restrict__ history,
+    S* __restrict__ spikes, S* __restrict__ new_history,
+    const T* __restrict__ fallback_coefficients, const bool* __restrict__ type_identity,
+    int words = 0, int32* __restrict__ record_words = nullptr) {
   extern __shared__ __align__(16) unsigned char shared_bytes[];
   T* block_coefficients = reinterpret_cast<T*>(shared_bytes);
   const bool use_types = type_identity == nullptr || *type_identity;
@@ -196,22 +256,15 @@ __global__ void NestForwardTypeIndexedKernel(
     block_coefficients[entry] = type_coefficients[entry];
   }
   __syncthreads();
-  GPU_1D_KERNEL_LOOP(slot, count) {
-    int index = slot;
-    int neuron;
-    int sample;
-    bool valid = true;
-    if constexpr (Record) {
-      const int row_bits = words * 32;
-      sample = slot / row_bits;
-      const int column = slot - sample * row_bits;
-      valid = column < neurons;
-      neuron = valid ? column : 0;
-      index = sample * neurons + neuron;
-    } else {
-      neuron = index % neurons;
-      sample = index / neurons;
-    }
+  // count < 2^31 (checked by the op): 32-bit index arithmetic.
+  const int row_bits = Record ? words * 32 : neurons;
+  GPU_1D_KERNEL_LOOP(slot64, count) {
+    const int slot = static_cast<int>(slot64);
+    const int sample = slot / row_bits;
+    const int column = slot - sample * row_bits;
+    const bool valid = !Record || column < neurons;
+    const int neuron = valid ? column : 0;
+    const int index = sample * neurons + neuron;
     bool fired = false;
     bool active = true;
     if (valid) {
@@ -219,19 +272,26 @@ __global__ void NestForwardTypeIndexedKernel(
         block_coefficients, use_types ? static_cast<int>(type_indices[neuron]) : 0,
         use_types ? nullptr : fallback_coefficients, neuron};
     active = refractory[index] <= 0;
-    const T mean_asc = NestAdd(NestMul(asc[index * 2], params[14]),
-                               NestMul(asc[index * 2 + 1], params[15]));
+    T asc_row[2];
+    LoadRow2(asc + static_cast<int64>(index) * 2, asc_row);
+    const T mean_asc = NestAdd(NestMul(asc_row[0], params[14]),
+                               NestMul(asc_row[1], params[15]));
+    S rise_row[4], psc_row[4], current_row[4], new_rise_row[4], new_psc_row[4];
+    LoadRow4(rise + static_cast<int64>(index) * 4, rise_row);
+    LoadRow4(psc + static_cast<int64>(index) * 4, psc_row);
+    LoadRow4(currents + static_cast<int64>(index) * 4, current_row);
     T contributions[4];
     #pragma unroll
     for (int basis = 0; basis < 4; ++basis) {
-      const int64 offset = index * 4 + basis;
-      contributions[basis] = NestAdd(NestMul(static_cast<T>(psc[offset]), params[18 + basis]),
-                                      NestMul(static_cast<T>(rise[offset]), params[22 + basis]));
-      new_rise[offset] = static_cast<S>(NestAdd(NestMul(static_cast<T>(rise[offset]), params[basis]),
-                                  NestMul(static_cast<T>(currents[offset]), params[4 + basis])));
-      new_psc[offset] = static_cast<S>(NestAdd(NestMul(static_cast<T>(psc[offset]), params[basis]),
-                                 NestMul(NestMul(*dt, params[basis]), static_cast<T>(rise[offset]))));
+      contributions[basis] = NestAdd(NestMul(static_cast<T>(psc_row[basis]), params[18 + basis]),
+                                      NestMul(static_cast<T>(rise_row[basis]), params[22 + basis]));
+      new_rise_row[basis] = static_cast<S>(NestAdd(NestMul(static_cast<T>(rise_row[basis]), params[basis]),
+                                  NestMul(static_cast<T>(current_row[basis]), params[4 + basis])));
+      new_psc_row[basis] = static_cast<S>(NestAdd(NestMul(static_cast<T>(psc_row[basis]), params[basis]),
+                                 NestMul(NestMul(*dt, params[basis]), static_cast<T>(rise_row[basis]))));
     }
+    StoreRow4(new_rise + static_cast<int64>(index) * 4, new_rise_row);
+    StoreRow4(new_psc + static_cast<int64>(index) * 4, new_psc_row);
     const T integrated = NestAdd(NestAdd(contributions[0], contributions[1]),
                                    NestAdd(contributions[2], contributions[3]));
     const T retained = NestAdd(FromFloat<T>(1.0f), FromFloat<T>(-ToFloat(params[27])));
@@ -264,14 +324,16 @@ __global__ void NestForwardTypeIndexedKernel(
             NestAdd(FromFloat<T>(1.0f), FromFloat<T>(-ToFloat(params[26])))))));
     new_r[index] = fired ? t_ref[neuron]
                         : static_cast<R>(max(static_cast<int>(refractory[index]) - 1, 0));
+    T new_asc_row[2];
     #pragma unroll
     for (int component = 0; component < 2; ++component) {
-      T adaptation = asc[index * 2 + component];
+      T adaptation = asc_row[component];
       if (active) adaptation = NestMul(adaptation, params[8 + component]);
-      new_asc[index * 2 + component] = fired
+      new_asc_row[component] = fired
           ? NestAdd(params[10 + component], NestMul(adaptation, params[16 + component]))
           : adaptation;
     }
+    StoreRow2(new_asc + static_cast<int64>(index) * 2, new_asc_row);
     }  // valid
     if constexpr (Record) {
       const unsigned spike_mask = __ballot_sync(0xffffffffu, fired);
@@ -552,16 +614,18 @@ __global__ void NestHistoryBackwardKernel(
 
 template <typename T, typename R, typename S, bool Events = false>
 __global__ void NestHistoryBackwardTypeIndexedKernel(
-    int64 count, int neurons, int type_count, int64 history_width, const T* threshold,
-    const R* refractory, const T* type_coefficients, const int64* type_indices,
-    const T* dt, const T* retention,
-    const T* grad_threshold, const T* grad_v, const T* grad_asc,
-    const S* grad_rise, const S* grad_psc, bool hard_reset,
-    const T* previous_asc, const T* v_th, const T* dampening, const T* gauss_std,
-    const S* grad_spikes, const S* grad_history, const S* grad_history_addend,
+    int64 count, int neurons, int type_count, int64 history_width, const T* __restrict__ threshold,
+    const R* __restrict__ refractory, const T* __restrict__ type_coefficients,
+    const int64* __restrict__ type_indices, const T* __restrict__ dt, const T* __restrict__ retention,
+    const T* __restrict__ grad_threshold, const T* __restrict__ grad_v, const T* __restrict__ grad_asc,
+    const S* __restrict__ grad_rise, const S* __restrict__ grad_psc, bool hard_reset,
+    const T* __restrict__ previous_asc, const T* __restrict__ v_th, const T* __restrict__ dampening,
+    const T* __restrict__ gauss_std, const S* __restrict__ grad_spikes,
+    const S* __restrict__ grad_history, const S* __restrict__ grad_history_addend,
     bool detach_reset, bool detach_asc_reset, bool pseudo_gauss,
-    T* voltage_grad, T* asc_grad, S* rise_grad, S* psc_grad, S* currents_grad,
-    S* old_history_grad, const T* fallback_coefficients, const bool* type_identity) {
+    T* __restrict__ voltage_grad, T* __restrict__ asc_grad, S* __restrict__ rise_grad,
+    S* __restrict__ psc_grad, S* __restrict__ currents_grad, S* __restrict__ old_history_grad,
+    const T* __restrict__ fallback_coefficients, const bool* __restrict__ type_identity) {
   extern __shared__ __align__(16) unsigned char shared_bytes[];
   T* block_coefficients = reinterpret_cast<T*>(shared_bytes);
   const bool use_types = type_identity == nullptr || *type_identity;
@@ -570,20 +634,24 @@ __global__ void NestHistoryBackwardTypeIndexedKernel(
     block_coefficients[entry] = type_coefficients[entry];
   }
   __syncthreads();
-  GPU_1D_KERNEL_LOOP(index, count) {
-    const int neuron = static_cast<int>(index % neurons);
-    const int64 history_base = (index / neurons) * history_width + neuron;
+  // count < 2^31 (checked by the op): 32-bit index arithmetic.
+  GPU_1D_KERNEL_LOOP(index64, count) {
+    const int index = static_cast<int>(index64);
+    const int sample = index / neurons;
+    const int neuron = index - sample * neurons;
+    const int64 history_base = static_cast<int64>(sample) * history_width + neuron;
     const NestTypeCoefficients<T> params{
         block_coefficients, use_types ? static_cast<int>(type_indices[neuron]) : 0,
         use_types ? nullptr : fallback_coefficients, neuron};
     const bool active = refractory[index] <= 0;
-    const bool fired = active && ToFloat(threshold[index]) > 0.0f;
+    const T threshold_value = threshold[index];
+    const bool fired = active && ToFloat(threshold_value) > 0.0f;
     const T square = FromFloat<T>(
-        ToFloat(NestMul(threshold[index], threshold[index])) /
+        ToFloat(NestMul(threshold_value, threshold_value)) /
         ToFloat(NestMul(*gauss_std, *gauss_std)));
     const T triangle = pseudo_gauss
         ? FromFloat<T>(expf(-ToFloat(square)))
-        : FromFloat<T>(fmaxf(1.0f - fabsf(ToFloat(threshold[index])), 0.0f));
+        : FromFloat<T>(fmaxf(1.0f - fabsf(ToFloat(threshold_value)), 0.0f));
     const T derivative = FromFloat<T>(ToFloat(*dampening) * ToFloat(triangle));
     // An optional second history cotangent (the recurrent source credit of the
     // step after this one) is added with the compute dtype's rounding, as the
@@ -606,25 +674,29 @@ __global__ void NestHistoryBackwardTypeIndexedKernel(
               ? history_at(history_index + neurons)
               : FromFloat<S>(0.0f);
     }
+    const T grad_v_value = grad_v[index];
+    T grad_asc_row[2];
+    LoadRow2(grad_asc + static_cast<int64>(index) * 2, grad_asc_row);
     if constexpr (Events) {
       if (active && (!detach_reset || !detach_asc_reset)) {
         const T one = FromFloat<T>(1.0f);
         T event_grad = FromFloat<T>(0.0f);
         if (!detach_reset) {
           const T sensitivity = hard_reset
-              ? NestAdd(params[26], FromFloat<T>(-ToFloat(NestAdd(threshold[index], *v_th))))
+              ? NestAdd(params[26], FromFloat<T>(-ToFloat(NestAdd(threshold_value, *v_th))))
               : FromFloat<T>(-ToFloat(NestAdd(one, FromFloat<T>(-ToFloat(params[26])))));
-          event_grad = NestAdd(event_grad, NestMul(grad_v[index], sensitivity));
+          event_grad = NestAdd(event_grad, NestMul(grad_v_value, sensitivity));
         }
         if (!detach_asc_reset) {
+          T previous_row[2];
+          LoadRow2(previous_asc + static_cast<int64>(index) * 2, previous_row);
           T terms[2];
           #pragma unroll
           for (int component = 0; component < 2; ++component) {
-            const T adaptation = NestMul(previous_asc[index * 2 + component],
-                                         params[8 + component]);
+            const T adaptation = NestMul(previous_row[component], params[8 + component]);
             const T sensitivity = NestAdd(params[10 + component], NestMul(
                 NestAdd(params[16 + component], FromFloat<T>(-1.0f)), adaptation));
-            terms[component] = NestMul(grad_asc[index * 2 + component], sensitivity);
+            terms[component] = NestMul(grad_asc_row[component], sensitivity);
           }
           event_grad = NestAdd(event_grad, NestAdd(terms[0], terms[1]));
         }
@@ -632,29 +704,35 @@ __global__ void NestHistoryBackwardTypeIndexedKernel(
       }
     }
     T candidate_grad = NestAdd(threshold_grad,
-        hard_reset && fired ? FromFloat<T>(0.0f) : grad_v[index]);
+        hard_reset && fired ? FromFloat<T>(0.0f) : grad_v_value);
     if (hard_reset && !active) candidate_grad = FromFloat<T>(0.0f);
     voltage_grad[index] = NestMul(NestMul(candidate_grad, params[12]), *retention);
     const T mean_grad = NestMul(candidate_grad, params[13]);
+    T asc_grad_row[2];
     #pragma unroll
     for (int component = 0; component < 2; ++component) {
-      T adaptation_grad = grad_asc[index * 2 + component];
+      T adaptation_grad = grad_asc_row[component];
       if (fired) adaptation_grad = NestMul(adaptation_grad, params[16 + component]);
       if (active) adaptation_grad = NestMul(adaptation_grad, params[8 + component]);
-      asc_grad[index * 2 + component] = NestAdd(
-          adaptation_grad, NestMul(mean_grad, params[14 + component]));
+      asc_grad_row[component] = NestAdd(adaptation_grad, NestMul(mean_grad, params[14 + component]));
     }
+    StoreRow2(asc_grad + static_cast<int64>(index) * 2, asc_grad_row);
+    S grad_rise_row[4], grad_psc_row[4], rise_row[4], psc_row[4], current_row[4];
+    LoadRow4(grad_rise + static_cast<int64>(index) * 4, grad_rise_row);
+    LoadRow4(grad_psc + static_cast<int64>(index) * 4, grad_psc_row);
     #pragma unroll
     for (int basis = 0; basis < 4; ++basis) {
-      const int64 offset = index * 4 + basis;
-      rise_grad[offset] = static_cast<S>(NestAdd(
-          NestAdd(NestMul(static_cast<T>(grad_rise[offset]), params[basis]),
-                  NestMul(static_cast<T>(grad_psc[offset]), NestMul(*dt, params[basis]))),
+      rise_row[basis] = static_cast<S>(NestAdd(
+          NestAdd(NestMul(static_cast<T>(grad_rise_row[basis]), params[basis]),
+                  NestMul(static_cast<T>(grad_psc_row[basis]), NestMul(*dt, params[basis]))),
           NestMul(candidate_grad, params[22 + basis])));
-      psc_grad[offset] = static_cast<S>(NestAdd(NestMul(static_cast<T>(grad_psc[offset]), params[basis]),
+      psc_row[basis] = static_cast<S>(NestAdd(NestMul(static_cast<T>(grad_psc_row[basis]), params[basis]),
                                   NestMul(candidate_grad, params[18 + basis])));
-      currents_grad[offset] = static_cast<S>(NestMul(static_cast<T>(grad_rise[offset]), params[4 + basis]));
+      current_row[basis] = static_cast<S>(NestMul(static_cast<T>(grad_rise_row[basis]), params[4 + basis]));
     }
+    StoreRow4(rise_grad + static_cast<int64>(index) * 4, rise_row);
+    StoreRow4(psc_grad + static_cast<int64>(index) * 4, psc_row);
+    StoreRow4(currents_grad + static_cast<int64>(index) * 4, current_row);
   }
 }
 
@@ -953,6 +1031,8 @@ class NestStateTypeIndexedOp : public OpKernel {
         spikes = outputs[6]->flat<S>().data();
         new_history = outputs[7]->flat<S>().data();
       }
+      OP_REQUIRES(context, voltage.NumElements() < std::numeric_limits<int>::max(),
+                  errors::InvalidArgument("NEST state elements exceed the 32-bit kernel index range."));
       OP_REQUIRES_OK(context, GpuLaunchKernel(
           NestForwardTypeIndexedKernel<T, R, S, EmitPreResetVoltage, History>,
           config.block_count, config.thread_per_block, shared_bytes,
@@ -1179,6 +1259,8 @@ class NestStateHistoryTypeIndexedBackwardOp : public OpKernel {
     auto& device = context->eigen_device<GPUDevice>();
     auto config = GetGpuLaunchConfig(voltage.NumElements(), device);
     const int history_index = spike_index + 1;
+    OP_REQUIRES(context, voltage.NumElements() < std::numeric_limits<int>::max(),
+                errors::InvalidArgument("NEST state elements exceed the 32-bit kernel index range."));
     OP_REQUIRES_OK(context, GpuLaunchKernel(
         NestHistoryBackwardTypeIndexedKernel<T, R, S, Events>,
         config.block_count, config.thread_per_block, shared_bytes,
@@ -1317,6 +1399,8 @@ class NestRecordForwardOp : public OpKernel {
           ? context->input(context->num_inputs() - 2).flat<T>().data() : nullptr;
       const bool* identity = DeviceDispatch
           ? context->input(context->num_inputs() - 1).flat<bool>().data() : nullptr;
+      OP_REQUIRES(context, padded < std::numeric_limits<int>::max(),
+                  errors::InvalidArgument("NEST record elements exceed the 32-bit kernel index range."));
       OP_REQUIRES_OK(context, GpuLaunchKernel(
           NestForwardTypeIndexedKernel<T, R, S, true, true, true>,
           config.block_count, config.thread_per_block, shared_bytes,
