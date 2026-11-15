@@ -293,7 +293,10 @@ every delayed slot at every step. Private journals are time-major so reverse
 steps read contiguous frames; public outputs remain batch-major.
 Attached adaptation-reset derivatives require
 previous ASC values; these are reconstructed within each chunk from its exact
-boundary ASC and recorded events, rather than retained for the whole sequence.
+boundary ASC and recorded events, rather than retained for the whole sequence
+(a square-root decomposition: coarse snapshots every ``ceil(sqrt(chunk))`` steps,
+then one block at a time; with a rebuilt state library each walk is one native
+launch, ``DpointnetAdvanceAscBlockRecord``, bitwise the per-step recurrence).
 Only delay-slot shifts and the small ASC recurrence are rematerialized: membrane integration and
 current projections are not replayed. Native state/history and per-source
 projection VJPs are reused with the original hard-forward reset, configured
