@@ -64,6 +64,10 @@ JOINT_SWEEP_ARCHITECTURES = (61, 70, 75, 80, 86, 89, 90)
 NATIVE_BACKWARD_BATCH = csr_spike_ops.NATIVE_BACKWARD_BATCH
 JOINT_SWEEP_MAX_BATCH = NATIVE_BACKWARD_BATCH  # historical name: the per-launch bound
 COMBINED_TARGET_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
+# Up to this many tiles the adaptive routing names a row's tiles with a 64-bit mask.
+ADAPTIVE_MASK_TILES = 64
+# Tiles tried, widest first, when 2048-target tiles would exceed ADAPTIVE_MASK_TILES.
+LARGE_NETWORK_TILES = (5120, 4096, 3072)
 # Smallest batch for which automatic adaptive routing is selected. Matched full-V1
 # FR-loss arms on an RTX 3090 (20-sample medians, adaptive vs dense routing):
 # B1 +5.4% slower (0.4304 vs 0.4085 s/update, a 256 wide tile did not help),
@@ -336,11 +340,24 @@ def select_performance_projection(
                 * context["source_rows_upper_bound"] * index_bytes
             )
 
+        def launchable(targets):
+            return routing_bytes(targets) <= 512 * 1024**2 and combined_sweep_launch_geometry(
+                architecture, targets, index_bytes=index_bytes,
+            )["valid"]
+
         if routing_bytes(tile) > 512 * 1024**2:
             tile = 2048
-        eligible = routing_bytes(tile) <= 512 * 1024**2 and combined_sweep_launch_geometry(
-            architecture, tile, index_bytes=index_bytes,
-        )["valid"]
+        if batch_size > 1 and -(-context["n_post"] // tile) > ADAPTIVE_MASK_TILES:
+            # Above 64 tiles every (active row, block) pair binary-searches the row's
+            # segments instead of testing a 64-bit tile mask, and the high-fanout
+            # segments shorten; the widest launchable tile keeps the mask path up to
+            # 327,680 neurons and the longest segments beyond (203,816 neurons on the
+            # RTX 3090: 5120 is 15 percent faster than 2048 per sweep).
+            for wide in LARGE_NETWORK_TILES:
+                if launchable(wide):
+                    tile = wide
+                    break
+        eligible = launchable(tile)
         predicates["routing table <= 512 MiB and launchable tile"] = eligible
     missing = [name for name, ok in predicates.items() if not ok]
     if missing:

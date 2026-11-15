@@ -55,6 +55,31 @@ def test_every_fat_binary_architecture_and_batch_up_to_32_is_admitted(
     assert enabled and tile == (256 if batch == 1 else 2048)
 
 
+@pytest.mark.parametrize("n_post,architecture,tile", [
+    (131072, 86, 2048),   # exactly 64 tiles of 2048: mask path, unchanged
+    (131073, 86, 5120),   # 65 tiles: widest launchable tile
+    (203816, 86, 5120), (203816, 80, 5120), (203816, 89, 5120), (203816, 90, 5120), (203816, 70, 5120),
+    (203816, 75, 3072),   # SM75 (64 KiB per block) cannot launch 4096/5120
+    (327681, 86, 5120),   # beyond 64 tiles at any width: still the widest (longest segments)
+])
+def test_large_networks_take_the_widest_launchable_tile(projection_hardware, n_post, architecture, tile):
+    metadata = context(n_post=n_post, source_rows_upper_bound=3 * n_post)
+    enabled, actual, _ = select(metadata=metadata, architecture=architecture)
+    assert enabled and actual == tile
+    # Batch 1 keeps its previous geometry (256, or 2048 when 256-target routing exceeds
+    # the budget; at 327,681 neurons even 2048-target routing exceeds it, as before).
+    enabled, actual, _ = select(metadata=metadata, architecture=architecture, batch_size=1)
+    assert (enabled and actual in (256, 2048)) or (not enabled and n_post > 300000)
+
+
+def test_large_network_tile_respects_routing_budget(projection_hardware):
+    # A routing table over 512 MiB at every width is not admitted at all (the
+    # 1,000,000-neuron archive network with three delay slots is such a case today).
+    metadata = context(n_post=1_000_000, source_rows_upper_bound=3_000_000)
+    enabled, _, reason = select(metadata=metadata)
+    assert not enabled and "launchable tile" in reason
+
+
 @pytest.mark.parametrize("architecture", [52, 60, 72, 87, 100, 120, None])
 def test_non_target_architectures_keep_existing_routes(projection_hardware, architecture):
     assert not select(architecture=architecture)[0]

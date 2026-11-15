@@ -349,10 +349,15 @@ Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
 ``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
 are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
 device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
-routing; the automatic choice remains 256 (batch 1 without adaptive routing, when
-its routing table fits 512 MiB) or 2048; it never undercuts the routing budget. On the V1 reference
-workload a 5120 tile is faster for the LGN alone but slower for the full
-update, because the background source costs more per block there.
+routing; the automatic choice is 256 (batch 1 without adaptive routing, when
+its routing table fits 512 MiB) or 2048 up to 131,072 neurons, and above that
+(more than 64 tiles of 2048, where the adaptive routing's 64-bit per-row tile mask
+gives way to a binary search and high-fanout segments shorten) the widest
+launchable wide tile, 5120 where the device allows it; it never undercuts the
+routing budget. On the 66,658-neuron V1 reference workload a 5120 tile is faster
+for the LGN alone but slower for the full update, because the background source
+costs more per block there; on the 203,816-neuron archive network it is about
+15 percent faster per sweep than 2048.
 Explicit choices retain validation and are not
 evidence that an unqualified hardware/feature combination is supported.
 Small tiles use more routing memory and are not a general large-batch tuning
