@@ -106,6 +106,39 @@ def test_sliced_backward_matches_single_launch(selective, monkeypatch):
         cell.close_fused_cuda()
 
 
+@pytest.mark.parametrize("batch", [64, 48])
+def test_wide_fp16_slice_matches_two_32_slices(batch, monkeypatch):
+    """The FP16 accumulate backward takes batch 33..64 as one 64-sample slice whose
+    spike cotangents are bitwise the two 32-sample launches (partial accumulators
+    fold in the 32-slice butterfly order); the FP32 weight accumulator differs only
+    by atomic order."""
+    _gpu_required()
+    if not csr_spike_ops.wide_accumulate_backward_available():
+        pytest.skip("Rebuilt CSR library with the 64-sample backward slice required.")
+    tf.keras.mixed_precision.set_global_policy("mixed_float16")
+    cell = make_cell("nest", selective=True, batch_size=batch, hard_reset_gradient_mode="soft_surrogate",
+                     use_javier_recurrent_vjp=True, **LARGE_BATCH_OPTIONS)
+    try:
+        assert cell.use_javier_recurrent_vjp and cell.compute_dtype == "float16"
+        initial = _initial_state(cell, batch)
+        model = _model(cell, initial)
+        options = dict(sequence_length=7, chunk_size=3, differentiate_inputs=False, count_windows=((0, 7), (1, 6)))
+        traces = _traces(cell, 7)
+        spikes = tf.zeros((batch, 1), tf.float16)
+        assert csr_spike_ops.accumulate_backward_batch(spikes, {"use_javier_batch32_backward": True}) == 64
+        assert csr_spike_ops.accumulate_backward_batch(tf.zeros((batch, 1), tf.float32), {"use_javier_batch32_backward": True}) == 32
+        assert csr_spike_ops.accumulate_backward_batch(spikes, {}) == 32
+        wide = DirectRecordedAdjointRunner(model, cell, **options)
+        results, n_exact = _evaluate([wide], cell, initial, model, 7, traces)
+        monkeypatch.setattr(csr_spike_ops, "WIDE_BACKWARD_BATCH", 32)
+        narrow = DirectRecordedAdjointRunner(model, cell, **options)
+        observed, _ = _evaluate([narrow], cell, initial, model, 7, traces)
+        _compare(results[0], observed[0], n_exact, f"wide slice batch {batch}")
+        assert all(np.any(value.numpy() != 0) for value in results[0][1][-3:])
+    finally:
+        cell.close_fused_cuda()
+
+
 @pytest.mark.parametrize("offload", [(), ("voltage", "history")])
 def test_batch_64_resolves_direct_route_and_matches_reference(offload):
     """Batch 64 is admitted by the automatic policy (joint sweep, CSR masters,
@@ -143,3 +176,4 @@ def test_joint_sweep_admission_no_longer_capped_at_32(batch):
     assert diagnostics[f"positive batch (found {batch})"] is True
     assert not any("batch1..32" in name for name in diagnostics)
     assert acceleration.JOINT_SWEEP_MAX_BATCH == csr_spike_ops.NATIVE_BACKWARD_BATCH == 32
+    assert csr_spike_ops.WIDE_BACKWARD_BATCH == 64

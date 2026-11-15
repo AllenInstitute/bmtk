@@ -89,7 +89,7 @@ optimizer, Poisson inputs or canonical exports; see :doc:`dpointnet_performance`
      - ``"auto"``: packed for GLIF3 cells
      - ``false``: unpacked spike boundaries
    * - Joint current sweep admission
-     - SM61/70/75/80/86/89/90 with native SASS, any positive batch (backward launches of at most 32 samples)
+     - SM61/70/75/80/86/89/90 with native SASS, any positive batch (backward launches of at most 32 samples; the FP16 recurrent accumulate backward of a rebuilt library takes up to 64 per launch)
      - SM86 only, batch 1, 16 or 32
 
 To reproduce the previous route exactly, set the three cell options to ``false``

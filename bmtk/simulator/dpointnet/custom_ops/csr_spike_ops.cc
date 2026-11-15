@@ -477,6 +477,15 @@ REGISTER_OP("DpointnetCsrSpikeGradCsrMaster")
       return absl::OkStatus();
     });
 
+// Capability marker (never executed): this library's FP16 Javier-derived
+// accumulate backward takes a single slice of up to 64 samples.
+REGISTER_OP("DpointnetCsrBackwardWideSlice")
+    .Output("samples: int32")
+    .SetShapeFn([](InferenceContext* context) -> absl::Status {
+      context->set_output(0, context->Scalar());
+      return absl::OkStatus();
+    });
+
 REGISTER_OP("DpointnetCsrSpikeGradAccumulateCsrMaster")
     .Attr("uint8_types: bool = false")
     .Input("spikes: T")

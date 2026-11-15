@@ -341,6 +341,28 @@ def _projection_type_representatives(basis, n_synapse_types):
 # sliced here: source cotangents concatenate, weight gradients accumulate.
 # The combined forward sweep is per sample and needs no slicing.
 NATIVE_BACKWARD_BATCH = 32
+# The FP16 Javier-derived accumulate backward of a rebuilt library takes one
+# 64-sample slice (each pair's projected line read once per edge; bitwise the
+# two-slice result). Older libraries keep 32.
+WIDE_BACKWARD_BATCH = 64
+
+
+def wide_accumulate_backward_available():
+    return _OPS is not None and hasattr(_OPS, "dpointnet_csr_backward_wide_slice")
+
+
+def accumulate_backward_batch(spikes, attributes):
+    """Samples per launch of the accumulate backward for these operands."""
+    if (
+        attributes.get("use_javier_batch32_backward", False)
+        and not attributes.get("use_small_batch_backward", False)
+        and not attributes.get("use_packed_sm120_backward", False)
+        and attributes.get("write_csr_weight_gradient", True)
+        and spikes.dtype == tf.float16
+        and wide_accumulate_backward_available()
+    ):
+        return WIDE_BACKWARD_BATCH
+    return NATIVE_BACKWARD_BATCH
 
 
 def _static_batch(spikes):
@@ -348,8 +370,9 @@ def _static_batch(spikes):
     return int(batch) if batch is not None else None
 
 
-def _batch_slices(batch):
-    return [(start, min(start + NATIVE_BACKWARD_BATCH, batch)) for start in range(0, batch, NATIVE_BACKWARD_BATCH)]
+def _batch_slices(batch, width=None):
+    width = NATIVE_BACKWARD_BATCH if width is None else width
+    return [(start, min(start + width, batch)) for start in range(0, batch, width)]
 
 
 def _slice_currents(dcurrents, n_post, start, stop):
@@ -359,7 +382,8 @@ def _slice_currents(dcurrents, n_post, start, stop):
 
 def spike_grad_accumulate_batched(operator, spikes, dcurrents, metadata, weights, basis, scale,
                                   accumulator, *, n_post, **attributes):
-    """``operator(spikes, dcurrents, ...)`` in slices of at most 32 samples.
+    """``operator(spikes, dcurrents, ...)`` in slices of at most 32 (FP16 Javier
+    backward on a rebuilt library: 64) samples.
 
     Returns ``(spike_cotangent, accumulator)`` as the single launch would: the
     per-sample spike cotangents of the slices concatenated, the FP32 weight
@@ -367,10 +391,11 @@ def spike_grad_accumulate_batched(operator, spikes, dcurrents, metadata, weights
     unspecified within one launch).
     """
     batch = _static_batch(spikes)
-    if batch is None or batch <= NATIVE_BACKWARD_BATCH:
+    width = accumulate_backward_batch(spikes, attributes)
+    if batch is None or batch <= width:
         return operator(spikes, dcurrents, metadata, weights, basis, scale, accumulator, n_post=n_post, **attributes)
     parts = []
-    for start, stop in _batch_slices(batch):
+    for start, stop in _batch_slices(batch, width):
         dz, accumulator = operator(
             spikes[start:stop], _slice_currents(dcurrents, n_post, start, stop), metadata, weights, basis,
             scale, accumulator, n_post=n_post, **attributes,
