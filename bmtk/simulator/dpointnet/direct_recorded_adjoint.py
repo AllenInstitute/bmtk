@@ -51,7 +51,8 @@ from .cell_models.state_rnn import (
 )
 from .custom_ops import csr_spike_ops, glif_state_ops
 from .custom_ops.glif_state_ops import (
-    NestDirectDispatch, advance_asc_record, direct_reverse_ops_available,
+    NestDirectDispatch, advance_asc_block_record, advance_asc_block_record_available,
+    advance_asc_record, direct_reverse_ops_available,
     direct_reverse_record, nest_record_forward_available, pack_step_record,
     record_counts, record_traces, shift_history_record, step_record_ops_available,
     unpack_step_record,
@@ -1277,6 +1278,15 @@ class DirectRecordedAdjointRunner:
                     element_shape=tf.constant([batch, step.words], tf.int32), element_dtype=tf.int32,
                 )
 
+            def resident_block_words(begin, end):
+                """Records of ``begin <= time < end`` as one ``[steps, batch, words]`` tensor."""
+                return tf.raw_ops.TensorListGather(
+                    input_handle=words, indices=tf.range(begin, end) + delay,
+                    element_shape=tf.constant([batch, step.words], tf.int32), element_dtype=tf.int32,
+                )
+
+            resident_words_at.block = resident_block_words
+
             def chunk_words(chunk_index):
                 """``words_at`` valid for times in ``[start - chunk_size, start + chunk_size)``.
 
@@ -1294,6 +1304,12 @@ class DirectRecordedAdjointRunner:
                 def words_at(time):
                     return tf.bitcast(pair[time - start + self.chunk_size], tf.int32)
 
+                def block_words(begin, end):
+                    return tf.bitcast(
+                        pair[begin - start + self.chunk_size:end - start + self.chunk_size], tf.int32,
+                    )
+
+                words_at.block = block_words
                 return words_at
 
             populations = step.populations
@@ -1307,22 +1323,33 @@ class DirectRecordedAdjointRunner:
             block = self.asc_block
             blocks_per_chunk = -(-self.chunk_size // block)
 
-            def walk_asc(begin, end, asc, buffer, stride, words_at):
-                """Advance ``asc`` over ``[begin, end]`` storing ``asc(begin + j * stride)`` at ``j``.
+            asc_block_op = advance_asc_block_record_available()
 
-                Every step writes slot ``ceil((time - begin) / stride)``; the
-                block-boundary step writes a slot last, so no conditional is
-                needed. ``buffer`` must have ``ceil((end - begin) / stride) + 1``
-                slots; the value at ``end`` itself is stored too.
+            def walk_asc(begin, end, asc, size, stride, words_at):
+                """``asc(begin + j * stride)`` for ``j = 0..ceil((end - begin) / stride)``.
+
+                The value at ``end`` itself is stored last. With a rebuilt state
+                library one native launch walks the block from the recorded words
+                (``[slots, batch, 2 * neurons]`` tensor, read with ``asc_slot``);
+                otherwise one advance per step fills a TensorArray of ``size``
+                slots, every step writing slot ``ceil((time - begin) / stride)`` so
+                the block-boundary step writes a slot last without a conditional.
                 """
+                if asc_block_op:
+                    return advance_asc_block_record(asc, words_at.block(begin, end), step.asc_table, stride=stride)
+
                 def body(time, asc, buffer):
                     index = (time - begin + stride - 1) // stride
                     return time + 1, step.advance_asc(asc, words_at(time)), buffer.write(index, asc)
 
+                buffer = tf.TensorArray(T, size=size, element_shape=(batch, 2 * neurons))
                 _, asc, buffer = tf.while_loop(
                     lambda time, *_: time < end, body, (begin, asc, buffer), parallel_iterations=1,
                 )
                 return buffer.write((end - begin + stride - 1) // stride, asc)
+
+            def asc_slot(walked, index):
+                return walked[index] if asc_block_op else walked.read(index)
 
             def chunk_snapshot(chunk_index):
                 if asc_store is not None:
@@ -1345,7 +1372,7 @@ class DirectRecordedAdjointRunner:
                             if keep else tf.zeros([batch, 0], S)
                         )
                 carry, credit, accumulators = step.reverse(
-                    voltage_record(time, words_at), asc_buffer.read(time - block_start), carry,
+                    voltage_record(time, words_at), asc_slot(asc_buffer, time - block_start), carry,
                     spike_base(time), penalty_gradient[:, time], sources, source_credit,
                     tuple(acc if keep else None for acc, keep in zip(accumulators, accumulate)),
                     trace=trace_at(time),
@@ -1377,10 +1404,7 @@ class DirectRecordedAdjointRunner:
                 block_stop = tf.minimum(block_start + block, chunk_stop)
                 # The last block's value at block_stop - 1 is written by the walk's
                 # final write; the walk stops one step short of the block end.
-                fine = walk_asc(
-                    block_start, block_stop - 1, coarse.read(block_index),
-                    tf.TensorArray(T, size=block, element_shape=(batch, 2 * neurons)), 1, words_at,
-                )
+                fine = walk_asc(block_start, block_stop - 1, asc_slot(coarse, block_index), block, 1, words_at)
                 _, carry, window, accumulators, _, _, pending = tf.while_loop(
                     lambda time, *_: time >= block_start,
                     lambda *args: reverse_step(*args, words_at),
@@ -1396,8 +1420,7 @@ class DirectRecordedAdjointRunner:
                 words_at = chunk_words(chunk_index)
                 # Coarse sub-snapshots at every block start up to the last block only.
                 coarse = walk_asc(
-                    start, start + last_block * block, chunk_snapshot(chunk_index),
-                    tf.TensorArray(T, size=blocks_per_chunk + 1, element_shape=(batch, 2 * neurons)), block,
+                    start, start + last_block * block, chunk_snapshot(chunk_index), blocks_per_chunk + 1, block,
                     words_at,
                 )
                 _, carry, window, accumulators, pending, _, _, _ = tf.while_loop(

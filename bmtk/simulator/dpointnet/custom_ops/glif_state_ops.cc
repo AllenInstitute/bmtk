@@ -960,6 +960,31 @@ REGISTER_OP("DpointnetAdvanceAscRecord")
       return OkStatus();
     });
 
+// Block form of DpointnetAdvanceAscRecord: the ASC before every ``stride``-th
+// of ``steps`` recorded steps, then the final value, as [ceil(steps / stride) + 1,
+// batch, 2 * neurons]; bitwise the sequential op.
+REGISTER_OP("DpointnetAdvanceAscBlockRecord")
+    .Attr("T: {half, float}")
+    .Attr("stride: int >= 1")
+    .Input("asc: T")
+    .Input("words: int32")
+    .Input("coefficients: T")
+    .Output("snapshots: T")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle asc, words;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &asc));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(1), 3, &words));
+      int stride;
+      TF_RETURN_IF_ERROR(context->GetAttr("stride", &stride));
+      shape_inference::DimensionHandle outputs = context->UnknownDim();
+      if (context->ValueKnown(context->Dim(words, 0))) {
+        const int64_t steps = context->Value(context->Dim(words, 0));
+        outputs = context->MakeDim((steps + stride - 1) / stride + 1);
+      }
+      context->set_output(0, context->MakeShape({outputs, context->Dim(asc, 0), context->Dim(asc, 1)}));
+      return OkStatus();
+    });
+
 // Direct recorded adjoint reverse prelude: unpack the step record, form the
 // threshold voltage, add the voltage-penalty VJP of the post-reset membrane to
 // the carried voltage cotangent and emit the recorded spikes.

@@ -2124,6 +2124,112 @@ REGISTER_KERNEL_BUILDER(Name("DpointnetAdvanceAscRecord").Device(DEVICE_GPU)
 REGISTER_KERNEL_BUILDER(Name("DpointnetAdvanceAscRecord").Device(DEVICE_GPU)
     .TypeConstraint<Eigen::half>("T"), AdvanceAscRecordOp<Eigen::half>);
 
+// Exact ASC re-walk over a block of recorded steps in one launch. One thread
+// owns one neuron for kAscBlockSamples samples: it reads the neuron's
+// coefficients once, each sample's ASC pair once, applies the per-step update
+// of AdvanceAscRecordKernel (same operations, same order, so the values are
+// bitwise the sequential launches) for `steps` recorded word rows, and writes
+// the ASC *before* step j * stride into output slot j, then the final value
+// into the last slot. Replaces one launch plus one TensorArray write per step
+// of the reverse's sqrt-decomposed ASC walk.
+constexpr int kAscBlockSamples = 4;
+
+template <typename T, bool Compact>
+__global__ void AdvanceAscBlockRecordKernel(
+    int neurons, int batch, int words, int steps, int stride, int outputs, const T* asc,
+    const int32* record, const T* table, T* output) {
+  const int neuron = blockIdx.x * blockDim.x + threadIdx.x;
+  if (neuron >= neurons) return;
+  const T* compact = table + static_cast<int64>(neuron) * 6;
+  const NestCoefficients<T, false> params{table, neurons, neuron};
+  T decay[2], amplitude[2], refractory[2];
+  #pragma unroll
+  for (int component = 0; component < 2; ++component) {
+    decay[component] = Compact ? compact[component] : params[8 + component];
+    amplitude[component] = Compact ? compact[2 + component] : params[10 + component];
+    refractory[component] = Compact ? compact[4 + component] : params[16 + component];
+  }
+  const int word = neuron >> 5;
+  const unsigned bit = 1u << (neuron & 31);
+  const int64 pair_stride = static_cast<int64>(batch) * neurons * 2;
+  for (int k = 0; k < kAscBlockSamples; ++k) {
+    const int sample = blockIdx.y * kAscBlockSamples + k;
+    if (sample >= batch) break;
+    const int64 index = static_cast<int64>(sample) * neurons + neuron;
+    T value[2] = {asc[index * 2], asc[index * 2 + 1]};
+    for (int step = 0; step < steps; ++step) {
+      if (step % stride == 0) {
+        T* slot = output + (step / stride) * pair_stride + index * 2;
+        slot[0] = value[0];
+        slot[1] = value[1];
+      }
+      const int32* row = record + (static_cast<int64>(step) * batch + sample) * 2 * words;
+      const bool fired = static_cast<unsigned>(row[word]) & bit;
+      const bool active = !(static_cast<unsigned>(row[words + word]) & bit);
+      #pragma unroll
+      for (int component = 0; component < 2; ++component) {
+        T adaptation = value[component];
+        if (active) adaptation = NestMul(adaptation, decay[component]);
+        value[component] = fired
+            ? NestAdd(amplitude[component], NestMul(adaptation, refractory[component]))
+            : adaptation;
+      }
+    }
+    T* last = output + static_cast<int64>(outputs - 1) * pair_stride + index * 2;
+    last[0] = value[0];
+    last[1] = value[1];
+  }
+}
+
+template <typename T>
+class AdvanceAscBlockRecordOp : public OpKernel {
+ public:
+  explicit AdvanceAscBlockRecordOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("stride", &stride_));
+    OP_REQUIRES(context, stride_ >= 1, errors::InvalidArgument("stride must be positive"));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    const Tensor& asc = context->input(0);
+    const Tensor& record = context->input(1);
+    const Tensor& coefficients = context->input(2);
+    OP_REQUIRES(context, asc.dims() == 2 && record.dims() == 3 && coefficients.dims() == 2
+                && (coefficients.dim_size(1) == 28 || coefficients.dim_size(1) == 6)
+                && asc.dim_size(0) == record.dim_size(1)
+                && asc.dim_size(1) == 2 * coefficients.dim_size(0),
+                errors::InvalidArgument("asc [batch, 2 * neurons], words [steps, batch, 2 * words] and "
+                                        "AoS coefficients [neurons, 28] or compact [neurons, 6] required"));
+    const bool compact = coefficients.dim_size(1) == 6;
+    const int neurons = coefficients.dim_size(0);
+    const int batch = asc.dim_size(0);
+    const int words = (neurons + 31) / 32;
+    const int steps = record.dim_size(0);
+    OP_REQUIRES(context, record.dim_size(2) == 2 * words,
+                errors::InvalidArgument("words must have 2 * ceil(neurons / 32) columns"));
+    const int outputs = (steps + stride_ - 1) / stride_ + 1;
+    Tensor* output;
+    OP_REQUIRES_OK(context, context->allocate_output(
+        0, TensorShape({outputs, asc.dim_size(0), asc.dim_size(1)}), &output));
+    if (asc.NumElements() == 0) return;
+    auto& device = context->eigen_device<GPUDevice>();
+    constexpr int kThreads = 256;
+    const dim3 grid((neurons + kThreads - 1) / kThreads, (batch + kAscBlockSamples - 1) / kAscBlockSamples);
+    auto kernel = compact ? AdvanceAscBlockRecordKernel<T, true> : AdvanceAscBlockRecordKernel<T, false>;
+    OP_REQUIRES_OK(context, GpuLaunchKernel(
+        kernel, grid, kThreads, 0, device.stream(), neurons, batch, words, steps, stride_, outputs,
+        asc.flat<T>().data(), record.flat<int32>().data(), coefficients.flat<T>().data(),
+        output->flat<T>().data()));
+  }
+
+ private:
+  int stride_;
+};
+
+REGISTER_KERNEL_BUILDER(Name("DpointnetAdvanceAscBlockRecord").Device(DEVICE_GPU)
+    .TypeConstraint<float>("T"), AdvanceAscBlockRecordOp<float>);
+REGISTER_KERNEL_BUILDER(Name("DpointnetAdvanceAscBlockRecord").Device(DEVICE_GPU)
+    .TypeConstraint<Eigen::half>("T"), AdvanceAscBlockRecordOp<Eigen::half>);
+
 // Half atomic add through a 32-bit CAS so the fat binary also covers SM61;
 // the sum is formed in float and rounded to half once, like a TensorFlow
 // half AddV2 of the two operands.

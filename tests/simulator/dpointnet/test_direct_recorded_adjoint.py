@@ -100,6 +100,46 @@ def test_step_record_pack_unpack_roundtrip(dtype, refractory, neurons):
     np.testing.assert_array_equal(blocked.numpy(), (counters.numpy() > 0).astype(refractory.as_numpy_dtype))
 
 
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("compact", [True, False])
+@pytest.mark.parametrize("steps,stride", [(0, 1), (1, 1), (4, 1), (7, 3), (25, 5), (23, 5)])
+@pytest.mark.parametrize("neurons", [31, 33, 1000])
+def test_advance_asc_block_record_is_bitwise_the_sequential_walk(dtype, compact, steps, stride, neurons):
+    """One block launch yields the ASC before every stride-th recorded step and the
+    final value, bitwise the per-step DpointnetAdvanceAscRecord walk."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.custom_ops import glif_state_ops as ops
+
+    if not ops.advance_asc_block_record_available():
+        pytest.skip("Rebuilt state library with DpointnetAdvanceAscBlockRecord required.")
+    rng = np.random.default_rng(steps * 7 + stride)
+    batch = 6
+    table = rng.random((neurons, 28)).astype(np.float32)
+    table[:, 8:10] = 0.9 + 0.1 * rng.random((neurons, 2))    # decay
+    table[:, 10:12] = rng.standard_normal((neurons, 2))      # amplitude
+    table[:, 16:18] = 0.5 + 0.5 * rng.random((neurons, 2))   # refractory decay
+    coefficients = tf.constant(np.concatenate([table[:, 8:12], table[:, 16:18]], axis=1) if compact else table, dtype)
+    asc = tf.constant(rng.standard_normal((batch, 2 * neurons)).astype(np.float32), dtype)
+    words = []
+    for _ in range(steps):
+        spikes = tf.cast(rng.random((batch, neurons)) < 0.3, dtype)
+        counters = tf.cast(rng.integers(0, 3, (batch, neurons)), tf.int16)
+        words.append(ops.pack_step_record(spikes, counters))
+    stacked = tf.stack(words) if steps else tf.zeros((0, batch, 2 * ((neurons + 31) // 32)), tf.int32)
+    block = ops.advance_asc_block_record(asc, stacked, coefficients, stride=stride)
+    expected = []
+    value = asc
+    for index in range(steps):
+        if index % stride == 0:
+            expected.append(value)
+        value = ops.advance_asc_record(value, words[index], coefficients)
+    expected.append(value)
+    assert block.shape == (len(expected), batch, 2 * neurons)
+    for index, item in enumerate(expected):
+        np.testing.assert_array_equal(block[index].numpy(), item.numpy(), err_msg=f"slot {index}")
+
+
 @pytest.mark.parametrize("selective", [False, True])
 @pytest.mark.parametrize("mode", ["exact", "soft_surrogate"])
 @pytest.mark.parametrize("batch", [4, 32])

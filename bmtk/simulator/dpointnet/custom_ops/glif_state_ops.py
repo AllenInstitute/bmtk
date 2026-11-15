@@ -1255,6 +1255,17 @@ def advance_asc_record(asc, words, coefficients):
     return _OPS.dpointnet_advance_asc_record(asc, words, coefficients)
 
 
+def advance_asc_block_record_available():
+    return _OPS is not None and hasattr(_OPS, "dpointnet_advance_asc_block_record")
+
+
+def advance_asc_block_record(asc, words, coefficients, stride=1):
+    """ASC before every ``stride``-th recorded step of ``words`` ([steps, batch,
+    2 * words]), then the final value: ``[ceil(steps / stride) + 1, batch, 2 * neurons]``,
+    bitwise ``advance_asc_record`` applied step by step."""
+    return _OPS.dpointnet_advance_asc_block_record(asc, words, coefficients, stride=stride)
+
+
 def direct_reverse_record(pre_reset, words, grad_v, grad_penalty, v_th, v_reset, *,
                           spike_base, refractory_dtype, penalty_mode, row=0, trace=None):
     """``(threshold, blocked, total_grad_v, spikes, spike_cotangent)`` of one recorded step.
