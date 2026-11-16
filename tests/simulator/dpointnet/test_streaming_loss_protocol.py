@@ -8,7 +8,6 @@ module, through ``"auto"`` and compare them with the checkpointed streaming
 reference and the dense route.
 """
 
-import logging
 import sys
 import textwrap
 from types import SimpleNamespace
@@ -245,7 +244,7 @@ def _run(engine, cell, model, states):
     return losses, [tf.identity(g) for g in tf.nest.flatten(gradients) if g is not None]
 
 
-def test_declared_project_losses_take_the_direct_route_under_auto(caplog):
+def test_declared_project_losses_take_the_direct_route_under_auto(monkeypatch):
     """Project-local declared losses: ``"auto"`` selects the direct recorded adjoint, the
     route log names each loss with its basis, and losses/gradients match the checkpointed
     streaming reference exactly and the dense route to compute-dtype rounding."""
@@ -253,7 +252,10 @@ def test_declared_project_losses_take_the_direct_route_under_auto(caplog):
     from bmtk.simulator.dpointnet.direct_recorded_adjoint import DirectRecordedAdjointRunner
     from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
     from bmtk.simulator.dpointnet.spike_statistics import SpikeStatisticsRunner
+    from bmtk.simulator.dpointnet import training
 
+    messages = []
+    monkeypatch.setattr(training.io, "log_info", messages.append)
     results = {}
     for route, options in (
         ("auto", {}),
@@ -269,8 +271,7 @@ def test_declared_project_losses_take_the_direct_route_under_auto(caplog):
             neurons = int(states[1].shape[-1])
             projection = np.random.default_rng(5).normal(size=(neurons, 3))
             engine = _engine_for(cell, states, model, _project_losses(projection), **options)
-            with caplog.at_level(logging.INFO):
-                engine.prepare_gradient_checkpointing()
+            engine.prepare_gradient_checkpointing()
             report = engine.training_route_report
             if route == "auto":
                 assert engine.recorded_adjoint == "direct"
@@ -279,7 +280,7 @@ def test_declared_project_losses_take_the_direct_route_under_auto(caplog):
                 bases = {entry["key"]: entry["basis"] for entry in report["losses"]}
                 assert bases == {"rate": "built-in", "window": "declared", "readout": "declared"}
                 assert {entry["key"]: entry["plans"] for entry in report["losses"]}["readout"] == ("projected traces",)
-                line = [r.getMessage() for r in caplog.records if r.getMessage().startswith("Training route:")][-1]
+                line = [m for m in messages if m.startswith("Training route:")][-1]
                 assert "checkpointed streaming + direct recorded adjoint" in line
                 assert f"window [_CountWindowLoss: declared by {__name__}, counts]" in line
                 assert "readout [_ProjectedTraceLoss: declared by" in line and "projected traces]" in line
@@ -303,10 +304,13 @@ def test_declared_project_losses_take_the_direct_route_under_auto(caplog):
         assert np.any(direct.numpy() != 0)
 
 
-def test_undeclared_and_opted_out_losses_keep_the_dense_route_visibly(caplog):
+def test_undeclared_and_opted_out_losses_keep_the_dense_route_visibly(monkeypatch):
     make_cell, DIRECT_OPTIONS, _engine_for, _model = _gpu_fixture()
     from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
+    from bmtk.simulator.dpointnet import training
 
+    messages = []
+    monkeypatch.setattr(training.io, "log_info", messages.append)
     for loss, phrase in ((_Undeclared(), "does not declare streaming support"), (_OptedOut(), "opts out of streaming")):
         cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
         try:
@@ -318,14 +322,13 @@ def test_undeclared_and_opted_out_losses_keep_the_dense_route_visibly(caplog):
                 return {"rate": TargetFiringRate(rnn, firing_rate=5, compiled_spike_counts=True), "custom": loss}
 
             engine = _engine_for(cell, states, model, losses)
-            with caplog.at_level(logging.INFO):
-                engine.prepare_gradient_checkpointing()
+            engine.prepare_gradient_checkpointing()
             assert isinstance(engine._extractor_forward, SegmentedRecomputeRunner)
             report = engine.training_route_report
             assert report["mode"] == "dense spike sequences" and phrase in report["reasons"]["stream_spike_statistics"]
             custom = [entry for entry in report["losses"] if entry["key"] == "custom"][0]
             assert custom["basis"] in ("undeclared", "opted-out") and phrase in custom["unmet"][0]
-            line = [r.getMessage() for r in caplog.records if r.getMessage().startswith("Training route:")][-1]
+            line = [m for m in messages if m.startswith("Training route:")][-1]
             assert "dense spike sequences" in line and phrase in line
             with pytest.raises(ValueError, match=phrase):
                 _engine_for(cell, states, model, losses, stream_spike_statistics=True).prepare_gradient_checkpointing()
