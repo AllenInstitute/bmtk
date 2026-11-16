@@ -64,6 +64,24 @@ class _ProjectedTraceLoss(StreamingSpikeLoss):
         return self.cost * tf.reduce_mean(tf.square(traces))
 
 
+class _LabelWeightedCountLoss(StreamingSpikeLoss):
+    """Count loss whose value depends on the batch labels ``y`` (row-aligned with counts)."""
+
+    def __init__(self, cost=1.0):
+        self.cost = cost
+        self.built_with = None
+
+    def build_streaming(self, context):
+        self.built_with = context  # eager hook: runs once before tracing
+        assert not tf.inside_function()
+
+    def __call__(self, spikes, y=None, **kwargs):
+        counts = spikes.temporal_sum() if isinstance(spikes, SpikeSummary) else tf.reduce_sum(
+            tf.cast(spikes, tf.float32), axis=1)
+        weights = tf.cast(tf.reshape(y["gain"], [-1, 1]), tf.float32)  # one gain per batch row
+        return self.cost * tf.reduce_mean(tf.square(weights * counts))
+
+
 class _Undeclared:
     def __call__(self, spikes, **kwargs):
         return tf.reduce_mean(tf.cast(spikes, tf.float32))
@@ -76,8 +94,8 @@ class _OptedOut(StreamingSpikeLoss):
         return tf.reduce_mean(tf.cast(spikes, tf.float32))
 
 
-def _context(length=7):
-    return streaming.StreamingContext(length, (4,), None, None, 1)
+def _context(length=7, partition=None):
+    return streaming.StreamingContext(length, (4,), None, partition, 1, dt=1.0)
 
 
 def test_declaration_bases_and_unmet_sentences():
@@ -107,6 +125,12 @@ def test_declaration_bases_and_unmet_sentences():
 
     assert streaming.streaming_unmet(Failing(), _context(7)) == ["needs at least 10 steps"]
     assert streaming.streaming_unmet(Failing(), _context(12)) == []
+    # Trace plans are not neuron-partition aware; count-only losses are.
+    projected = _ProjectedTraceLoss(np.ones((3, 2)), (1, 6))
+    assert streaming.streaming_unmet(projected, _context(partition=object())) == [
+        "_ProjectedTraceLoss trace plans are not neuron-partition aware."]
+    assert streaming.streaming_unmet(_CountWindowLoss(), _context(partition=object())) == []
+    assert _context().dt == 1.0
 
 
 def test_count_windows_and_plan_validation():
@@ -179,6 +203,28 @@ def test_engine_admits_declared_losses_without_a_gpu():
     assert "proj [_ProjectedTraceLoss: declared by" in described and "projected traces]" in described
     assert training.TrainingEngine.training_route_mode(
         {"selected": {"stream_spike_statistics": False, "recorded_adjoint": False}}) == "dense spike sequences"
+    # Native library status is part of the report/checklist (a missing library or
+    # .archs manifest is a named reason, not a silent slower route).
+    native = training.TrainingEngine._native_library_status()
+    assert set(native) == {"csr", "state", "record_store"} and all(isinstance(v, str) for v in native.values())
+    report["native"] = native
+    report["requested"] = {"stream_spike_statistics": "auto", "recorded_adjoint": "auto"}
+    report["automatic"] = report["selected"]
+    report["reasons"] = {"stream_spike_statistics": "ok", "recorded_adjoint": "ok"}
+    engine = engine_with({"count": _CountWindowLoss(1, 2)})
+    checklist = engine.training_route_checklist(report)
+    assert any(line.startswith("native csr library: ") for line in checklist)
+    assert any(line.startswith("count windows: 0-7, 1-5") for line in checklist)
+    # Eager build hook runs once, outside tracing, with the context (dt included).
+    labelled = _LabelWeightedCountLoss()
+    engine = engine_with({"labelled": labelled})
+    engine.rnn.dt = 0.5
+    engine.build_streaming_losses()
+    engine.build_streaming_losses()
+    assert labelled.built_with.sequence_length == 7 and labelled.built_with.dt == 0.5
+    assert labelled.built_with.batch_sizes == (4,)
+    with pytest.raises(ValueError, match="require_route must be"):
+        training.TrainingEngine.__init__(object.__new__(training.TrainingEngine), None, 1, 1, require_route="fast")
 
 
 def test_import_loss_modules_registers_project_losses(tmp_path, monkeypatch):
@@ -234,13 +280,18 @@ def _project_losses(projection):
             "rate": TargetFiringRate(rnn, firing_rate=5, compiled_spike_counts=True),
             "window": _CountWindowLoss(1, 2, cost=0.5),
             "readout": _ProjectedTraceLoss(projection, (1, 6), cost=2.0),
+            "labelled": _LabelWeightedCountLoss(cost=0.25),
         }
     return losses
 
 
-def _run(engine, cell, model, states):
+_LABELS = {"gain": tf.constant(np.linspace(0.5, 2.0, 32, dtype=np.float32).reshape(32, 1))}
+
+
+def _run(engine, cell, model, states, y=None):
     values = tf.zeros((32, 7, 0), cell.compute_dtype)
-    losses, gradients, _ = tf.function(lambda: engine._single_gradients((values,), {}, tuple(states)))()
+    labels = _LABELS if y is None else y
+    losses, gradients, _ = tf.function(lambda: engine._single_gradients((values,), labels, tuple(states)))()
     return losses, [tf.identity(g) for g in tf.nest.flatten(gradients) if g is not None]
 
 
@@ -278,7 +329,10 @@ def test_declared_project_losses_take_the_direct_route_under_auto(monkeypatch):
                 assert isinstance(engine._extractor_forward, DirectRecordedAdjointRunner)
                 assert report["mode"] == "checkpointed streaming + direct recorded adjoint"
                 bases = {entry["key"]: entry["basis"] for entry in report["losses"]}
-                assert bases == {"rate": "built-in", "window": "declared", "readout": "declared"}
+                assert bases == {"rate": "built-in", "window": "declared", "readout": "declared", "labelled": "declared"}
+                assert all(str(v).startswith("loaded from") for v in report["native"].values())
+                labelled = engine.parameters[0].loss_functions["labelled"]
+                assert labelled.built_with is not None and labelled.built_with.dt == 1.0
                 assert {entry["key"]: entry["plans"] for entry in report["losses"]}["readout"] == ("projected traces",)
                 line = [m for m in messages if m.startswith("Training route:")][-1]
                 assert "checkpointed streaming + direct recorded adjoint" in line
@@ -293,7 +347,21 @@ def test_declared_project_losses_take_the_direct_route_under_auto(monkeypatch):
             results[route] = _run(engine, cell, model, states)
         finally:
             cell.close_fused_cuda()
-    for name in ("rate", "window", "readout"):
+    # Labels drive the value: doubling the per-row gains quadruples the labelled term only.
+    tf.keras.utils.set_random_seed(23)
+    cell = make_cell("nest", selective=True, batch_size=32, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        states = list(cell.zero_state(32, cell.compute_dtype))
+        states[1] = tf.tile(tf.cast([[0.9, 1.1]], states[1].dtype), [32, 1])
+        model = _model(cell, tuple(states))
+        engine = _engine_for(cell, states, model, _project_losses(projection), require_route="direct")
+        engine.prepare_gradient_checkpointing()
+        doubled = _run(engine, cell, model, states, y={"gain": _LABELS["gain"] * 2.0})[0]["p0"]
+        np.testing.assert_allclose(doubled["labelled"], 4.0 * results["auto"][0]["p0"]["labelled"], rtol=1e-5)
+        np.testing.assert_array_equal(doubled["window"], results["auto"][0]["p0"]["window"])
+    finally:
+        cell.close_fused_cuda()
+    for name in ("rate", "window", "readout", "labelled"):
         assert float(results["auto"][0]["p0"][name]) > 0
         np.testing.assert_array_equal(results["auto"][0]["p0"][name], results["streaming"][0]["p0"][name])
         np.testing.assert_allclose(results["auto"][0]["p0"][name], results["dense"][0]["p0"][name], rtol=1e-4, atol=1e-6)
@@ -332,5 +400,10 @@ def test_undeclared_and_opted_out_losses_keep_the_dense_route_visibly(monkeypatc
             assert "dense spike sequences" in line and phrase in line
             with pytest.raises(ValueError, match=phrase):
                 _engine_for(cell, states, model, losses, stream_spike_statistics=True).prepare_gradient_checkpointing()
+            # require_route turns the visible fallback into an error naming the reason and the libraries.
+            with pytest.raises(ValueError, match="require_route='direct'.*native libraries"):
+                _engine_for(cell, states, model, losses, require_route="direct").prepare_gradient_checkpointing()
+            with pytest.raises(ValueError, match="require_route='streaming'"):
+                _engine_for(cell, states, model, losses, require_route="streaming").prepare_gradient_checkpointing()
         finally:
             cell.close_fused_cuda()

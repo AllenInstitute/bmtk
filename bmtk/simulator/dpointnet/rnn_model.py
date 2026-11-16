@@ -74,7 +74,7 @@ class Inference:
 
 # Training-engine route requests a config may name; omitted keys keep the
 # engine's "auto" defaults rather than being passed as None.
-TRAINING_ROUTE_OPTIONS = ("stream_spike_statistics", "recorded_adjoint", "record_offload")
+TRAINING_ROUTE_OPTIONS = ("stream_spike_statistics", "recorded_adjoint", "record_offload", "require_route")
 
 
 def training_route_options(train_dict):

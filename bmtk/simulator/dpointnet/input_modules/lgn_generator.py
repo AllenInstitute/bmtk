@@ -621,6 +621,7 @@ class PerDeviceLGNIterator:
                 "duration": tf.fill(
                     (self.batch_size, 1), tf.cast(generator.duration, generator.dtype)
                 ),
+                "phase": tf.reshape(tf.cast(values[1], generator.dtype), (self.batch_size, 1)),
             }
             return spikes, signatures
 
@@ -796,6 +797,7 @@ def create_drifting_gratings_generator(
                 "orientation": orientation_target,
                 "contrast": tf.constant(contrast, dtype=dtype, shape=(1,)),
                 "duration": tf.constant(duration, dtype=dtype, shape=(1,)),
+                "phase": tf.reshape(tf.cast(sample_phase_tensor, dtype), (1,)),
             }
             sample_idx += 1
 
@@ -811,7 +813,8 @@ def create_drifting_gratings_generator(
             {
                 'orientation': tf.TensorSpec(dtype=dtype, shape=(1,)), 
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,)), 
-                'duration': tf.TensorSpec(dtype=dtype, shape=(1,))
+                'duration': tf.TensorSpec(dtype=dtype, shape=(1,)),
+                'phase': tf.TensorSpec(dtype=dtype, shape=(1,)),
             }
         )
     )

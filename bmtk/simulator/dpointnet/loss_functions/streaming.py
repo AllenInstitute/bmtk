@@ -38,8 +38,15 @@ Contract (all optional overrides have defaults suitable for a count-only loss):
     ``"sampled traces"``, ``"projected traces"``), used for reporting and the
     reuse check; the actual plans are validated when prepared.
 
+``build_streaming(context)``
+    Optional eager hook run once before tracing (lazy target generators, tables).
+
 ``__call__(spikes, **kwargs)`` must accept a ``SpikeSummary`` (and may still
-accept dense spike tensors on the dense route).
+accept dense spike tensors on the dense route). On every route the engine also
+passes ``voltages``, ``model_state`` and the batch labels ``y`` of the loss's
+parameter group; ``SpikeSummary`` rows, trace rows and ``y`` rows refer to the
+same samples (the whole group, single replica). Windows are in steps; the
+context carries ``dt`` in ms.
 """
 
 from typing import NamedTuple
@@ -50,12 +57,19 @@ _BUILTIN_PREFIX = __name__.rsplit(".", 1)[0] + "."
 
 
 class StreamingContext(NamedTuple):
-    """Engine-level facts a loss may check in ``streaming_unmet``."""
+    """Engine-level facts a loss may check in ``streaming_unmet`` / use in ``build_streaming``.
+
+    Time base: ``sequence_length``, count windows and trace windows are in **steps**;
+    ``dt`` is the step in milliseconds (``steps = ms / dt``). ``batch_sizes`` are the
+    per-parameter-group batch sizes; a loss is called once per group with the trace,
+    count and ``y`` rows of exactly that group (single replica).
+    """
     sequence_length: int
     batch_sizes: tuple
     cell: object
     neuron_partition: object
     replicas: int
+    dt: float = 1.0
 
 
 class StreamingSpikeLoss:
@@ -65,7 +79,14 @@ class StreamingSpikeLoss:
     streaming_plan_kinds = ("counts",)
 
     def streaming_unmet(self, context):
+        """Route prerequisites only (fallback sentences); configuration errors should raise
+        in ``__init__`` or ``build_streaming`` instead of silently selecting the dense route."""
         return ()
+
+    def build_streaming(self, context):
+        """Eager hook, called once outside any ``tf.function`` before the first rollout
+        is traced (e.g. to build target generators or constant tables)."""
+        return None
 
     def count_windows(self, sequence_length):
         pre = getattr(self, "_pre_delay", None) or 0
@@ -123,10 +144,13 @@ def streaming_unmet(loss, context):
         return [f"{name} declares unknown streaming plan kinds {unknown}; known kinds are {list(PLAN_KINDS)}."]
     unmet = loss.streaming_unmet(context)
     if unmet is None:
-        return []
-    if isinstance(unmet, str):
+        unmet = ()
+    elif isinstance(unmet, str):
         unmet = (unmet,)
-    return [str(sentence) for sentence in unmet]
+    unmet = [str(sentence) for sentence in unmet]
+    if declares_trace_plans(loss) and getattr(context, "neuron_partition", None) is not None:
+        unmet.append(f"{name} trace plans are not neuron-partition aware.")
+    return unmet
 
 
 def count_windows(loss, sequence_length):

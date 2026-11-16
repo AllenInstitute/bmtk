@@ -206,6 +206,11 @@ class TrainingEngine:
         # Pinned-host offload of the direct route's records; validated against
         # the resolved route in prepare_gradient_checkpointing (no silent fallback).
         self.record_offload = normalize_record_offload(kwargs.get("record_offload", ()))
+        # ``require_route`` turns an automatic fallback into an error: "direct",
+        # "streaming" (streaming with or without a recorded adjoint) or None.
+        self.require_route = kwargs.get("require_route", None)
+        if self.require_route not in (None, "direct", "streaming"):
+            raise ValueError(f"require_route must be None, 'streaming' or 'direct', got {self.require_route!r}.")
         if self.record_offload and self._recorded_adjoint_request not in ("auto", "direct"):
             raise ValueError(
                 f"record_offload={self.record_offload!r} requires the direct recorded adjoint "
@@ -905,6 +910,7 @@ class TrainingEngine:
                     "stream_spike_statistics resolved to False: "
                     + report["reasons"]["stream_spike_statistics"]
                 )
+        report["native"] = self._native_library_status()
         report["selected"] = {"stream_spike_statistics": bool(stream), "recorded_adjoint": adjoint}
         report["automatic"] = {"stream_spike_statistics": bool(auto_stream), "recorded_adjoint": auto_adjoint}
         report["record_offload"] = tuple(self.record_offload)
@@ -921,6 +927,18 @@ class TrainingEngine:
             if getattr(self, f"_{name}_request") != "auto"
             and report["selected"][name] != report["automatic"][name]
         }
+        if self.require_route == "direct" and adjoint != "direct":
+            raise ValueError(
+                "require_route='direct' but the training route resolved to "
+                f"{self.training_route_mode({'selected': {'stream_spike_statistics': bool(stream), 'recorded_adjoint': adjoint}})}: "
+                f"stream_spike_statistics: {report['reasons']['stream_spike_statistics']}; recorded_adjoint: "
+                f"{report['reasons']['recorded_adjoint']}; native libraries: {report['native']}"
+            )
+        if self.require_route == "streaming" and not stream:
+            raise ValueError(
+                "require_route='streaming' but the training route resolved to dense spike sequences: "
+                f"{report['reasons']['stream_spike_statistics']}; native libraries: {report['native']}"
+            )
         self.stream_spike_statistics = bool(stream)
         self.recorded_adjoint = adjoint
         # Per-loss admission: which losses are on the streaming routes and why
@@ -932,12 +950,20 @@ class TrainingEngine:
         acceleration = getattr(cell, "acceleration_report", None)
         if isinstance(acceleration, dict):
             acceleration["training_route"] = report
+        native_note = ""
+        if adjoint != "direct":
+            degraded = {
+                name: status for name, status in report["native"].items()
+                if not str(status).startswith("loaded from")
+            }
+            if degraded:
+                native_note = "; native libraries: " + ", ".join(f"{k}: {v}" for k, v in degraded.items())
         io.log_info(
-            "Training route: %s; stream_spike_statistics=%s (%s); recorded_adjoint=%s (%s); losses: %s."
+            "Training route: %s; stream_spike_statistics=%s (%s); recorded_adjoint=%s (%s); losses: %s%s."
             % (report["mode"],
                report["selected"]["stream_spike_statistics"], report["reasons"]["stream_spike_statistics"],
                report["selected"]["recorded_adjoint"], report["reasons"]["recorded_adjoint"],
-               self.describe_route_losses(report))
+               self.describe_route_losses(report), native_note)
         )
         for line in self.training_route_checklist(report):
             io.log_debug("Training route detail: " + line)
@@ -950,6 +976,19 @@ class TrainingEngine:
                 ) + ". Remove inherited stream_spike_statistics/recorded_adjoint flags unless the "
                 "override is intended."
             )
+
+    @staticmethod
+    def _native_library_status():
+        """Load/compatibility status of each native library (named in the route report so a
+        missing library or ``.archs`` manifest is a visible reason, not a silent slower route)."""
+        from .custom_ops import csr_spike_ops, glif_state_ops, record_store_ops
+
+        status = {"csr": csr_spike_ops.cuda_op_status(), "state": glif_state_ops.glif_state_op_status()}
+        try:
+            status["record_store"] = record_store_ops.record_store_op_status()
+        except Exception as error:  # pragma: no cover - status helpers must not break routing
+            status["record_store"] = f"status unavailable: {error}"
+        return status
 
     @staticmethod
     def training_route_mode(report):
@@ -993,6 +1032,8 @@ class TrainingEngine:
                 f"{name}: requested={report['requested'][name]!r} selected={report['selected'][name]!r} "
                 f"automatic={report['automatic'][name]!r} ({report['reasons'][name]})"
             )
+        for library, status in (report.get("native") or {}).items():
+            lines.append(f"native {library} library: {status}")
         if report.get("record_payload"):
             lines.append(f"record payload: {report['record_payload']['estimate']}")
         if report["selected"]["stream_spike_statistics"]:
@@ -1010,6 +1051,7 @@ class TrainingEngine:
         return lines
 
     def prepare_gradient_checkpointing(self):
+        self.build_streaming_losses()
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
         if prepare_training_model is not None:
             prepare_training_model()
@@ -1173,7 +1215,23 @@ class TrainingEngine:
             cell=getattr(rnn, "cell", None),
             neuron_partition=getattr(rnn, "neuron_partition", None),
             replicas=strategy.num_replicas_in_sync if strategy is not None else 1,
+            dt=float(getattr(rnn, "dt", 1.0) or 1.0),
         )
+
+    def build_streaming_losses(self):
+        """Run every declared loss's eager ``build_streaming`` hook once (outside tracing)."""
+        if getattr(self, "_streaming_losses_built", False):
+            return
+        from .loss_functions import streaming
+
+        context = self._streaming_context()
+        for parameter in getattr(self, "_parameters", None) or ():
+            for loss in (getattr(parameter, "loss_functions", None) or {}).values():
+                if streaming.streaming_basis(loss) in ("built-in", "declared"):
+                    hook = getattr(loss, "build_streaming", None)
+                    if hook is not None:
+                        hook(context)
+        self._streaming_losses_built = True
 
     def streaming_loss_declarations(self):
         """Per-loss admission basis for the streaming routes (also in ``training_route_report``)."""

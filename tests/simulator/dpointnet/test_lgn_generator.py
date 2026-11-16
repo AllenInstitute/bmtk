@@ -145,6 +145,9 @@ try:
             np.testing.assert_array_equal(local, expected)
             theta = strategy.experimental_local_results(targets[0]['orientation'])[replica]
             np.testing.assert_array_equal(theta, expected_targets['orientation'])
+            phase = strategy.experimental_local_results(targets[0]['phase'])[replica]
+            np.testing.assert_array_equal(phase, expected_targets['phase'])
+            assert phase.shape == theta.shape
         reduced = strategy.run(lambda value: tf.reduce_sum(tf.cast(value, tf.int32)), args=(spikes,))
         assert len(strategy.experimental_local_results(reduced)) == 2
     for replica, (generator, _) in enumerate(iterator.data_itrs[0].generators):
