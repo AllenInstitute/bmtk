@@ -167,6 +167,8 @@ class TrainingEngine:
     # Class-level fallbacks for engines built without __init__ (test doubles):
     # explicit dense requests, so preparation never resolves a route for them.
     record_offload = ()
+    require_route = None
+    _streaming_losses_built = False
     _stream_spike_statistics_request = False
     _recorded_adjoint_request = False
     training_route_report = None
@@ -1051,7 +1053,6 @@ class TrainingEngine:
         return lines
 
     def prepare_gradient_checkpointing(self):
-        self.build_streaming_losses()
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
         if prepare_training_model is not None:
             prepare_training_model()
@@ -1063,6 +1064,8 @@ class TrainingEngine:
             self._validate_neuron_partition_training()
         if self.stream_spike_statistics:
             self._validate_spike_statistics()
+            # Eager build hooks of the admitted losses, once, before the first trace.
+            self.build_streaming_losses()
         if getattr(cell, "temporal_gradient_precision", "compute") == "float32":
             if self.gradient_checkpointing and (
                 cell.temporal_checkpoint_chunk_size

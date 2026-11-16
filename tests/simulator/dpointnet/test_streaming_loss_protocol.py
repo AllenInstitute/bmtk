@@ -24,6 +24,14 @@ from bmtk.simulator.dpointnet.spike_summary import SpikeSummary  # noqa: E402
 from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, SampledSpikeTraces  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def restore_policy():
+    """``make_cell`` sets the global mixed-precision policy; leave it as found."""
+    previous = tf.keras.mixed_precision.global_policy()
+    yield
+    tf.keras.mixed_precision.set_global_policy(previous)
+
+
 class _CountWindowLoss(StreamingSpikeLoss):
     """Project-style loss: mean squared spike count over a trimmed window."""
 
