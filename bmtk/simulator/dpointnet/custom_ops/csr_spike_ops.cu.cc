@@ -1232,12 +1232,13 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
     tile[sample][pair_offset] = value;
   }
   __syncthreads();
-  const float factor = scale[0];
   for (int index = threadIdx.x; index < kSlice * kPairsPerTile; index += blockDim.x) {
     const int sample = index % kSlice;
     const int pair_offset = index / kSlice;
     const int64_t pair = pair_base + pair_offset;
     if (pair < n_pairs) {
+      // `scale` holds one (scale, inverse, max bits) triple per 32-sample half.
+      const float factor = scale[(kSlice > 32 ? (sample >> 5) * 3 : 0)];
       projected[pair * kSlice + sample] = FromFloat<Eigen::half>(
           tile[sample][pair_offset] * factor);
     }
@@ -1249,7 +1250,7 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
 // an edge takes kSlice / kPack lanes, and the warp walks its row 32 edges at a
 // time, broadcasting each edge's pair and weight with shuffles.
 //
-// kSlice = 64 (FP16, batch 33..64) reads each pair's whole 128-byte projected
+// kSlice = 64 (FP16, batch exactly 64) reads each pair's whole 128-byte projected
 // line once per edge instead of twice in two 32-sample launches, and streams
 // the row descriptors once. Each lane then keeps kPartials = kSlice / 32
 // accumulators, taking edge `column` into partial `step % kPartials`: every
@@ -1323,7 +1324,9 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
     }
   }
   if (lane < kLanesPerEdge) {
-    const float factor = inverse_scale[1] * ToFloat(*spike_gradient_scale);
+    // The lane's kPack samples lie in one 32-sample half; its own inverse scale.
+    const float factor = inverse_scale[(kSlice > 32 ? (sample_base >> 5) * 3 : 0) + 1]
+                         * ToFloat(*spike_gradient_scale);
 #pragma unroll
     for (int sample = 0; sample < kPack; ++sample) {
       float total = grad[0][sample];
@@ -2374,9 +2377,12 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           errors::InvalidArgument("Accumulator must have one FP32 value per CSR edge."));
       // The FP16 Javier-derived backward also takes one 64-sample slice
       // (kDpointnetWideSlice); every other path is bounded by its 32-bit
-      // sample masks.
+      // sample masks. Exactly 64 samples: the two 32-sample launches it replaces are then bitwise
+      // reproduced (per-half scales, partial accumulators); other batches above 32
+      // keep the Python slicer's 32-sample launches (a 16-sample tail has its own
+      // reduction geometry).
       const bool wide_slice = use_javier_batch32_backward_ &&
-          std::is_same<T, Eigen::half>::value && batch > 32 && batch <= kDpointnetWideSlice;
+          std::is_same<T, Eigen::half>::value && batch == kDpointnetWideSlice;
       OP_REQUIRES(
           context, batch >= 1 && (batch <= 32 || wide_slice) && n_basis == 4 && n_pairs_ > 0 &&
               write_csr_weight_gradient_ && !use_small_batch_backward_ &&
@@ -2454,7 +2460,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                   std::is_same<Index, uint32>::value) {
         const bool javier_slice = use_javier_batch32_backward_ && batch > 0 &&
             (batch < 32 || (kAccumulate && std::is_same<T, Eigen::half>::value &&
-                            batch > 32 && batch <= kDpointnetWideSlice));
+                            batch == kDpointnetWideSlice));
         if (!use_small_batch_backward_ && (batch == 32 || javier_slice) &&
           n_basis == 4 && n_pairs_ > 0) {
         if (use_javier_batch32_backward_ && write_csr_weight_gradient_) {
@@ -2472,23 +2478,31 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           const int64_t projected_count = (n_pairs_ + 1) * slice;
           OP_REQUIRES_OK(context, context->allocate_temp(
               DT_HALF, TensorShape({projected_count}), &projected_half));
+          // One (scale, inverse, max bits) triple per 32-sample half: a 64-sample
+          // slice normalizes each half exactly as its own 32-sample launch would.
+          const int halves = slice > 32 ? slice / 32 : 1;
           OP_REQUIRES_OK(context, context->allocate_temp(
-              DT_FLOAT, TensorShape({3}), &scale_tensor));
+              DT_FLOAT, TensorShape({3 * halves}), &scale_tensor));
           scale = scale_tensor.flat<float>().data();
-          unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 2);
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               SetZeroKernel<Eigen::half>, 1, 32, 0, device.stream(), slice,
               projected_half.flat<Eigen::half>().data() + n_pairs_ * slice));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
-              reinterpret_cast<uint32*>(max_bits)));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              DpointnetAbsMaxFiniteKernel<T>, 1024, 256, 0, device.stream(),
-              current_grad.NumElements(), current_grad.flat<T>().data(), max_bits));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              DpointnetProjectionScaleKernel<T>, 1, 32, 0, device.stream(),
-              max_bits, basis.flat<T>().data(), static_cast<int>(basis.dim_size(0)),
-              static_cast<int>(n_basis), scale));
+          const int64_t half_elements = static_cast<int64_t>(32) * n_post_ * n_basis;
+          for (int half = 0; half < halves; ++half) {
+            unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 3 * half + 2);
+            const int64_t first = half * half_elements;
+            const int64_t count = std::min<int64_t>(half_elements, current_grad.NumElements() - first);
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
+                reinterpret_cast<uint32*>(max_bits)));
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                DpointnetAbsMaxFiniteKernel<T>, 1024, 256, 0, device.stream(),
+                count, current_grad.flat<T>().data() + first, max_bits));
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                DpointnetProjectionScaleKernel<T>, 1, 32, 0, device.stream(),
+                max_bits, basis.flat<T>().data(), static_cast<int>(basis.dim_size(0)),
+                static_cast<int>(n_basis), scale + 3 * half));
+          }
 #define LAUNCH_HALF_PROJECTION(SLICE) \
           OP_REQUIRES_OK(context, GpuLaunchKernel( \
               DpointnetPreprojectPairsHalfBatch32Kernel<T, Index, SLICE>, \

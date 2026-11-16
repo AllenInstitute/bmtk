@@ -341,9 +341,10 @@ def _projection_type_representatives(basis, n_synapse_types):
 # sliced here: source cotangents concatenate, weight gradients accumulate.
 # The combined forward sweep is per sample and needs no slicing.
 NATIVE_BACKWARD_BATCH = 32
-# The FP16 Javier-derived accumulate backward of a rebuilt library takes one
-# 64-sample slice (each pair's projected line read once per edge; bitwise the
-# two-slice result). Older libraries keep 32.
+# The FP16 Javier-derived accumulate backward of a rebuilt library takes a batch
+# of exactly 64 as one slice (each pair's projected line read once per edge; per
+# 32-sample-half scales and partial accumulators make it bitwise the two 32-sample
+# launches it replaces). Other batches, and older libraries, keep 32-sample slices.
 WIDE_BACKWARD_BATCH = 64
 
 
@@ -353,8 +354,10 @@ def wide_accumulate_backward_available():
 
 def accumulate_backward_batch(spikes, attributes):
     """Samples per launch of the accumulate backward for these operands."""
+    batch = _static_batch(spikes)
     if (
-        attributes.get("use_javier_batch32_backward", False)
+        batch == WIDE_BACKWARD_BATCH
+        and attributes.get("use_javier_batch32_backward", False)
         and not attributes.get("use_small_batch_backward", False)
         and not attributes.get("use_packed_sm120_backward", False)
         and attributes.get("write_csr_weight_gradient", True)

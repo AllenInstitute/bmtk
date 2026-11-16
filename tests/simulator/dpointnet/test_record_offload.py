@@ -127,11 +127,23 @@ def test_host_record_store_round_trips_frames_in_reverse(dtype):
         assert stats.numpy()[4] <= prefetch + 2
     np.testing.assert_array_equal(store.take(5).numpy(), values[5])
     np.testing.assert_array_equal(store.take(5).numpy(), values[5])
+    # Demand-loaded frames (no prefetch index) obey the same resident bound as prefetches.
+    for index in range(frames):
+        np.testing.assert_array_equal(store.take(index).numpy(), values[index])
+    assert store.stats().numpy()[4] <= prefetch + 2
     empty = HostRecordStore(3, (batch, width), dtype, name="dpointnet_test_empty_store_" + dtype.name)
     with pytest.raises(tf.errors.FailedPreconditionError, match="never offloaded"):
         empty.take(1)
     with pytest.raises(tf.errors.InvalidArgumentError, match="outside"):
         store.take(frames)
+    # The Python object owns the resource: after close() the name resolves to a fresh,
+    # empty store (the pinned allocation and cached frames of the old one are released).
+    store.close()
+    reopened = HostRecordStore(frames, (batch, width), dtype, prefetch=prefetch, staging_slots=slots, name=store.name)
+    with pytest.raises(tf.errors.FailedPreconditionError, match="never offloaded"):
+        reopened.take(0)
+    reopened.close()
+    empty.close()
 
 
 def _compare(runners, cell, initial, model, length, traces):
@@ -214,9 +226,13 @@ def test_offload_runner_validation():
     try:
         initial = _initial_state(cell, 4)
         model = _model(cell, initial)
-        assert cell.max_delay > 1
-        with pytest.raises(ValueError, match="must not exceed chunk_size"):
+        assert cell.max_delay == 2
+        with pytest.raises(ValueError, match="must be smaller than chunk_size"):
             DirectRecordedAdjointRunner(model, cell, sequence_length=7, chunk_size=1, record_offload="history")
+        # delay == chunk_size: the oldest record a chunk's window shifts read lies before the
+        # staged previous-chunk frame, so it is rejected too.
+        with pytest.raises(ValueError, match="must be smaller than chunk_size"):
+            DirectRecordedAdjointRunner(model, cell, sequence_length=7, chunk_size=2, record_offload="history")
         runner = DirectRecordedAdjointRunner(model, cell, sequence_length=7, chunk_size=1, record_offload="voltage")
         assert runner.record_offload == ("voltage",)
         with pytest.raises(ValueError, match="record_offload accepts"):

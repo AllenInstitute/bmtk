@@ -101,6 +101,9 @@ class HostRecordStore : public ResourceBase {
     TF_RETURN_IF_ERROR(CheckStored(index, "take"));
     auto found = resident_.find(index);
     if (found == resident_.end()) {
+      // Demand load: the same resident bound as a prefetch, so distinct takes
+      // never accumulate the whole record payload on the device.
+      TF_RETURN_IF_ERROR(EvictToBound());
       Resident resident;
       TF_RETURN_IF_ERROR(StartUpload(context, compute, index, &resident));
       found = resident_.emplace(index, std::move(resident)).first;
@@ -205,14 +208,19 @@ class HostRecordStore : public ResourceBase {
       TF_EXCLUSIVE_LOCKS_REQUIRED(mu_) {
     TF_RETURN_IF_ERROR(CheckStored(index, "prefetch"));
     if (resident_.count(index)) return absl::OkStatus();
-    // The reverse loop walks indices downwards: the largest resident index is
-    // the one consumed longest ago.
-    while (static_cast<int>(resident_.size()) >= prefetch_ + 2) {
-      TF_RETURN_IF_ERROR(Evict(std::prev(resident_.end())));
-    }
+    TF_RETURN_IF_ERROR(EvictToBound());
     Resident resident;
     TF_RETURN_IF_ERROR(StartUpload(context, compute, index, &resident));
     resident_.emplace(index, std::move(resident));
+    return absl::OkStatus();
+  }
+
+  // At most prefetch_ + 1 frames stay resident. The reverse loop walks indices
+  // downwards: the largest resident index is the one consumed longest ago.
+  absl::Status EvictToBound() TF_EXCLUSIVE_LOCKS_REQUIRED(mu_) {
+    while (static_cast<int>(resident_.size()) >= prefetch_ + 2) {
+      TF_RETURN_IF_ERROR(Evict(std::prev(resident_.end())));
+    }
     return absl::OkStatus();
   }
 

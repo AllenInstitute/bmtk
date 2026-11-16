@@ -11,6 +11,7 @@ mode (commit 5d58bc3; credit: Javier), without its codec.
 
 import threading
 import uuid
+import weakref
 from pathlib import Path
 
 import tensorflow as tf
@@ -62,12 +63,26 @@ def host_record_store_available():
     return _load() is not None
 
 
+def _destroy_store(name, frames, frame_shape, dtype, prefetch):
+    """Delete the named store resource (pinned host memory, cached device frames)."""
+    try:
+        with tf.init_scope():
+            handle = _OPS.dpointnet_host_record_store(
+                frames=frames, frame_shape=frame_shape, dtype=dtype, prefetch=prefetch, shared_name=name,
+            )
+            tf.raw_ops.DestroyResourceOp(resource=handle, ignore_lookup_error=True)
+    except (tf.errors.OpError, RuntimeError, AttributeError, TypeError):
+        pass
+
+
 class HostRecordStore:
     """``frames`` equally shaped records in pinned host memory, one store per rollout role.
 
     Each graph (the forward function and the custom gradient's reverse function)
     creates its own handle to the same named resource; the resource itself is
-    created on first use and lives with the kernels of those graphs.
+    created on first use. The Python object owns it: ``close()`` (or garbage
+    collection) destroys the resource, releasing the pinned allocation and any
+    cached device frames, as ``CsrConnectivity`` does for its metadata.
     """
 
     def __init__(self, frames, frame_shape, dtype, *, prefetch=DEFAULT_PREFETCH,
@@ -86,6 +101,15 @@ class HostRecordStore:
         if self.dtype not in (tf.float16, tf.float32):
             raise ValueError(f"Host record stores hold float16 or float32 frames, not {self.dtype.name}.")
         self.name = name or f"dpointnet_host_record_store_{uuid.uuid4().hex}"
+        self._handles = {}
+        self._finalizer = weakref.finalize(
+            self, _destroy_store, self.name, self.frames, self.frame_shape, self.dtype,
+            self.prefetch_depth,
+        )
+
+    def close(self):
+        """Destroy the store resource now (idempotent)."""
+        self._finalizer()
         self._handles = {}
 
     @property

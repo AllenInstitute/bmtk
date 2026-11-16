@@ -108,10 +108,11 @@ def test_sliced_backward_matches_single_launch(selective, monkeypatch):
 
 @pytest.mark.parametrize("batch", [64, 48])
 def test_wide_fp16_slice_matches_two_32_slices(batch, monkeypatch):
-    """The FP16 accumulate backward takes batch 33..64 as one 64-sample slice whose
-    spike cotangents are bitwise the two 32-sample launches (partial accumulators
-    fold in the 32-slice butterfly order); the FP32 weight accumulator differs only
-    by atomic order."""
+    """The FP16 accumulate backward takes a batch of exactly 64 as one slice whose
+    spike cotangents are bitwise the two 32-sample launches (per-half scales,
+    partial accumulators folded in the 32-slice butterfly order); the FP32 weight
+    accumulator differs only by atomic order. Batch 48 stays on 32-sample slices
+    (its 16-sample tail has its own reduction geometry) and must match too."""
     _gpu_required()
     if not csr_spike_ops.wide_accumulate_backward_available():
         pytest.skip("Rebuilt CSR library with the 64-sample backward slice required.")
@@ -125,7 +126,8 @@ def test_wide_fp16_slice_matches_two_32_slices(batch, monkeypatch):
         options = dict(sequence_length=7, chunk_size=3, differentiate_inputs=False, count_windows=((0, 7), (1, 6)))
         traces = _traces(cell, 7)
         spikes = tf.zeros((batch, 1), tf.float16)
-        assert csr_spike_ops.accumulate_backward_batch(spikes, {"use_javier_batch32_backward": True}) == 64
+        expected_width = 64 if batch == 64 else 32
+        assert csr_spike_ops.accumulate_backward_batch(spikes, {"use_javier_batch32_backward": True}) == expected_width
         assert csr_spike_ops.accumulate_backward_batch(tf.zeros((batch, 1), tf.float32), {"use_javier_batch32_backward": True}) == 32
         assert csr_spike_ops.accumulate_backward_batch(spikes, {}) == 32
         wide = DirectRecordedAdjointRunner(model, cell, **options)
@@ -135,6 +137,18 @@ def test_wide_fp16_slice_matches_two_32_slices(batch, monkeypatch):
         observed, _ = _evaluate([narrow], cell, initial, model, 7, traces)
         _compare(results[0], observed[0], n_exact, f"wide slice batch {batch}")
         assert all(np.any(value.numpy() != 0) for value in results[0][1][-3:])
+    finally:
+        cell.close_fused_cuda()
+
+
+def test_numpy_integer_batch_is_accepted_by_fused_accumulation():
+    """Declared batch sizes arrive as NumPy integers from configs/metadata; the fused
+    accumulation check must accept them like the rest of the resolver."""
+    _gpu_required()
+    cell = make_cell("nest", selective=True, batch_size=np.int64(8), hard_reset_gradient_mode="soft_surrogate",
+                     **LARGE_BATCH_OPTIONS)
+    try:
+        assert cell.use_fused_recurrent_accumulation
     finally:
         cell.close_fused_cuda()
 

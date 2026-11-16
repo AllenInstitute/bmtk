@@ -1495,7 +1495,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if (
                 not supported_temporal_route
                 or not use_direct_csr_recurrent_gradient
-                or not (isinstance(batch_size, int) and batch_size >= 1)
+                or not (isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size >= 1)
                 or not train_recurrent
                 or train_recurrent_per_type
             ):

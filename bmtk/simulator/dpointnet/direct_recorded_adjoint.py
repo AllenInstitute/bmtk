@@ -600,10 +600,12 @@ class DirectRecordedAdjointRunner:
             raise RuntimeError(
                 "record_offload requires a GPU and the record store library: " + record_store_op_status()
             )
-        if "history" in self.record_offload and int(cell.max_delay) > self.chunk_size:
+        # The staged (previous chunk, current chunk) word frames must hold every record
+        # the reverse's delay-window shifts read, down to start - 1 - max_delay.
+        if "history" in self.record_offload and int(cell.max_delay) >= self.chunk_size:
             raise ValueError(
                 "History offload reads the previous chunk's word frame for delayed spikes, so the "
-                f"recurrent delay ({int(cell.max_delay)} steps) must not exceed chunk_size ({self.chunk_size})."
+                f"recurrent delay ({int(cell.max_delay)} steps) must be smaller than chunk_size ({self.chunk_size})."
             )
         self._stores = {}
         self.n_chunks = -(-self.sequence_length // self.chunk_size)
@@ -805,6 +807,12 @@ class DirectRecordedAdjointRunner:
             store = HostRecordStore(frames, frame_shape, dtype, staging_slots=staging_slots, prefetch=prefetch)
             self._stores[key] = store
         return store
+
+    def close(self):
+        """Release the pinned-host record stores (also released when the runner is collected)."""
+        for store in self._stores.values():
+            store.close()
+        self._stores = {}
 
     def record_offload_report(self):
         """Pinned host bytes per offloaded surface of the stores created so far."""
