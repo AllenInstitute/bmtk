@@ -379,7 +379,7 @@ class PointEdgeAdaptor(EdgeAdaptor):
             else:
                 # Get nsyns as either an array or a constant. If not explcitiy specified assume nsyns = 1
                 if 'nsyns' in grp_vals.columns:
-                    nsyns = grp_vals['nsyns'].values
+                    nsyns = grp_vals['nsyns'].values.astype(int)
                 else:
                     nsyns = edge_props.get('nsyns', 1)
 
@@ -412,4 +412,4 @@ class PointEdgeAdaptor(EdgeAdaptor):
 
 
 def point_syn_weight(self, edge, src_node, trg_node):
-    return edge['syn_weight']*edge.nsyns
+    return edge['syn_weight']*int(edge.nsyns)
