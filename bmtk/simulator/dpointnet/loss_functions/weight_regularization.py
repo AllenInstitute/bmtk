@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 
 from . import loss_utils
+from .streaming import StreamingSpikeLoss
 
 
 _weight_regularization_scope = ContextVar("weight_regularization_scope", default=None)
@@ -218,7 +219,7 @@ def _grouped_emd_custom_gradient(
     return emd(values)
 
 
-class EMDWeightRegularization:
+class EMDWeightRegularization(StreamingSpikeLoss):
     """Earth Mover's Distance (Wasserstein-1) regularizer on the recurrent weights.
 
     Penalizes the per-connection-type EMD between the current and initial recurrent
@@ -226,6 +227,8 @@ class EMDWeightRegularization:
     initial distribution is captured at construction, the loss is exactly 0 at init.
     Ported from V1_GLIF_model loss_functions.EarthMoversDistanceRegularizer.
     """
+
+    streaming_plan_kinds = ()  # reads recurrent weights, never spikes
 
     _deduplicate_within_graph = False
     supports_neuron_partition = True

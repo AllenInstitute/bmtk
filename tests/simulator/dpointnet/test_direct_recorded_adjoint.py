@@ -526,7 +526,7 @@ def test_training_engine_auto_keeps_dense_route_for_unsupported_losses():
         assert "CustomLoss" in engine.training_route_report["reasons"]["stream_spike_statistics"]
         assert engine.training_route_report["reasons"]["recorded_adjoint"] == "recorded routes require streamed statistics"
         explicit = _engine_for(cell, states, model, losses, stream_spike_statistics=True)
-        with pytest.raises(ValueError, match="does not support CustomLoss"):
+        with pytest.raises(ValueError, match="CustomLoss does not declare streaming support"):
             explicit.prepare_gradient_checkpointing()
     finally:
         cell.close_fused_cuda()

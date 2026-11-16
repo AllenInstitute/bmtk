@@ -5,6 +5,7 @@ import inspect
 import tensorflow as tf
 
 from ..spike_summary import SpikeSummary
+from .streaming import StreamingSpikeLoss
 
 
 @tf.function(jit_compile=True)
@@ -17,7 +18,7 @@ def voltage_rate_floor_step(voltage, nonrefractory, gate, target=0.9, cost=1.0):
     )
 
 
-class VoltageRateFloor:
+class VoltageRateFloor(StreamingSpikeLoss):
     """Opt-in all-neuron voltage floor gated by committed firing-rate EMA.
 
     Register before building the RNN. History pools every condition participating

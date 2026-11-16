@@ -884,6 +884,15 @@ class DirectRecordedAdjointRunner:
             noise_steps = initial_state[6]
             offload_voltage = "voltage" in self.record_offload
             offload_history = "history" in self.record_offload
+            if offload_history and any(isinstance(spec, ProjectedSpikeTraces) for spec in sampled_traces):
+                # Streamed per-chunk statistics reduce each staged word frame; the
+                # projected trace needs the unpacked spike matrix, computed after the
+                # loop from the resident records only.
+                raise ValueError(
+                    "Projected spike traces are not available with record_offload='history'; "
+                    "keep the history records resident (offload 'voltage' only) for losses that "
+                    "declare projected traces."
+                )
             # Per-step FP32 records as separate allocations land in oversized free
             # chunks (about 1.5x their size on the full network); a loop-carried
             # contiguous buffer makes Grappler's memory optimizer swap loop state to

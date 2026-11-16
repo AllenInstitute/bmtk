@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from .._options import validate_bool_option
 from ..spike_summary import SpikeSummary
+from .streaming import StreamingSpikeLoss
 
 
 @tf.function(jit_compile=True, reduce_retracing=True)
@@ -9,7 +10,7 @@ def _compiled_fp32_spike_counts(spikes):
     return tf.reduce_sum(tf.cast(spikes, tf.float32), axis=1)
 
 
-class TargetFiringRate:
+class TargetFiringRate(StreamingSpikeLoss):
     data_parallel_reduction = "replica_mean"
 
     def __init__(

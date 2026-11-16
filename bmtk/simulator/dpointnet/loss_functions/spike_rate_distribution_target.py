@@ -5,9 +5,10 @@ import numpy as np
 import pandas as pd
 
 from . import loss_utils
+from .streaming import StreamingSpikeLoss
 
 
-class SpikeRateDistributionTarget:
+class SpikeRateDistributionTarget(StreamingSpikeLoss):
     def __init__(
             self, 
             rnn, 
