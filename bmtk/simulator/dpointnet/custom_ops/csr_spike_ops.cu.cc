@@ -1232,18 +1232,32 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
     tile[sample][pair_offset] = value;
   }
   __syncthreads();
-  const float factor = scale[0];
   for (int index = threadIdx.x; index < kSlice * kPairsPerTile; index += blockDim.x) {
     const int sample = index % kSlice;
     const int pair_offset = index / kSlice;
     const int64_t pair = pair_base + pair_offset;
     if (pair < n_pairs) {
+      // `scale` holds one (scale, inverse, max bits) triple per 32-sample half.
+      const float factor = scale[(kSlice > 32 ? (sample >> 5) * 3 : 0)];
       projected[pair * kSlice + sample] = FromFloat<Eigen::half>(
           tile[sample][pair_offset] * factor);
     }
   }
 }
 
+// Spike gradient for one batch slice of up to kSlice samples (an SpMM over the
+// compact pairs, one CSR row per warp). A lane holds kPack consecutive samples,
+// an edge takes kSlice / kPack lanes, and the warp walks its row 32 edges at a
+// time, broadcasting each edge's pair and weight with shuffles.
+//
+// kSlice = 64 (FP16, batch exactly 64) reads each pair's whole 128-byte projected
+// line once per edge instead of twice in two 32-sample launches, and streams
+// the row descriptors once. Each lane then keeps kPartials = kSlice / 32
+// accumulators, taking edge `column` into partial `step % kPartials`: every
+// partial sums exactly the edges one 32-sample slot summed, in the same order,
+// and the fold below combines them in the 32-sample butterfly's order, so the
+// result is bitwise the two-launch result (adapted from Javier's
+// BackwardRowTileKernel kPartials scheme).
 template <typename T, typename Index, int kSlice = 32, typename W = const T*>
 __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
   int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
@@ -1252,6 +1266,8 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   constexpr int kPack = kSlice < 8 ? kSlice : 8;
   constexpr int kLanesPerEdge = kSlice / kPack;
   constexpr int kSlots = 32 / kLanesPerEdge;
+  constexpr int kPartials = kSlice > 32 ? kSlice / 32 : 1;
+  static_assert(kLanesPerEdge % kPartials == 0, "partials must tile the edge steps");
   constexpr int kRows = 4;
   const int lane = threadIdx.x & 31;
   const int row_lane = threadIdx.x >> 5;
@@ -1260,7 +1276,7 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   const int pre = blockIdx.x * kRows + row_lane;
   if (pre >= n_pre) return;
   const int sample_base = sub * kPack;
-  float grad[kPack] = {};
+  float grad[kPartials][kPack] = {};
   const Index start = row_splits[pre];
   const Index end = row_splits[pre + 1];
   for (Index base = start; base < end; base += static_cast<Index>(32)) {
@@ -1293,24 +1309,32 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
       }
 #pragma unroll
       for (int sample = 0; sample < kPack; ++sample) {
-        grad[sample] += values[sample] * weight;
+        grad[step % kPartials][sample] += values[sample] * weight;
       }
     }
   }
 #pragma unroll
   for (int mask = kLanesPerEdge; mask < 32; mask <<= 1) {
 #pragma unroll
-    for (int sample = 0; sample < kPack; ++sample) {
-      grad[sample] += __shfl_xor_sync(0xffffffffu, grad[sample], mask);
+    for (int partial = 0; partial < kPartials; ++partial) {
+#pragma unroll
+      for (int sample = 0; sample < kPack; ++sample) {
+        grad[partial][sample] += __shfl_xor_sync(0xffffffffu, grad[partial][sample], mask);
+      }
     }
   }
   if (lane < kLanesPerEdge) {
-    const float factor = inverse_scale[1] * ToFloat(*spike_gradient_scale);
+    // The lane's kPack samples lie in one 32-sample half; its own inverse scale.
+    const float factor = inverse_scale[(kSlice > 32 ? (sample_base >> 5) * 3 : 0) + 1]
+                         * ToFloat(*spike_gradient_scale);
 #pragma unroll
     for (int sample = 0; sample < kPack; ++sample) {
+      float total = grad[0][sample];
+#pragma unroll
+      for (int partial = 1; partial < kPartials; ++partial) total += grad[partial][sample];
       if (sample_base + sample < batch) {
         spike_grad[static_cast<int64_t>(sample_base + sample) * n_pre + pre] =
-            FromFloat<T>(grad[sample] * factor);
+            FromFloat<T>(total * factor);
       }
     }
   }
@@ -1406,6 +1430,9 @@ __global__ void CsrSpikeGradPairVariableBatchKernel(
 constexpr int kDpointnetEventThreads = 256;
 constexpr int kDpointnetEventChunk = 256;
 constexpr int kDpointnetEventBlocks = 4512;
+// Widest FP16 backward slice: one 128-byte projected line per pair (two 32-bit
+// event mask words). Advertised to Python by DpointnetCsrBackwardWideSlice.
+constexpr int kDpointnetWideSlice = 64;
 
 template <typename T, typename Index, bool kPositiveOnly = false>
 __global__ __launch_bounds__(kDpointnetEventThreads)
@@ -1416,18 +1443,24 @@ void DpointnetEventRowQueueKernel(
   const int64_t row = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
   unsigned int chunks = 0;
   unsigned int mask = 0;
+  unsigned int mask_high = 0;
   if (row < n_pre) {
+    // Samples 0..31 in `mask`, 32..63 (FP16 wide slices) in `mask_high`.
 #pragma unroll
-    for (int sample = 0; sample < 32; ++sample) {
+    for (int sample = 0; sample < 64; ++sample) {
       if (sample < batch) {
         const float activity_value =
             ToFloat(activity[static_cast<int64_t>(sample) * n_pre + row]);
-        mask |= static_cast<unsigned int>(
-              kPositiveOnly ? activity_value > 0.0f : activity_value != 0.0f)
-                << sample;
+        const unsigned int bit = static_cast<unsigned int>(
+              kPositiveOnly ? activity_value > 0.0f : activity_value != 0.0f);
+        if (sample < 32) {
+          mask |= bit << sample;
+        } else {
+          mask_high |= bit << (sample - 32);
+        }
       }
     }
-    if (mask != 0) {
+    if ((mask | mask_high) != 0) {
       const unsigned int edges = static_cast<unsigned int>(
           row_splits[row + 1] - row_splits[row]);
       chunks = (edges + kDpointnetEventChunk - 1) / kDpointnetEventChunk;
@@ -1446,7 +1479,7 @@ void DpointnetEventRowQueueKernel(
   base = __shfl_sync(0xffffffffu, base, 31) + inclusive - chunks;
   for (unsigned int chunk = 0; chunk < chunks; ++chunk) {
     reinterpret_cast<::uint4*>(queue)[base + chunk] =
-        ::make_uint4(static_cast<unsigned int>(row), chunk, mask, 0u);
+        ::make_uint4(static_cast<unsigned int>(row), chunk, mask, mask_high);
   }
 }
 
@@ -1492,20 +1525,23 @@ void DpointnetEventWeightGradKernel(
       current_offsets[k] = static_cast<int64_t>(post_ids[csr]) * n_basis;
       basis_offsets[k] = static_cast<int64_t>(synapse_types[csr]) * n_basis;
     }
-    for (unsigned int bits = entry.z; bits; bits &= bits - 1) {
-      const int sample = __ffs(bits) - 1;
-      const float spike =
-          ToFloat(activity[static_cast<int64_t>(sample) * n_pre + pre]);
 #pragma unroll
-      for (int k = 0; k < kEdgesPerThread; ++k) {
-        const Index csr = start + static_cast<Index>(lane + k * 32);
-        if (csr >= end) continue;
-        const T* type_basis = basis + basis_offsets[k];
-        const T* grad_row =
-            current_grad + static_cast<int64_t>(sample) * sample_stride +
-            current_offsets[k];
-        sum[k] += spike *
-                  DpointnetEventProjection<T, kBasis>(grad_row, type_basis, n_basis);
+    for (int word = 0; word < 2; ++word) {
+      for (unsigned int bits = word == 0 ? entry.z : entry.w; bits; bits &= bits - 1) {
+        const int sample = 32 * word + __ffs(bits) - 1;
+        const float spike =
+            ToFloat(activity[static_cast<int64_t>(sample) * n_pre + pre]);
+#pragma unroll
+        for (int k = 0; k < kEdgesPerThread; ++k) {
+          const Index csr = start + static_cast<Index>(lane + k * 32);
+          if (csr >= end) continue;
+          const T* type_basis = basis + basis_offsets[k];
+          const T* grad_row =
+              current_grad + static_cast<int64_t>(sample) * sample_stride +
+              current_offsets[k];
+          sum[k] += spike *
+                    DpointnetEventProjection<T, kBasis>(grad_row, type_basis, n_basis);
+        }
       }
     }
 #pragma unroll
@@ -2339,13 +2375,22 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           context, TensorShapeUtils::IsVector(accumulator.shape()) &&
               accumulator.NumElements() == n_edges_,
           errors::InvalidArgument("Accumulator must have one FP32 value per CSR edge."));
+      // The FP16 Javier-derived backward also takes one 64-sample slice
+      // (kDpointnetWideSlice); every other path is bounded by its 32-bit
+      // sample masks. Exactly 64 samples: the two 32-sample launches it replaces are then bitwise
+      // reproduced (per-half scales, partial accumulators); other batches above 32
+      // keep the Python slicer's 32-sample launches (a 16-sample tail has its own
+      // reduction geometry).
+      const bool wide_slice = use_javier_batch32_backward_ &&
+          std::is_same<T, Eigen::half>::value && batch == kDpointnetWideSlice;
       OP_REQUIRES(
-          context, batch >= 1 && batch <= 32 && n_basis == 4 && n_pairs_ > 0 &&
+          context, batch >= 1 && (batch <= 32 || wide_slice) && n_basis == 4 && n_pairs_ > 0 &&
               write_csr_weight_gradient_ && !use_small_batch_backward_ &&
               !use_packed_sm120_backward_ && SupportsPackedBatch32Backward(),
           errors::InvalidArgument(
-              "Fused accumulation requires SM61+, batch1..32/four bases, pairs, "
-              "direct CSR and generic packed backward flags."));
+              "Fused accumulation requires SM61+, batch 1..32 (1..64 for the FP16 "
+              "Javier backward)/four bases, pairs, direct CSR and generic packed "
+              "backward flags."));
     }
     OP_REQUIRES(
         context, weights.NumElements() == n_edges_,
@@ -2413,8 +2458,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     if constexpr ((kAccumulate || std::is_same<T, float>::value) &&
                   std::is_same<Index, uint32>::value) {
-        if (!use_small_batch_backward_ &&
-          (batch == 32 || (use_javier_batch32_backward_ && batch > 0 && batch < 32)) &&
+        const bool javier_slice = use_javier_batch32_backward_ && batch > 0 &&
+            (batch < 32 || (kAccumulate && std::is_same<T, Eigen::half>::value &&
+                            batch == kDpointnetWideSlice));
+        if (!use_small_batch_backward_ && (batch == 32 || javier_slice) &&
           n_basis == 4 && n_pairs_ > 0) {
         if (use_javier_batch32_backward_ && write_csr_weight_gradient_) {
           OP_REQUIRES(
@@ -2431,23 +2478,31 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           const int64_t projected_count = (n_pairs_ + 1) * slice;
           OP_REQUIRES_OK(context, context->allocate_temp(
               DT_HALF, TensorShape({projected_count}), &projected_half));
+          // One (scale, inverse, max bits) triple per 32-sample half: a 64-sample
+          // slice normalizes each half exactly as its own 32-sample launch would.
+          const int halves = slice > 32 ? slice / 32 : 1;
           OP_REQUIRES_OK(context, context->allocate_temp(
-              DT_FLOAT, TensorShape({3}), &scale_tensor));
+              DT_FLOAT, TensorShape({3 * halves}), &scale_tensor));
           scale = scale_tensor.flat<float>().data();
-          unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 2);
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               SetZeroKernel<Eigen::half>, 1, 32, 0, device.stream(), slice,
               projected_half.flat<Eigen::half>().data() + n_pairs_ * slice));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
-              reinterpret_cast<uint32*>(max_bits)));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              DpointnetAbsMaxFiniteKernel<T>, 1024, 256, 0, device.stream(),
-              current_grad.NumElements(), current_grad.flat<T>().data(), max_bits));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              DpointnetProjectionScaleKernel<T>, 1, 32, 0, device.stream(),
-              max_bits, basis.flat<T>().data(), static_cast<int>(basis.dim_size(0)),
-              static_cast<int>(n_basis), scale));
+          const int64_t half_elements = static_cast<int64_t>(32) * n_post_ * n_basis;
+          for (int half = 0; half < halves; ++half) {
+            unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 3 * half + 2);
+            const int64_t first = half * half_elements;
+            const int64_t count = std::min<int64_t>(half_elements, current_grad.NumElements() - first);
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
+                reinterpret_cast<uint32*>(max_bits)));
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                DpointnetAbsMaxFiniteKernel<T>, 1024, 256, 0, device.stream(),
+                count, current_grad.flat<T>().data() + first, max_bits));
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                DpointnetProjectionScaleKernel<T>, 1, 32, 0, device.stream(),
+                max_bits, basis.flat<T>().data(), static_cast<int>(basis.dim_size(0)),
+                static_cast<int>(n_basis), scale + 3 * half));
+          }
 #define LAUNCH_HALF_PROJECTION(SLICE) \
           OP_REQUIRES_OK(context, GpuLaunchKernel( \
               DpointnetPreprojectPairsHalfBatch32Kernel<T, Index, SLICE>, \
@@ -2461,7 +2516,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             case 4: LAUNCH_HALF_PROJECTION(4); break;
             case 8: LAUNCH_HALF_PROJECTION(8); break;
             case 16: LAUNCH_HALF_PROJECTION(16); break;
-            default: LAUNCH_HALF_PROJECTION(32); break;
+            case 32: LAUNCH_HALF_PROJECTION(32); break;
+            default: LAUNCH_HALF_PROJECTION(kDpointnetWideSlice); break;
           }
 #undef LAUNCH_HALF_PROJECTION
           } else {
@@ -2496,7 +2552,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               case 4: LAUNCH_HALF_ROWS(4); break;
               case 8: LAUNCH_HALF_ROWS(8); break;
               case 16: LAUNCH_HALF_ROWS(16); break;
-              default: LAUNCH_HALF_ROWS(32); break;
+              case 32: LAUNCH_HALF_ROWS(32); break;
+              default: LAUNCH_HALF_ROWS(kDpointnetWideSlice); break;
             }
 #undef LAUNCH_HALF_ROWS
             }

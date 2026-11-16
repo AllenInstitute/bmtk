@@ -1063,10 +1063,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
     @property
     def _guarded_type_indexed_dispatch(self):
+        """Hoist the type-identity predicate onto the GPU for device-side dispatch.
+
+        Admitted for the standard single-replica automatic TensorFlow 2.21 model on
+        any GPU the loaded fat library supports (``fused_nest_device_dispatch_available``
+        checks the library); the conditional type-indexed path otherwise costs a host
+        round trip per time step in both the forward and the backward loop.
+        """
         return bool(
             self.acceleration_report is not None
             and self.acceleration_report["profile"] == "auto"
-            and self.acceleration_report["architecture"] == 86
+            and self.acceleration_report["architecture"] is not None
             and self.acceleration_report["tensorflow"].startswith("2.21.")
             and self.temporal_gradient_precision == "compute"
             and self._performance_auto_context is not None
@@ -1488,14 +1495,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if (
                 not supported_temporal_route
                 or not use_direct_csr_recurrent_gradient
-                or batch_size not in range(1, 33)
+                or not (isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size >= 1)
                 or not train_recurrent
                 or train_recurrent_per_type
             ):
                 raise ValueError(
                     "Fused recurrent accumulation requires FP32 temporal carry or "
-                    "the direct state RNN loop, batch1..32, direct CSR and trainable "
-                    "per-edge recurrent weights."
+                    "the direct state RNN loop, a positive static batch, direct CSR and "
+                    "trainable per-edge recurrent weights."
                 )
         if current_replay_mode not in (None, "record", "recompute"):
             raise ValueError("current_replay_mode must be None, 'record' or 'recompute'.")

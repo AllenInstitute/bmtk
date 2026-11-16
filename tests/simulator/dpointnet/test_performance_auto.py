@@ -55,6 +55,31 @@ def test_every_fat_binary_architecture_and_batch_up_to_32_is_admitted(
     assert enabled and tile == (256 if batch == 1 else 2048)
 
 
+@pytest.mark.parametrize("n_post,architecture,tile", [
+    (131072, 86, 2048),   # exactly 64 tiles of 2048: mask path, unchanged
+    (131073, 86, 5120),   # 65 tiles: widest launchable tile
+    (203816, 86, 5120), (203816, 80, 5120), (203816, 89, 5120), (203816, 90, 5120), (203816, 70, 5120),
+    (203816, 75, 3072),   # SM75 (64 KiB per block) cannot launch 4096/5120
+    (327681, 86, 5120),   # beyond 64 tiles at any width: still the widest (longest segments)
+])
+def test_large_networks_take_the_widest_launchable_tile(projection_hardware, n_post, architecture, tile):
+    metadata = context(n_post=n_post, source_rows_upper_bound=3 * n_post)
+    enabled, actual, _ = select(metadata=metadata, architecture=architecture)
+    assert enabled and actual == tile
+    # Batch 1 keeps its previous geometry (256, or 2048 when 256-target routing exceeds
+    # the budget; at 327,681 neurons even 2048-target routing exceeds it, as before).
+    enabled, actual, _ = select(metadata=metadata, architecture=architecture, batch_size=1)
+    assert (enabled and actual in (256, 2048)) or (not enabled and n_post > 300000)
+
+
+def test_large_network_tile_respects_routing_budget(projection_hardware):
+    # A routing table over 512 MiB at every width is not admitted at all (the
+    # 1,000,000-neuron archive network with three delay slots is such a case today).
+    metadata = context(n_post=1_000_000, source_rows_upper_bound=3_000_000)
+    enabled, _, reason = select(metadata=metadata)
+    assert not enabled and "launchable tile" in reason
+
+
 @pytest.mark.parametrize("architecture", [52, 60, 72, 87, 100, 120, None])
 def test_non_target_architectures_keep_existing_routes(projection_hardware, architecture):
     assert not select(architecture=architecture)[0]
@@ -66,9 +91,15 @@ def test_architecture_without_native_sass_keeps_existing_route(projection_hardwa
     assert not select(architecture=89)[0]
 
 
-@pytest.mark.parametrize("batch", [0, 33, 64, None, True])
-def test_unknown_or_large_batch_does_not_get_new_route(projection_hardware, batch):
+@pytest.mark.parametrize("batch", [0, None, True])
+def test_unknown_batch_does_not_get_new_route(projection_hardware, batch):
     assert not select(batch_size=batch)[0]
+
+
+@pytest.mark.parametrize("batch", [33, 64, 128])
+def test_large_batches_are_admitted(projection_hardware, batch):
+    """Backward launches above 32 samples are sliced by the wrappers; the sweep is per sample."""
+    assert select(batch_size=batch)[0]
 
 
 @pytest.mark.parametrize("option,value", [
@@ -234,6 +265,39 @@ def test_resolver_preserves_integer_tile_overrides(projection_hardware, tile):
     assert type(options["combined_current_target_tile_size"]) is int
     assert options["combined_current_target_tile_size"] == tile
     assert report["selected"]["combined_current_target_tile_size"] == tile
+
+
+@pytest.mark.parametrize("architecture", FAT_BINARY_ARCHITECTURES)
+def test_guarded_type_indexed_dispatch_admits_every_loaded_architecture(architecture):
+    """Device-side dispatch is gated on the route and the loaded library, not an SM list."""
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    metadata = context()
+    cell = SimpleNamespace(
+        acceleration_report={"profile": "auto", "architecture": architecture, "tensorflow": "2.21.1"},
+        temporal_gradient_precision="compute", _performance_auto_context=metadata,
+    )
+    guarded = GLIF3Cell._guarded_type_indexed_dispatch.fget
+    assert guarded(cell) is True
+    cell.acceleration_report["architecture"] = None
+    assert guarded(cell) is False
+    cell.acceleration_report["architecture"] = architecture
+    cell.acceleration_report["profile"] = "compatibility_v1"
+    assert guarded(cell) is False
+    cell.acceleration_report["profile"] = "auto"
+    cell.acceleration_report["tensorflow"] = "2.13.0"
+    assert guarded(cell) is False
+    cell.acceleration_report["tensorflow"] = "2.21.0"
+    cell.temporal_gradient_precision = "float32"
+    assert guarded(cell) is False
+    cell.temporal_gradient_precision = "compute"
+    metadata["single_replica"] = False
+    assert guarded(cell) is False
+    metadata["single_replica"] = True
+    metadata["standard_cell"] = False
+    assert guarded(cell) is False
+    cell._performance_auto_context = None
+    assert guarded(cell) is False
 
 
 def test_rate_count_auto_uses_declared_single_replica_boundary():
@@ -695,7 +759,7 @@ def test_auto_omits_traversals_without_the_rebuilt_native_capability(monkeypatch
     {"options": {"use_combined_current_sweep": False}},
     {"options": {"acceleration_profile": None}},
     {"architecture": 120},
-    {"batch_size": 33},
+    {"batch_size": 0},
     {"metadata": None},
 ])
 def test_traversals_follow_the_joint_sweep_boundary(monkeypatch, boundary):

@@ -71,6 +71,17 @@ class Inference:
             self._data_itr.close()
             self._data_itr = None
 
+
+# Training-engine route requests a config may name; omitted keys keep the
+# engine's "auto" defaults rather than being passed as None.
+TRAINING_ROUTE_OPTIONS = ("stream_spike_statistics", "recorded_adjoint", "record_offload")
+
+
+def training_route_options(train_dict):
+    """The ``training`` section's route requests present in ``train_dict``."""
+    return {key: train_dict[key] for key in TRAINING_ROUTE_OPTIONS if key in train_dict}
+
+
 class RNN:
     """The primary model and simulation class for dpointnet.
 
@@ -1381,6 +1392,7 @@ class RNN:
             regenerate_initial_state_each_epoch = train_dict.get(
                 "regenerate_initial_state_each_epoch", True
             )
+            route_options = training_route_options(train_dict)
             training_engine = network.set_training(
                 rnn=network,
                 n_epochs=n_epochs,
@@ -1390,6 +1402,7 @@ class RNN:
                 gradient_checkpoint_chunk_size=gradient_checkpoint_chunk_size,
                 pack_spike_checkpoints=pack_spike_checkpoints,
                 regenerate_initial_state_each_epoch=regenerate_initial_state_each_epoch,
+                **route_options,
             )
 
             learning_rate = train_dict['learning_rate']

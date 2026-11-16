@@ -37,6 +37,8 @@ step (credit: Javier); DPointNet keeps its NEST dynamics, event map, dtype
 boundaries, independent per-source VJPs and canonical master ownership.
 """
 
+import math
+
 import tensorflow as tf
 from tensorflow.python.eager import record
 
@@ -49,14 +51,61 @@ from .cell_models.state_rnn import (
 )
 from .custom_ops import csr_spike_ops, glif_state_ops
 from .custom_ops.glif_state_ops import (
-    NestDirectDispatch, advance_asc_record, direct_reverse_ops_available,
+    NestDirectDispatch, advance_asc_block_record, advance_asc_block_record_available,
+    advance_asc_record, direct_reverse_ops_available,
     direct_reverse_record, nest_record_forward_available, pack_step_record,
     record_counts, record_traces, shift_history_record, step_record_ops_available,
     unpack_step_record,
 )
+from .custom_ops.record_store_ops import (
+    DEFAULT_PREFETCH, HostRecordStore, host_record_store_available, record_store_op_status,
+)
 from .spike_statistics import SpikeStatistics, _window
 
 RECORD_FORMAT = "direct_step_record_v1"
+
+# Record surfaces the direct route can keep in pinned host memory instead of
+# device memory (``record_offload``): the per-step FP32 pre-reset membrane rows
+# ("voltage") and the per-chunk records, i.e. the packed spike/refractory word
+# frames and the chunk-start ASC snapshots ("history"). Offload moves bytes
+# only; values, gradients and their arithmetic order are unchanged.
+RECORD_OFFLOAD_CHOICES = ("voltage", "history")
+# Device staging slots the forward writes before the oldest frame must have
+# left the device: a few per-step membrane rows, three per-chunk word frames,
+# two chunk-start ASC snapshots. Per-chunk frames are read one chunk at a time
+# in reverse, so their stores prefetch one frame ahead (three resident).
+VOLTAGE_STAGING_SLOTS = 8
+HISTORY_STAGING_SLOTS = 3
+ASC_STAGING_SLOTS = 2
+CHUNK_PREFETCH = 1
+
+
+def normalize_record_offload(value):
+    """``record_offload`` request as a sorted tuple of surface names.
+
+    Accepts ``None``/``False``/``"none"``/empty (no offload), ``True``/``"all"``
+    (both surfaces), one name or an iterable of names from
+    :data:`RECORD_OFFLOAD_CHOICES`.
+    """
+    if value is None or value is False or (isinstance(value, str) and value == "none"):
+        return ()
+    if value is True or (isinstance(value, str) and value == "all"):
+        return tuple(RECORD_OFFLOAD_CHOICES)
+    if isinstance(value, str):
+        names = (value,)
+    elif isinstance(value, (list, tuple, set, frozenset)):
+        names = tuple(value)
+        if not names:
+            return ()
+    else:
+        names = (value,)
+    unknown = [name for name in names if not isinstance(name, str) or name not in RECORD_OFFLOAD_CHOICES]
+    if unknown:
+        raise ValueError(
+            f"record_offload accepts none/false, true/'all' or names from {RECORD_OFFLOAD_CHOICES}, "
+            f"got {value!r}."
+        )
+    return tuple(name for name in RECORD_OFFLOAD_CHOICES if name in names)
 
 
 class SpikeExchange:
@@ -138,7 +187,7 @@ def direct_records_supported(cell):
 DIRECT_RECORD_MEMORY_FRACTION = 0.6
 
 
-def direct_record_bytes(cell, batch, length, chunk_size, free_bytes=None):
+def direct_record_bytes(cell, batch, length, chunk_size, free_bytes=None, offload=()):
     """``(fits, reason)``: advisory estimate of the direct route's record payload.
 
     The payload is ``length * batch * neurons`` state-dtype membrane values
@@ -147,30 +196,44 @@ def direct_record_bytes(cell, batch, length, chunk_size, free_bytes=None):
     report. ``fits`` is ``None`` when the payload or the device memory is
     unknown, ``False`` when it exceeds ``DIRECT_RECORD_MEMORY_FRACTION`` of the
     free memory. The estimate never disables the route; callers warn.
+
+    With ``offload`` surfaces (see :func:`normalize_record_offload`) the
+    offloaded records count only their device staging and prefetch frames, and
+    the reason names the pinned host bytes they take instead.
     """
     neurons = getattr(cell, "_n_neurons", None)
     if not neurons or not isinstance(batch, int) or batch <= 0 or not isinstance(length, int) or length <= 0:
         return None, "record payload unknown (static batch, sequence length and neuron count required)"
+    offload = normalize_record_offload(offload)
     selective = getattr(cell, "state_precision", "compute") == "selective"
     state_bytes = tf.as_dtype(cell.state_dtype if selective else cell.compute_dtype).size
     words = 2 * (-(-neurons // 32))
     chunk_size = max(1, min(int(chunk_size), length))
     n_chunks = -(-length // chunk_size)
-    asc_block = -(-chunk_size // 2)
+    asc_block = max(1, math.isqrt(chunk_size - 1) + 1)
     snapshots = n_chunks + asc_block + -(-chunk_size // asc_block) + 2
-    payload = (
-        length * batch * neurons * state_bytes
-        + (length + int(getattr(cell, "max_delay", 1))) * batch * words * 4
-        + snapshots * batch * 2 * neurons * state_bytes
-    )
+    membrane = length * batch * neurons * state_bytes
+    history = (length + int(getattr(cell, "max_delay", 1))) * batch * words * 4
+    host = 0
+    if "voltage" in offload:
+        host += membrane
+        membrane = (VOLTAGE_STAGING_SLOTS + DEFAULT_PREFETCH + 2) * batch * neurons * state_bytes
+    asc_snapshot = batch * 2 * neurons * state_bytes
+    if "history" in offload:
+        frame = chunk_size * batch * words * 4
+        host += (n_chunks + 1) * frame + n_chunks * asc_snapshot
+        history = (HISTORY_STAGING_SLOTS + 4) * frame
+        snapshots += ASC_STAGING_SLOTS + CHUNK_PREFETCH + 2 - n_chunks
+    payload = membrane + history + snapshots * asc_snapshot
+    offloaded = f"; {host / 2**30:.2f} GiB pinned host memory for {', '.join(offload)} offload" if offload else ""
     if free_bytes is None:
         free_bytes = device_free_bytes()
         if free_bytes is None:
-            return None, f"record payload {payload / 2**30:.2f} GiB; no queryable GPU memory report"
+            return None, f"record payload {payload / 2**30:.2f} GiB; no queryable GPU memory report" + offloaded
     limit = DIRECT_RECORD_MEMORY_FRACTION * free_bytes
     reason = (
         f"record payload {payload / 2**30:.2f} GiB versus {limit / 2**30:.2f} GiB advisory "
-        f"({DIRECT_RECORD_MEMORY_FRACTION:.0%} of {free_bytes / 2**30:.2f} GiB free)"
+        f"({DIRECT_RECORD_MEMORY_FRACTION:.0%} of {free_bytes / 2**30:.2f} GiB free)" + offloaded
     )
     return payload <= limit, reason
 
@@ -467,7 +530,8 @@ class DirectRecordedStep:
                     raise ValueError("The recurrent population always receives source credit.")
                 if accumulator is None:
                     accumulator = tf.zeros_like(population["variable"])
-                source_grad, accumulated = csr_spike_ops._OPS.dpointnet_csr_spike_grad_accumulate_csr_master(
+                source_grad, accumulated = csr_spike_ops.spike_grad_accumulate_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_spike_grad_accumulate_csr_master,
                     source, currents_grad, _metadata(connectivity), population["variable"],
                     self.basis, self.recurrent_scale, accumulator,
                     use_javier_batch32_backward=self.cell.use_javier_recurrent_vjp,
@@ -477,7 +541,8 @@ class DirectRecordedStep:
                 new_accumulators.append(accumulated)
                 continue
             if credit:
-                source_grad, weight_grad = csr_spike_ops._OPS.dpointnet_csr_spike_grad_csr_master(
+                source_grad, weight_grad = csr_spike_ops.spike_grad_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_spike_grad_csr_master,
                     source, currents_grad, _metadata(connectivity), population["variable"],
                     self.basis,
                     self.recurrent_scale if population["exchanged"] else tf.ones((), self.spike_dtype),
@@ -488,7 +553,8 @@ class DirectRecordedStep:
                 source_cotangents.append(source_grad)
             else:
                 source_cotangents.append(None)
-                weight_grad = None if accumulator is None else csr_spike_ops._OPS.dpointnet_csr_weight_grad(
+                weight_grad = None if accumulator is None else csr_spike_ops.weight_grad_batched(
+                    csr_spike_ops._OPS.dpointnet_csr_weight_grad,
                     source, currents_grad, _metadata(connectivity), self.basis,
                     use_packed_sm120_backward=csr_spike_ops._resolve_packed_sm120_backward(
                         population["net"].get("use_packed_sm120_backward", False),
@@ -518,6 +584,7 @@ class DirectRecordedAdjointRunner:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
         if differentiate_inputs:
             raise ValueError("Direct recorded adjoint does not differentiate inputs.")
+        self.record_offload = normalize_record_offload(kwargs.pop("record_offload", ()))
         unknown = set(kwargs) - {"pack_spike_checkpoints", "variable_gradient_transform", "n_sequence_outputs"}
         if unknown:
             raise TypeError(f"Unexpected runner options: {sorted(unknown)}")
@@ -529,14 +596,27 @@ class DirectRecordedAdjointRunner:
         self.chunk_size = int(chunk_size)
         if self.sequence_length <= 0 or not 1 <= self.chunk_size <= self.sequence_length:
             raise ValueError("chunk_size must satisfy 1 <= chunk_size <= sequence_length.")
+        if self.record_offload and not host_record_store_available():
+            raise RuntimeError(
+                "record_offload requires a GPU and the record store library: " + record_store_op_status()
+            )
+        # The staged (previous chunk, current chunk) word frames must hold every record
+        # the reverse's delay-window shifts read, down to start - 1 - max_delay.
+        if "history" in self.record_offload and int(cell.max_delay) >= self.chunk_size:
+            raise ValueError(
+                "History offload reads the previous chunk's word frame for delayed spikes, so the "
+                f"recurrent delay ({int(cell.max_delay)} steps) must be smaller than chunk_size ({self.chunk_size})."
+            )
+        self._stores = {}
         self.n_chunks = -(-self.sequence_length // self.chunk_size)
         self.remainder_size = self.sequence_length % self.chunk_size
         # Exact prior-ASC values are re-walked per chunk in two passes: coarse
         # sub-snapshots every ``asc_block`` steps, then one block at a time, so
         # the resident buffers hold about asc_block + chunk_size / asc_block
         # tensors instead of chunk_size, for one extra walk of the chunk's
-        # first blocks per chunk.
-        self.asc_block = -(-self.chunk_size // 2)
+        # first blocks per chunk. The block near sqrt(chunk_size) minimizes
+        # that sum (10 tensors for chunk 25 instead of 15 at chunk_size / 2).
+        self.asc_block = max(1, math.isqrt(self.chunk_size - 1) + 1)
         self.differentiate_inputs = False
         self.count_windows = tuple(
             _window(window, self.sequence_length)
@@ -719,6 +799,47 @@ class DirectRecordedAdjointRunner:
             step, "direct_recorded_voltage_scratch", [length, step.batch, step.neurons], step.state_dtype,
         )
 
+    def _store(self, role, frames, frame_shape, dtype, staging_slots, prefetch=DEFAULT_PREFETCH):
+        """Pinned-host record store of one role, created once per (shape, dtype)."""
+        key = (role, int(frames), tuple(int(size) for size in frame_shape), tf.as_dtype(dtype).name)
+        store = self._stores.get(key)
+        if store is None:
+            store = HostRecordStore(frames, frame_shape, dtype, staging_slots=staging_slots, prefetch=prefetch)
+            self._stores[key] = store
+        return store
+
+    def close(self):
+        """Release the pinned-host record stores (also released when the runner is collected)."""
+        for store in self._stores.values():
+            store.close()
+        self._stores = {}
+
+    def record_offload_report(self):
+        """Pinned host bytes per offloaded surface of the stores created so far."""
+        return {
+            key[0]: {"frames": store.frames, "frame_bytes": store.frame_bytes, "host_bytes": store.host_bytes}
+            for key, store in self._stores.items()
+        }
+
+    def _voltage_store(self, step, length):
+        return self._store(
+            "voltage", length, (step.batch, step.neurons), step.state_dtype, VOLTAGE_STAGING_SLOTS,
+        )
+
+    def _history_store(self, step):
+        # Frame 0 holds the initial delay slots (in its last rows); frame c + 1 holds chunk c.
+        return self._store(
+            "history", self.n_chunks + 1, (self.chunk_size, step.batch, step.words), tf.float32,
+            HISTORY_STAGING_SLOTS, prefetch=CHUNK_PREFETCH,
+        )
+
+    def _asc_store(self, step):
+        """Chunk-start ASC snapshots (frame c = ASC entering chunk c), offloaded with the history."""
+        return self._store(
+            "asc", self.n_chunks, (step.batch, 2 * step.neurons), step.state_dtype, ASC_STAGING_SLOTS,
+            prefetch=CHUNK_PREFETCH,
+        )
+
     # -- forward driver ------------------------------------------------------------------
 
     def _forward(self, inputs, initial_state, sampled_traces, time_check):
@@ -736,12 +857,25 @@ class DirectRecordedAdjointRunner:
                 **({"spike_exchanges": tuple(self.spike_exchanges)} if self.spike_exchanges else {}),
             })
             noise_steps = initial_state[6]
+            offload_voltage = "voltage" in self.record_offload
+            offload_history = "history" in self.record_offload
             # Per-step FP32 records as separate allocations land in oversized free
             # chunks (about 1.5x their size on the full network); a loop-carried
             # contiguous buffer makes Grappler's memory optimizer swap loop state to
             # the host. A persistent untracked scratch variable, written by row,
-            # avoids both; it is sized once per (length, batch) and reused.
-            scratch = self._record_buffer(step, length)
+            # avoids both; it is sized once per (length, batch) and reused. With
+            # voltage offload the variable is a small staging ring instead: the
+            # kernel writes row ``time % slots`` and the store copies it to pinned
+            # host memory on its own stream before the row is reused.
+            if offload_voltage:
+                voltage_store = self._voltage_store(step, length)
+                scratch = self._scratch(
+                    step, "direct_recorded_voltage_staging",
+                    [VOLTAGE_STAGING_SLOTS, batch, neurons], step.state_dtype,
+                )
+            else:
+                voltage_store = None
+                scratch = self._record_buffer(step, length)
             buffered = scratch is not None
             in_place = buffered and nest_record_forward_available()
             # The scratch variable is written from the closure; the loop variable then
@@ -758,17 +892,90 @@ class DirectRecordedAdjointRunner:
                 max_num_elements=length + step.delay, element_dtype=tf.int32,
             )
             no_refractory = tf.zeros([batch, neurons], step.refractory_dtype)
-            for slot in reversed(range(step.delay)):
-                initial_slot = tf.cast(initial_state[0][:, slot * neurons:(slot + 1) * neurons], step.spike_dtype)
-                words = tf.raw_ops.TensorListPushBack(
-                    input_handle=words, tensor=pack_step_record(initial_slot, no_refractory),
-                )
-            asc_snapshots = self._scratch(
-                step, "direct_recorded_asc_snapshot_scratch", [self.n_chunks, batch, 2 * neurons],
-                step.state_dtype,
-            )
-            penalties = tf.TensorArray(tf.float32, size=length, element_shape=(batch,))
+            history_store = words_staging = None
+            history_token = tf.constant(0, tf.int32)
             trace_plan = self._trace_plan(sampled_traces, step)
+            if offload_history:
+                # Per-chunk word frames [chunk, batch, words] staged as float32 bit
+                # views (TensorFlow's int32 GPU scatter/concat/slice kernels live in
+                # host memory) and offloaded at every chunk end; statistics are then
+                # accumulated per step instead of reduced from the stacked records.
+                history_store = self._history_store(step)
+                words_staging = self._scratch(
+                    step, "direct_recorded_words_staging",
+                    [HISTORY_STAGING_SLOTS * self.chunk_size, batch, step.words], tf.float32,
+                )
+                with step.device_scope():
+                    rows = tf.range(self.chunk_size, dtype=tf.int64)
+                    clear = tf.raw_ops.ResourceScatterUpdate(
+                        resource=words_staging.handle, indices=rows,
+                        updates=tf.zeros([self.chunk_size, batch, step.words], tf.float32),
+                    )
+                    # Frame 0 rows chunk_size - 1 - k hold initial slot k (time -1 - k).
+                    writes = [clear]
+                    for slot in range(step.delay):
+                        initial_slot = tf.cast(
+                            initial_state[0][:, slot * neurons:(slot + 1) * neurons], step.spike_dtype,
+                        )
+                        with tf.control_dependencies([op for op in writes if op is not None]):
+                            writes.append(tf.raw_ops.ResourceScatterUpdate(
+                                resource=words_staging.handle,
+                                indices=tf.constant([self.chunk_size - 1 - slot], tf.int64),
+                                updates=tf.bitcast(pack_step_record(initial_slot, no_refractory), tf.float32)[None],
+                            ))
+                    with tf.control_dependencies([op for op in writes if op is not None]):
+                        history_token = history_store.offload(
+                            words_staging, 0, 0, after=tf.identity(initial_state[1]),
+                        )
+            else:
+                for slot in reversed(range(step.delay)):
+                    initial_slot = tf.cast(initial_state[0][:, slot * neurons:(slot + 1) * neurons], step.spike_dtype)
+                    words = tf.raw_ops.TensorListPushBack(
+                        input_handle=words, tensor=pack_step_record(initial_slot, no_refractory),
+                    )
+            # Streamed statistics (history offload): counts and sampled traces are
+            # reduced per chunk from the staged word frame by the same native
+            # kernels the resident route applies to the stacked records. A window
+            # whose bounds fall inside a chunk is accumulated per step instead.
+            streamed_counts = tuple(
+                tf.zeros([batch, neurons], tf.float32) for _ in self.count_windows
+            ) if offload_history else ()
+            streamed_traces = (
+                tf.TensorArray(tf.float32, size=self.n_chunks, element_shape=(trace_plan["total"], self.chunk_size))
+                if offload_history and trace_plan is not None else tf.zeros([0], tf.float32)
+            )
+            chunk_masks, stepwise_windows = [], []
+            if offload_history:
+                for index_w, (begin, end) in enumerate(self.count_windows):
+                    aligned = begin % self.chunk_size == 0 and (end % self.chunk_size == 0 or end == length)
+                    if aligned:
+                        inside = [
+                            float(c * self.chunk_size >= begin and min((c + 1) * self.chunk_size, length) <= end)
+                            for c in range(self.n_chunks)
+                        ]
+                        with step.device_scope():
+                            chunk_masks.append((index_w, tf.identity(tf.constant(inside, tf.float32))))
+                    else:
+                        stepwise_windows.append(index_w)
+
+            def staging_rows(frame):
+                """Device row indices of word frame ``frame`` in the staging variable."""
+                with step.device_scope():
+                    return tf.range(self.chunk_size, dtype=tf.int64) + tf.cast(
+                        frame % HISTORY_STAGING_SLOTS, tf.int64) * self.chunk_size
+            if offload_history:
+                asc_store = self._asc_store(step)
+                asc_snapshots = self._scratch(
+                    step, "direct_recorded_asc_staging", [ASC_STAGING_SLOTS, batch, 2 * neurons],
+                    step.state_dtype,
+                )
+            else:
+                asc_store = None
+                asc_snapshots = self._scratch(
+                    step, "direct_recorded_asc_snapshot_scratch", [self.n_chunks, batch, 2 * neurons],
+                    step.state_dtype,
+                )
+            penalties = tf.TensorArray(tf.float32, size=length, element_shape=(batch,))
             # Exchanged frames are recorded bit-packed, indexed by time + history:
             # the first ``history_steps`` entries hold the initial input history
             # (oldest first), as the word records hold the initial spike history.
@@ -794,7 +1001,8 @@ class DirectRecordedAdjointRunner:
                 frames.append(record)
             frames = tuple(frames)
 
-            def body(time, clock, state, voltages, words, penalties, frames):
+            def body(time, clock, state, voltages, words, penalties, frames, extra):
+                counts, traces, token = extra
                 sources = [tf.cast(state[0], step.spike_dtype)]
                 previous_spikes = sources[0][:, :neurons]
                 new_input_history, new_frames = [], list(frames)
@@ -821,33 +1029,102 @@ class DirectRecordedAdjointRunner:
                     sources.append(source)
                 # With the record forward the state kernel writes the pre-reset row
                 # itself (host loop counter as the row; no device index upload).
+                row = time % VOLTAGE_STAGING_SLOTS if offload_voltage else time
                 spikes, new_state, (pre_reset, record), penalty = step.forward(
-                    sources, state, record_row=(scratch.handle, time) if in_place else None,
+                    sources, state, record_row=(scratch.handle, row) if in_place else None,
                 )
                 if step.has_input_history:
                     new_state += (tf.concat(new_input_history, axis=1),)
+                written = None
                 if buffered and not in_place:
-                    tf.raw_ops.ResourceScatterUpdate(
-                        resource=scratch.handle, indices=clock[None], updates=pre_reset[None],
+                    written = tf.raw_ops.ResourceScatterUpdate(
+                        resource=scratch.handle,
+                        indices=(clock % VOLTAGE_STAGING_SLOTS if offload_voltage else clock)[None],
+                        updates=pre_reset[None],
                     )
                 elif not buffered:
                     voltages = tf.raw_ops.TensorListPushBack(input_handle=voltages, tensor=pre_reset)
-                words = tf.raw_ops.TensorListPushBack(input_handle=words, tensor=record)
+                if offload_voltage:
+                    # ``record`` comes from the kernel that wrote the staging row, so
+                    # the copy is ordered after the write; the explicit dependency
+                    # covers the separate scatter of the non-record forward.
+                    with tf.control_dependencies([] if written is None else [written]):
+                        token = voltage_store.offload(scratch, row, time, after=record)
+                if offload_history:
+                    # Frame c + 1 (chunk c) stages at slot (c + 1) % slots; row within
+                    # the staging variable from the device clock (no index upload).
+                    frame = clock // self.chunk_size + 1
+                    staging_row = (frame % HISTORY_STAGING_SLOTS) * self.chunk_size + clock % self.chunk_size
+                    tf.raw_ops.ResourceScatterUpdate(
+                        resource=words_staging.handle, indices=staging_row[None],
+                        updates=tf.bitcast(record, tf.float32)[None],
+                    )
+                    if stepwise_windows:
+                        spikes32 = tf.cast(spikes, tf.float32)
+                        counts = tuple(
+                            count + spikes32 * tf.cast((clock >= begin) & (clock < end), tf.float32)
+                            if index_w in stepwise_windows else count
+                            for index_w, (count, (begin, end)) in enumerate(zip(counts, self.count_windows))
+                        )
+                else:
+                    words = tf.raw_ops.TensorListPushBack(input_handle=words, tensor=record)
                 penalties = penalties.write(time, penalty)
-                return time + 1, clock + 1, new_state, voltages, words, penalties, tuple(new_frames)
+                with tf.control_dependencies([token]):
+                    next_time = tf.identity(time + 1)
+                return next_time, clock + 1, new_state, voltages, words, penalties, tuple(new_frames), (counts, traces, token)
 
-            def chunk(index, clock, state, voltages, words, penalties, frames):
-                tf.raw_ops.ResourceScatterUpdate(
-                    resource=asc_snapshots.handle, indices=(clock // self.chunk_size)[None],
+            def chunk(index, clock, state, voltages, words, penalties, frames, extra):
+                chunk_index = clock // self.chunk_size
+                written = tf.raw_ops.ResourceScatterUpdate(
+                    resource=asc_snapshots.handle,
+                    indices=(chunk_index % ASC_STAGING_SLOTS if offload_history else chunk_index)[None],
                     updates=state[3][None],
                 )
+                if offload_history:
+                    counts, traces, token = extra
+                    with tf.control_dependencies([] if written is None else [written]):
+                        token = asc_store.offload(
+                            asc_snapshots, index % ASC_STAGING_SLOTS, index, after=tf.identity(token),
+                        )
+                    # Clear the chunk's staging slot so a short last chunk reduces
+                    # zero rows, not an older frame's.
+                    tf.raw_ops.ResourceScatterUpdate(
+                        resource=words_staging.handle, indices=staging_rows(index + 1),
+                        updates=tf.zeros([self.chunk_size, batch, step.words], tf.float32),
+                    )
+                    extra = (counts, traces, token)
                 stop = tf.minimum((index + 1) * self.chunk_size, length)
-                _, clock, state, voltages, words, penalties, frames = tf.while_loop(
+                _, clock, state, voltages, words, penalties, frames, extra = tf.while_loop(
                     lambda time, *_: time < stop, body,
-                    (index * self.chunk_size, clock, state, voltages, words, penalties, frames),
+                    (index * self.chunk_size, clock, state, voltages, words, penalties, frames, extra),
                     parallel_iterations=1,
                 )
-                return index + 1, clock, state, voltages, words, penalties, frames
+                if offload_history:
+                    # The inner loop's outputs follow every body operation, the row
+                    # scatters included: reduce the chunk's statistics from its staged
+                    # frame, then let the frame leave the device.
+                    counts, traces, _ = extra
+                    with tf.control_dependencies([state[1]]):
+                        frame = tf.bitcast(tf.raw_ops.ResourceGather(
+                            resource=words_staging.handle, indices=staging_rows(index + 1), dtype=tf.float32,
+                        ), tf.int32)
+                    counts = list(counts)
+                    for index_w, mask in chunk_masks:
+                        # (clock - 1) // chunk_size is this chunk's index on the device, also for a short last chunk.
+                        counts[index_w] = counts[index_w] + tf.gather(mask, (clock - 1) // self.chunk_size) * record_counts(
+                            frame, neurons, 0, self.chunk_size,
+                        )
+                    counts = tuple(counts)
+                    if trace_plan is not None:
+                        traces = traces.write(index, record_traces(
+                            frame, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
+                            neurons, trace_plan["total"], 0, self.chunk_size,
+                        ))
+                    token = history_store.offload(
+                        words_staging, (index + 1) % HISTORY_STAGING_SLOTS, index + 1, after=frame,
+                    )
+                    extra = (counts, traces, token)
+                return index + 1, clock, state, voltages, words, penalties, frames, extra
 
             with tf.control_dependencies([time_check, *self._begin_exchanges()]):
                 state = tuple(tf.identity(value) for value in initial_state)
@@ -855,39 +1132,72 @@ class DirectRecordedAdjointRunner:
             # index consumers read it without a per-step host-to-device upload.
             with step.device_scope():
                 clock = tf.identity(tf.zeros([], tf.int64))
-            _, _, state, voltages, words, penalties, frames = tf.while_loop(
+            extra = (streamed_counts, streamed_traces, history_token)
+            _, _, state, voltages, words, penalties, frames, extra = tf.while_loop(
                 lambda index, *_: index < self.n_chunks, chunk,
-                (tf.constant(0), clock, state, voltages, words, penalties, frames),
+                (tf.constant(0), clock, state, voltages, words, penalties, frames, extra),
                 parallel_iterations=1,
             )
-            # Statistics come from the packed records after the loop: a stacked
-            # [time, batch, words] view costs one reduction per window instead of
-            # several small ops per step. The initial-history rows stay in the
-            # stack and the windows shift by ``delay`` instead: TensorFlow's int32
-            # StridedSlice is a host-memory kernel on GPUs, so slicing them off
-            # would round-trip the whole record through the host.
+            streamed_counts, streamed_traces, history_token = extra
             with step.device_scope():
-                stacked = tf.raw_ops.TensorListStack(
-                    input_handle=words, element_shape=tf.constant([batch, step.words], tf.int32),
-                    element_dtype=tf.int32, num_elements=length + step.delay,
-                )
-                counts = tuple(
-                    record_counts(stacked, neurons, begin + step.delay, end + step.delay)
-                    for begin, end in self.count_windows
-                )
-                trace_outputs = ()
-                if trace_plan is not None:
-                    offset = 0
-                    for spec, extent in zip(sampled_traces, trace_plan["extents"]):
-                        traces = record_traces(
-                            stacked, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
-                            neurons, trace_plan["total"], spec.window[0] + step.delay,
-                            spec.window[1] + step.delay,
+                if offload_history:
+                    counts = streamed_counts
+                    trace_outputs = ()
+                    if trace_plan is not None:
+                        # [chunks, rows, chunk_size] -> [rows, chunks * chunk_size]; the
+                        # padded tail of a short last chunk is sliced off by the windows.
+                        columns = tf.reshape(
+                            tf.transpose(streamed_traces.stack(), [1, 0, 2]), [trace_plan["total"], -1],
                         )
-                        trace_outputs += (tf.cast(traces[offset:offset + extent], step.spike_dtype),)
-                        offset += extent
+                        offset = 0
+                        for spec, extent in zip(sampled_traces, trace_plan["extents"]):
+                            trace_outputs += (tf.cast(
+                                columns[offset:offset + extent, spec.window[0]:spec.window[1]], step.spike_dtype,
+                            ),)
+                            offset += extent
+                    # The reverse loop reads word frames from the store; a final
+                    # state identity carries the ordering of the last chunk's offload.
+                    with tf.control_dependencies([history_token]):
+                        state = tuple(tf.identity(value) for value in state)
+                else:
+                    # Statistics come from the packed records after the loop: a stacked
+                    # [time, batch, words] view costs one reduction per window instead of
+                    # several small ops per step. The initial-history rows stay in the
+                    # stack and the windows shift by ``delay`` instead: TensorFlow's int32
+                    # StridedSlice is a host-memory kernel on GPUs, so slicing them off
+                    # would round-trip the whole record through the host.
+                    stacked = tf.raw_ops.TensorListStack(
+                        input_handle=words, element_shape=tf.constant([batch, step.words], tf.int32),
+                        element_dtype=tf.int32, num_elements=length + step.delay,
+                    )
+                    counts = tuple(
+                        record_counts(stacked, neurons, begin + step.delay, end + step.delay)
+                        for begin, end in self.count_windows
+                    )
+                    trace_outputs = ()
+                    if trace_plan is not None:
+                        offset = 0
+                        for spec, extent in zip(sampled_traces, trace_plan["extents"]):
+                            traces = record_traces(
+                                stacked, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
+                                neurons, trace_plan["total"], spec.window[0] + step.delay,
+                                spec.window[1] + step.delay,
+                            )
+                            trace_outputs += (tf.cast(traces[offset:offset + extent], step.spike_dtype),)
+                            offset += extent
+            # The rollout entry is rewritten by the reverse trace; the offload
+            # surfaces and their pinned-host footprint keep their own entry.
+            acceleration = getattr(cell, "acceleration_report", None)
+            if isinstance(acceleration, dict):
+                acceleration["record_offload"] = {
+                    "surfaces": self.record_offload, "stores": self.record_offload_report(),
+                }
         penalty_sequence = tf.transpose(penalties.stack())
-        records = (scratch if buffered else voltages, words, asc_snapshots, tables, noise_steps, buffered, frames)
+        records = (
+            voltage_store if offload_voltage else (scratch if buffered else voltages),
+            history_store if offload_history else words,
+            asc_store if offload_history else asc_snapshots, tables, noise_steps, buffered, frames,
+        )
         return counts, trace_outputs, (penalty_sequence,), tuple(state), records
 
     # -- reverse driver ------------------------------------------------------------------
@@ -897,6 +1207,9 @@ class DirectRecordedAdjointRunner:
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
         voltages, words, asc_snapshots, tables, noise_steps, buffered, frames = records
+        voltage_store = voltages if isinstance(voltages, HostRecordStore) else None
+        history_store = words if isinstance(words, HostRecordStore) else None
+        asc_store = asc_snapshots if isinstance(asc_snapshots, HostRecordStore) else None
         with _rollout_context(cell):
             step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
             neurons, delay, S, T = step.neurons, step.delay, step.spike_dtype, step.state_dtype
@@ -952,8 +1265,11 @@ class DirectRecordedAdjointRunner:
                     return None
                 return (trace_columns[time], trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"])
 
-            def voltage_record(time):
+            def voltage_record(time, words_at):
                 """``(pre_reset, words, row)`` for ``DirectRecordedStep.reverse``."""
+                if voltage_store is not None:
+                    # Prefetched host frame; the upload of ``time - prefetch`` starts now.
+                    return (voltage_store.take(time, time - DEFAULT_PREFETCH), words_at(time), 0)
                 if buffered:
                     # The scratch variable itself: the native prelude reads row ``time``
                     # in place (a full read would copy the copy-on-read variable).
@@ -963,15 +1279,46 @@ class DirectRecordedAdjointRunner:
                     element_shape=tf.constant([batch, neurons], tf.int32), element_dtype=T,
                 ), words_at(time), 0)
 
-            def words_at(time):
+            def resident_words_at(time):
                 """Record of ``time``; ``-delay <= time < 0`` are the initial history slots."""
                 return tf.raw_ops.TensorListGetItem(
                     input_handle=words, index=time + delay,
                     element_shape=tf.constant([batch, step.words], tf.int32), element_dtype=tf.int32,
                 )
 
-            def spikes_at(time):
-                return step.unpack(words_at(time))[0]
+            def resident_block_words(begin, end):
+                """Records of ``begin <= time < end`` as one ``[steps, batch, words]`` tensor."""
+                return tf.raw_ops.TensorListGather(
+                    input_handle=words, indices=tf.range(begin, end) + delay,
+                    element_shape=tf.constant([batch, step.words], tf.int32), element_dtype=tf.int32,
+                )
+
+            resident_words_at.block = resident_block_words
+
+            def chunk_words(chunk_index):
+                """``words_at`` valid for times in ``[start - chunk_size, start + chunk_size)``.
+
+                With history offload the chunk's frame and its predecessor are
+                taken from the store (frame 0 holds the initial slots), so the
+                previous chunk's delayed spikes are at hand without a conditional.
+                """
+                if history_store is None:
+                    return resident_words_at
+                start = chunk_index * self.chunk_size
+                current = history_store.take(chunk_index + 1, chunk_index - 1)
+                previous = history_store.take(chunk_index, -1)
+                pair = tf.concat([previous, current], axis=0)
+
+                def words_at(time):
+                    return tf.bitcast(pair[time - start + self.chunk_size], tf.int32)
+
+                def block_words(begin, end):
+                    return tf.bitcast(
+                        pair[begin - start + self.chunk_size:end - start + self.chunk_size], tf.int32,
+                    )
+
+                words_at.block = block_words
+                return words_at
 
             populations = step.populations
             source_credit = tuple(population["recurrent"] or population["exchanged"] for population in populations)
@@ -984,30 +1331,43 @@ class DirectRecordedAdjointRunner:
             block = self.asc_block
             blocks_per_chunk = -(-self.chunk_size // block)
 
-            def walk_asc(begin, end, asc, buffer, stride):
-                """Advance ``asc`` over ``[begin, end]`` storing ``asc(begin + j * stride)`` at ``j``.
+            asc_block_op = advance_asc_block_record_available()
 
-                Every step writes slot ``ceil((time - begin) / stride)``; the
-                block-boundary step writes a slot last, so no conditional is
-                needed. ``buffer`` must have ``ceil((end - begin) / stride) + 1``
-                slots; the value at ``end`` itself is stored too.
+            def walk_asc(begin, end, asc, size, stride, words_at):
+                """``asc(begin + j * stride)`` for ``j = 0..ceil((end - begin) / stride)``.
+
+                The value at ``end`` itself is stored last. With a rebuilt state
+                library one native launch walks the block from the recorded words
+                (``[slots, batch, 2 * neurons]`` tensor, read with ``asc_slot``);
+                otherwise one advance per step fills a TensorArray of ``size``
+                slots, every step writing slot ``ceil((time - begin) / stride)`` so
+                the block-boundary step writes a slot last without a conditional.
                 """
+                if asc_block_op:
+                    return advance_asc_block_record(asc, words_at.block(begin, end), step.asc_table, stride=stride)
+
                 def body(time, asc, buffer):
                     index = (time - begin + stride - 1) // stride
                     return time + 1, step.advance_asc(asc, words_at(time)), buffer.write(index, asc)
 
+                buffer = tf.TensorArray(T, size=size, element_shape=(batch, 2 * neurons))
                 _, asc, buffer = tf.while_loop(
                     lambda time, *_: time < end, body, (begin, asc, buffer), parallel_iterations=1,
                 )
                 return buffer.write((end - begin + stride - 1) // stride, asc)
 
+            def asc_slot(walked, index):
+                return walked[index] if asc_block_op else walked.read(index)
+
             def chunk_snapshot(chunk_index):
+                if asc_store is not None:
+                    return asc_store.take(chunk_index, chunk_index - 1)
                 row = tf.raw_ops.ResourceGather(
                     resource=asc_snapshots.handle, indices=chunk_index[None], dtype=T,
                 )
                 return tf.reshape(row, [batch, 2 * neurons])
 
-            def reverse_step(time, carry, window, accumulators, asc_buffer, block_start, pending):
+            def reverse_step(time, carry, window, accumulators, asc_buffer, block_start, pending, words_at):
                 sources = [window]
                 for population, keep in zip(populations[1:], accumulate[1:]):
                     if population["exchanged"]:
@@ -1020,7 +1380,7 @@ class DirectRecordedAdjointRunner:
                             if keep else tf.zeros([batch, 0], S)
                         )
                 carry, credit, accumulators = step.reverse(
-                    voltage_record(time), asc_buffer.read(time - block_start), carry,
+                    voltage_record(time, words_at), asc_slot(asc_buffer, time - block_start), carry,
                     spike_base(time), penalty_gradient[:, time], sources, source_credit,
                     tuple(acc if keep else None for acc, keep in zip(accumulators, accumulate)),
                     trace=trace_at(time),
@@ -1046,17 +1406,16 @@ class DirectRecordedAdjointRunner:
                 window = step.shift_history(window, words_at(tf.maximum(time - 1 - delay, -delay)))
                 return time - 1, carry, window, accumulators, asc_buffer, block_start, tuple(new_pending)
 
-            def reverse_block(block_index, carry, window, accumulators, pending, coarse, chunk_start, chunk_stop):
+            def reverse_block(block_index, carry, window, accumulators, pending, coarse, chunk_start, chunk_stop,
+                              words_at):
                 block_start = chunk_start + block_index * block
                 block_stop = tf.minimum(block_start + block, chunk_stop)
                 # The last block's value at block_stop - 1 is written by the walk's
                 # final write; the walk stops one step short of the block end.
-                fine = walk_asc(
-                    block_start, block_stop - 1, coarse.read(block_index),
-                    tf.TensorArray(T, size=block, element_shape=(batch, 2 * neurons)), 1,
-                )
+                fine = walk_asc(block_start, block_stop - 1, asc_slot(coarse, block_index), block, 1, words_at)
                 _, carry, window, accumulators, _, _, pending = tf.while_loop(
-                    lambda time, *_: time >= block_start, reverse_step,
+                    lambda time, *_: time >= block_start,
+                    lambda *args: reverse_step(*args, words_at),
                     (block_stop - 1, carry, window, accumulators, fine, block_start, pending),
                     parallel_iterations=1,
                 )
@@ -1066,13 +1425,15 @@ class DirectRecordedAdjointRunner:
                 start = chunk_index * self.chunk_size
                 stop = tf.minimum(start + self.chunk_size, length)
                 last_block = (stop - start - 1) // block
+                words_at = chunk_words(chunk_index)
                 # Coarse sub-snapshots at every block start up to the last block only.
                 coarse = walk_asc(
-                    start, start + last_block * block, chunk_snapshot(chunk_index),
-                    tf.TensorArray(T, size=blocks_per_chunk + 1, element_shape=(batch, 2 * neurons)), block,
+                    start, start + last_block * block, chunk_snapshot(chunk_index), blocks_per_chunk + 1, block,
+                    words_at,
                 )
                 _, carry, window, accumulators, pending, _, _, _ = tf.while_loop(
-                    lambda block_index, *_: block_index >= 0, reverse_block,
+                    lambda block_index, *_: block_index >= 0,
+                    lambda *args: reverse_block(*args, words_at),
                     (last_block, carry, window, accumulators, pending, coarse, start, stop),
                     parallel_iterations=1,
                 )
@@ -1081,7 +1442,14 @@ class DirectRecordedAdjointRunner:
             def floating_gradient(gradient, value):
                 return tf.zeros_like(value) if gradient is None else tf.cast(gradient, value.dtype)
 
-            with tf.control_dependencies(self._begin_exchanges(after=final_state)):
+            # Prime the voltage prefetch with the last frames the reverse reads first.
+            primed = []
+            if voltage_store is not None:
+                for k in range(min(DEFAULT_PREFETCH, length)):
+                    primed.append(voltage_store.prefetch(
+                        length - 1 - k, after=primed[-1] if primed else tf.identity(final_state[1]),
+                    ))
+            with tf.control_dependencies([*self._begin_exchanges(after=final_state), *primed]):
                 carry = tuple(tf.identity(value) for value in (
                     floating_gradient(state_gradients[1], final_state[1]),
                     floating_gradient(state_gradients[3], final_state[3]),
@@ -1091,10 +1459,14 @@ class DirectRecordedAdjointRunner:
                     tf.zeros_like(final_state[0]),
                 ))
             # The delay window of the last step as one [batch, neurons * delay] tensor
-            # (newest slot first), as the forward's history state holds it.
-            window = tf.concat(
-                [spikes_at(tf.constant(length - 1 - k)) for k in range(1, delay + 1)], axis=1,
-            )
+            # (newest slot first), as the forward's history state holds it. Ordered
+            # after ``carry`` so store reads cannot precede the forward's offloads.
+            with tf.control_dependencies(carry):
+                last_words_at = chunk_words(tf.constant(self.n_chunks - 1))
+                window = tf.concat(
+                    [step.unpack(last_words_at(tf.constant(length - 1 - k)))[0] for k in range(1, delay + 1)],
+                    axis=1,
+                )
             accumulators = tuple(
                 tf.zeros_like(population["variable"]) if keep else tf.zeros([0], tf.float32)
                 for population, keep in zip(populations, accumulate)

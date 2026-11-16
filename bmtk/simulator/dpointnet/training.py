@@ -159,6 +159,7 @@ class TrainingEngine:
     recorded_adjoint = False
     # Class-level fallbacks for engines built without __init__ (test doubles):
     # explicit dense requests, so preparation never resolves a route for them.
+    record_offload = ()
     _stream_spike_statistics_request = False
     _recorded_adjoint_request = False
     training_route_report = None
@@ -194,6 +195,15 @@ class TrainingEngine:
         self.recorded_adjoint = (
             self._recorded_adjoint_request if self._recorded_adjoint_request in (True, "direct") else False
         )
+        from .direct_recorded_adjoint import normalize_record_offload
+        # Pinned-host offload of the direct route's records; validated against
+        # the resolved route in prepare_gradient_checkpointing (no silent fallback).
+        self.record_offload = normalize_record_offload(kwargs.get("record_offload", ()))
+        if self.record_offload and self._recorded_adjoint_request not in ("auto", "direct"):
+            raise ValueError(
+                f"record_offload={self.record_offload!r} requires the direct recorded adjoint "
+                f"(recorded_adjoint='auto' or 'direct'), got {self._recorded_adjoint_request!r}."
+            )
         self.training_route_report = None
         chunk_size = kwargs.get("gradient_checkpoint_chunk_size", UNSET)
         self._gradient_checkpoint_chunk_size = (
@@ -852,7 +862,7 @@ class TrainingEngine:
             except (IndexError, TypeError, ValueError):
                 batch = length = None
             fits, memory_reason = direct_record_bytes(
-                cell, batch, length, self.gradient_checkpoint_chunk_size,
+                cell, batch, length, self.gradient_checkpoint_chunk_size, offload=self.record_offload,
             )
             auto_adjoint = "direct" if not unmet else False
             reason = (
@@ -885,6 +895,12 @@ class TrainingEngine:
                 )
         report["selected"] = {"stream_spike_statistics": bool(stream), "recorded_adjoint": adjoint}
         report["automatic"] = {"stream_spike_statistics": bool(auto_stream), "recorded_adjoint": auto_adjoint}
+        report["record_offload"] = tuple(self.record_offload)
+        if self.record_offload and adjoint != "direct":
+            raise ValueError(
+                f"record_offload={self.record_offload!r} requires the direct recorded adjoint, but the "
+                f"training route resolved recorded_adjoint={adjoint!r}: " + report["reasons"]["recorded_adjoint"]
+            )
         # Explicit engine requests are the supported opt-out; name the ones that
         # leave the automatic (fastest qualified) route so stale flags are visible.
         report["explicit_deviations"] = {
@@ -969,7 +985,7 @@ class TrainingEngine:
         if self.recorded_adjoint == "direct":
             from .direct_recorded_adjoint import DirectRecordedAdjointRunner
             runner_type = DirectRecordedAdjointRunner
-            output_options = {"cell": cell}
+            output_options = {"cell": cell, "record_offload": self.record_offload}
             if partition is not None:
                 output_options["spike_exchanges"] = partition.spike_exchanges(self.adjusted_batch_size)
         elif self.recorded_adjoint:
@@ -994,7 +1010,8 @@ class TrainingEngine:
             "Segmented exact BPTT enabled: "
             f"{self._extractor_forward.n_chunks} chunks, "
             f"chunk_size={self.gradient_checkpoint_chunk_size}, "
-            f"pack_spike_checkpoints={self.pack_spike_checkpoints}."
+            f"pack_spike_checkpoints={self.pack_spike_checkpoints}"
+            + (f", record_offload={self.record_offload}" if self.record_offload else "") + "."
         )
 
     # Losses whose inputs are spike counts or the per-step voltage penalty, which a

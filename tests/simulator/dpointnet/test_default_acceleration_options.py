@@ -98,7 +98,17 @@ def test_adaptive_routing_min_batch_is_eight_and_explicit_true_is_honored(hardwa
 
 
 @pytest.mark.parametrize("batch", [33, 64, 128])
-def test_batches_above_32_keep_previous_route_without_error(hardware, batch):
+def test_batches_above_32_are_admitted(hardware, batch):
+    """The native backward launches are sliced to 32 samples by the wrappers, so
+    larger batches get the joint sweep and its dependent options."""
+    options, _ = resolve(batch_size=batch)
+    assert options["use_combined_current_sweep"] is True
+    for name in NEW_OPTIONS:
+        assert options[name] is True, name
+
+
+@pytest.mark.parametrize("batch", [0, None])
+def test_unknown_batches_keep_previous_route_without_error(hardware, batch):
     options, report = resolve(batch_size=batch)
     assert options["use_combined_current_sweep"] is False
     for name in NEW_OPTIONS:
@@ -190,20 +200,21 @@ def test_explicit_true_with_disabled_dependency_raises(hardware, options, match)
 
 def test_explicit_true_outside_auto_admission_raises_with_reason(hardware):
     with pytest.raises(ValueError, match="automatically admitted joint current sweep"):
-        resolve({"use_uint8_synapse_types": True}, batch_size=33)
+        resolve({"use_uint8_synapse_types": True, "dynamics_mode": "legacy"})
     with pytest.raises(ValueError, match="0..255"):
         resolve({"use_adaptive_routing": True}, type_range=(0, 300))
 
 
 def test_dependent_options_stay_off_outside_automatic_admission(hardware):
     options, report = resolve(
-        {"use_csr_master_weights": True, "use_combined_current_sweep": True}, batch_size=64,
+        {"use_csr_master_weights": True, "use_combined_current_sweep": True}, metadata=context(single_replica=False),
     )
     assert options["use_csr_master_weights"] is True
     assert options["use_uint8_synapse_types"] is options["use_adaptive_routing"] is False
     assert "automatically admitted joint current sweep" in report["reasons"]["use_uint8_synapse_types"]
     explicit, _ = resolve(
-        {**{name: True for name in NEW_OPTIONS}, "use_combined_current_sweep": True}, batch_size=64,
+        {**{name: True for name in NEW_OPTIONS}, "use_combined_current_sweep": True},
+        metadata=context(single_replica=False),
     )
     assert all(explicit[name] is True for name in NEW_OPTIONS)
 

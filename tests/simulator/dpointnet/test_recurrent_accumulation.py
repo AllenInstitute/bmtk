@@ -124,6 +124,55 @@ def test_scaled_variable_batch_gradients_queue_boundaries(batch_size, fanout):
 
 
 @gpu
+@pytest.mark.parametrize("fanout", [7, 40, 257])
+@pytest.mark.parametrize("heterogeneous", [False, True])
+def test_wide_slice_equals_two_32_sample_launches(fanout, heterogeneous):
+    """Batch 64 as one FP16 slice is bitwise the two 32-sample launches: each half keeps
+    its own FP16 projection scale (the halves differ by 2**26 in magnitude when
+    ``heterogeneous``) and the edge-reduction geometry matches, including rows with
+    cancelling +-1024 contributions beside 2**-15 ones."""
+    if not ops.wide_accumulate_backward_available():
+        pytest.skip("Rebuilt CSR library with the 64-sample backward slice required.")
+    rng = np.random.default_rng(4664 + fanout)
+    presynaptic = np.repeat(np.arange(5), fanout)
+    indices = np.column_stack((rng.integers(7, size=presynaptic.size), presynaptic))
+    indices = indices[rng.permutation(len(indices))]
+    types = rng.integers(3, size=len(indices))
+    conn = build_csr_connectivity(indices, types, 6, 7, 3, build_compact_pairs=True)
+    activity = rng.poisson(0.3, (64, 6)).astype(np.float16)
+    weights = rng.integers(-2, 3, size=len(indices)).astype(np.float16)
+    # Cancellation-sensitive row: large opposite weights and a tiny one on the same row.
+    row_edges = np.flatnonzero(indices[:, 1] == 1)
+    weights[row_edges[0]], weights[row_edges[1]], weights[row_edges[2]] = 1024, -1024, 2.0 ** -15
+    basis = rng.integers(-2, 3, size=(3, 4)).astype(np.float16)
+    upstream = (rng.integers(-16, 17, size=(64, 7, 4)) / 8).astype(np.float32)
+    if heterogeneous:
+        upstream[:32] *= 2.0 ** -14
+        upstream[32:] *= 2.0 ** 12
+    upstream = upstream.astype(np.float16)
+    seed = rng.normal(size=len(indices)).astype(np.float32)
+    try:
+        weights_csr = reorder_csr_values(tf.constant(weights), conn)
+        wide_spikes, wide_weights = raw_gradient(
+            conn, tf.constant(activity), weights_csr, tf.constant(basis),
+            tf.constant(upstream.reshape(-1, 4)), tf.constant(seed), scaled=True,
+        )
+        halves, accumulator = [], tf.constant(seed)
+        for start in (0, 32):
+            dz, accumulator = raw_gradient(
+                conn, tf.constant(activity[start:start + 32]), weights_csr, tf.constant(basis),
+                tf.constant(upstream[start:start + 32].reshape(-1, 4)), accumulator, scaled=True,
+            )
+            halves.append(dz.numpy())
+        np.testing.assert_array_equal(wide_spikes.numpy(), np.concatenate(halves))
+        reference = accumulator.numpy()
+        np.testing.assert_allclose(wide_weights.numpy(), reference, rtol=1e-6, atol=1e-6 * np.abs(reference).max())
+        assert np.any(wide_spikes.numpy()[:32] != 0) and np.any(wide_spikes.numpy()[32:] != 0)
+    finally:
+        conn.close()
+
+
+@gpu
 @pytest.mark.parametrize("batch_size", [1, 7, 8, 13, 16, 23, 31, 32])
 @pytest.mark.parametrize("fanout", [1, 31, 32, 33, 129])
 @pytest.mark.parametrize("silent", [False, True])
