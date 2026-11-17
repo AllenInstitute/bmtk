@@ -193,14 +193,17 @@ The contract:
   loss reads with ``SpikeSummary.trim(...).temporal_sum()``; the default uses
   ``_pre_delay``/``_post_delay`` when present. The full window is always there.
 * ``prepare_spike_statistics(batch_size, dtype, sequence_length, batch_start)``
-  returns trace plans for one parameter group: ``SampledSpikeTraces`` (sparse
-  per-neuron traces, as the synchronization loss uses) or ``ProjectedSpikeTraces``
-  (``spikes @ P`` for a static FP32 projection), covering exactly the group's batch
-  rows. Plans are data interpreted by BMTK's runners, never callbacks, so the
-  streaming kernels, memory bounds and credit paths stay in BMTK while the
-  objective stays in your project. A loss that returns plans reads them back with
+  returns at most **one** trace plan for one parameter group: a
+  ``SampledSpikeTraces`` (sparse per-neuron traces, as the synchronization loss
+  uses) or a ``ProjectedSpikeTraces`` (``spikes @ P`` for a static FP32
+  projection), covering exactly the group's batch rows; ``()`` for counts only.
+  Plans are data interpreted by BMTK's runners, never callbacks, so the streaming
+  kernels, memory bounds and credit paths stay in BMTK while the objective stays
+  in your project. The loss reads its plan back with
   ``spikes.trace_for_loss(self.name)`` (``name`` is the configuration key unless
-  the loss defines one) and may appear once per parameter group.
+  the loss defines one; plans are keyed by it, hence one plan per loss — a loss
+  needing several statistics is configured as several losses) and may appear once
+  per parameter group.
 * ``streaming_plan_kinds`` describes the plans for the route report
   (``"counts"``, ``"sampled traces"``, ``"projected traces"``).
 * ``__call__`` must accept a ``SpikeSummary``; keep a dense branch if the loss is
@@ -224,7 +227,20 @@ registered) before any loss is looked up:
 
    "training": {
      "loss_modules": ["my_project.losses"],
-     "parameters": { "...": { "loss_functions": { "readout": { "module": "ReadoutEnergy", "...": "..." } } } }
+     "parameters": [
+       {
+         "name": "evoked",
+         "inputs": ["lgn"],
+         "loss_functions": {
+           "readout": {
+             "module": "ReadoutEnergy",
+             "projection_file": "readout_projection.npy",
+             "window": [50, 500],
+             "cost": 1.0
+           }
+         }
+       }
+     ]
    }
 
 Callback interface

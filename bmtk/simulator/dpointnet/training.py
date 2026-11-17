@@ -1228,12 +1228,17 @@ class TrainingEngine:
         from .loss_functions import streaming
 
         context = self._streaming_context()
+        built = set()
         for parameter in getattr(self, "_parameters", None) or ():
             for loss in (getattr(parameter, "loss_functions", None) or {}).values():
-                if streaming.streaming_basis(loss) in ("built-in", "declared"):
-                    hook = getattr(loss, "build_streaming", None)
-                    if hook is not None:
-                        hook(context)
+                # One call per loss instance, also when the instance is shared
+                # by several parameter groups.
+                if id(loss) in built or streaming.streaming_basis(loss) not in ("built-in", "declared"):
+                    continue
+                built.add(id(loss))
+                hook = getattr(loss, "build_streaming", None)
+                if hook is not None:
+                    hook(context)
         self._streaming_losses_built = True
 
     def streaming_loss_declarations(self):

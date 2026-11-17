@@ -81,6 +81,7 @@ class _LabelWeightedCountLoss(StreamingSpikeLoss):
 
     def build_streaming(self, context):
         self.built_with = context  # eager hook: runs once before tracing
+        self.builds = getattr(self, "builds", 0) + 1
         assert not tf.inside_function()
 
     def __call__(self, spikes, y=None, **kwargs):
@@ -160,6 +161,14 @@ def test_count_windows_and_plan_validation():
     with pytest.raises(ValueError, match="covers batch rows"):
         streaming.prepare_spike_statistics(WrongRows(np.ones((3, 2)), (1, 6)), 4, tf.float16, 7, 2)
 
+    class TwoPlans(_ProjectedTraceLoss):
+        def prepare_spike_statistics(self, batch_size, dtype, sequence_length, batch_start=0):
+            plan = ProjectedSpikeTraces(self.projection, self.window, (batch_start, batch_start + batch_size))
+            return (plan, plan)
+
+    with pytest.raises(ValueError, match="at most one plan per parameter group"):
+        streaming.prepare_spike_statistics(TwoPlans(np.ones((3, 2)), (1, 6)), 4, tf.float16, 7, 0)
+
     class Callback(StreamingSpikeLoss):
         streaming_plan_kinds = ("sampled traces",)
 
@@ -230,7 +239,13 @@ def test_engine_admits_declared_losses_without_a_gpu():
     engine.build_streaming_losses()
     engine.build_streaming_losses()
     assert labelled.built_with.sequence_length == 7 and labelled.built_with.dt == 0.5
-    assert labelled.built_with.batch_sizes == (4,)
+    assert labelled.built_with.batch_sizes == (4,) and labelled.builds == 1
+    # One instance shared by two parameter groups is built once.
+    shared = _LabelWeightedCountLoss()
+    engine = engine_with({"shared": shared})
+    engine._parameters.append(SimpleNamespace(batch_size=4, seq_len=7, loss_functions={"shared": shared}, name="p1"))
+    engine.build_streaming_losses()
+    assert shared.builds == 1
     with pytest.raises(ValueError, match="require_route must be"):
         training.TrainingEngine.__init__(object.__new__(training.TrainingEngine), None, 1, 1, require_route="fast")
 

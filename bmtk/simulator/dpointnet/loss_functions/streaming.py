@@ -26,12 +26,13 @@ Contract (all optional overrides have defaults suitable for a count-only loss):
     is always available.
 
 ``prepare_spike_statistics(batch_size, dtype, sequence_length, batch_start)``
-    Trace plans for one parameter group, as a tuple of trace specifications
-    (``SampledSpikeTraces`` or ``ProjectedSpikeTraces`` from
-    ``spike_statistics``); ``()`` when the loss needs counts only. Plans are
-    data interpreted by the runners, never callbacks. A loss returning plans
-    reads them back with ``SpikeSummary.trace_for_loss(self.name)`` and may
-    appear once per parameter group.
+    At most one trace plan for one parameter group (a ``SampledSpikeTraces``
+    or ``ProjectedSpikeTraces`` from ``spike_statistics``, bare or in a
+    one-element tuple); ``()``/``None`` when the loss needs counts only. Plans
+    are data interpreted by the runners, never callbacks. The loss reads its
+    plan back with ``SpikeSummary.trace_for_loss(self.name)`` (plans are keyed
+    by the loss's name, hence one plan per loss) and may appear once per
+    parameter group.
 
 ``streaming_plan_kinds``
     Class attribute describing the plans the loss declares (``"counts"``,
@@ -186,6 +187,15 @@ def prepare_spike_statistics(loss, batch_size, dtype, sequence_length, batch_sta
     if isinstance(plans, (SampledSpikeTraces, ProjectedSpikeTraces)):
         plans = (plans,)
     plans = tuple(plans)
+    if len(plans) > 1:
+        # Plans are keyed by the loss's name, which SpikeSummary.trace_for_loss(name)
+        # resolves to exactly one trace; a loss that needs several statistics
+        # combines them in one plan or is configured as several losses.
+        raise ValueError(
+            f"{type(loss).__name__}.prepare_spike_statistics returned {len(plans)} trace plans; "
+            "a loss may declare at most one plan per parameter group (read back with "
+            "SpikeSummary.trace_for_loss(self.name))."
+        )
     for plan in plans:
         if not isinstance(plan, (SampledSpikeTraces, ProjectedSpikeTraces)):
             raise ValueError(
