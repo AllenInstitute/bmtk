@@ -1,9 +1,12 @@
 import tensorflow as tf
 
 from . import loss_utils
+from .streaming import StreamingSpikeLoss
 
 
-class VoltageRegularization:
+class VoltageRegularization(StreamingSpikeLoss):
+    streaming_plan_kinds = ()  # reads voltage penalties, never spikes
+
     def __init__(
         self,
         rnn,

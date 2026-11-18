@@ -16,6 +16,18 @@ class SampledSpikeTraces(NamedTuple):
     batch_range: tuple
 
 
+class ProjectedSpikeTraces(NamedTuple):
+    """Linear projection of the spike vector, ``spikes @ projection``, streamed per chunk.
+
+    ``projection`` is a static ``[n_neurons, n_features]`` FP32 matrix. The finished
+    trace has shape ``[rows * n_features, window_length]`` (row-major over batch rows,
+    then features), the same layout as sampled traces.
+    """
+    projection: tf.Tensor
+    window: tuple
+    batch_range: tuple
+
+
 class SpikeStatistics(NamedTuple):
     counts: tuple
     traces: tuple
@@ -46,6 +58,18 @@ class _StatisticsCollector:
                 or not 0 <= spec.batch_range[0] < spec.batch_range[1]
             ):
                 raise ValueError("Sampled traces require a nonempty static batch_range.")
+            if isinstance(spec, ProjectedSpikeTraces):
+                width = runner.sequence_specs[0].shape[-1] if runner.sequence_specs else None
+                if (
+                    spec.projection.shape.rank != 2
+                    or not spec.projection.shape.is_fully_defined()
+                    or spec.projection.dtype != tf.float32
+                    or (width is not None and spec.projection.shape[0] != width)
+                ):
+                    raise ValueError(
+                        "Projected traces require a static FP32 [n_neurons, n_features] projection."
+                    )
+                continue
             rows = spec.batch_range[1] - spec.batch_range[0]
             if (
                 spec.sample_ids.shape.rank != 2
@@ -71,10 +95,12 @@ class _StatisticsCollector:
         )
         traces = tuple(
             tf.TensorArray(
-                tf.as_dtype(self.runner.sequence_specs[0].dtype), self.runner.n_chunks,
+                tf.float32 if isinstance(spec, ProjectedSpikeTraces)
+                else tf.as_dtype(self.runner.sequence_specs[0].dtype),
+                self.runner.n_chunks,
                 infer_shape=self.runner.remainder_size == 0,
             )
-            for _ in self.sampled_traces
+            for spec in self.sampled_traces
         )
         sequences = tuple(
             tf.TensorArray(
@@ -98,6 +124,14 @@ class _StatisticsCollector:
         traces = []
         for spec in self.sampled_traces:
             begin, end = spec.batch_range
+            if isinstance(spec, ProjectedSpikeTraces):
+                projected = tf.einsum(
+                    "btn,nf->bft", tf.cast(spikes[begin:end], tf.float32), spec.projection
+                )
+                traces.append(tf.reshape(
+                    projected, [(end - begin) * spec.projection.shape[1], length]
+                ))
+                continue
             mask = spec.neuron_mask
             ids = spec.sample_ids
             checks = (

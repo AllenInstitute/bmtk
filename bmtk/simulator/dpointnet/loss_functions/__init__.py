@@ -7,6 +7,7 @@ from .weight_regularization import EMDWeightRegularization
 from .delayed_association import DelayedAssociationLoss
 from .low_rate_floor import LowRateFloor
 from .voltage_rate_floor import VoltageRateFloor
+from .streaming import StreamingSpikeLoss, StreamingContext
 
 
 class LossModules:
@@ -42,6 +43,31 @@ class LossModules:
         return self._loss_modules[module_name]
 
 
+def import_loss_modules(module_paths):
+    """Import project modules that register loss classes (config ``training.loss_modules``).
+
+    Each entry is an importable module path such as ``"my_project.losses"``; importing
+    it runs its ``register_loss_module``/``add_loss_module`` calls. Returns the imported
+    modules. A missing module raises ``ValueError`` naming the configuration key.
+    """
+    import importlib
+
+    if isinstance(module_paths, str):
+        module_paths = (module_paths,)
+    modules = []
+    for path in module_paths or ():
+        if not isinstance(path, str) or not path:
+            raise ValueError(f"training.loss_modules entries must be importable module paths; got {path!r}.")
+        try:
+            modules.append(importlib.import_module(path))
+        except ImportError as error:
+            raise ValueError(
+                f"training.loss_modules: could not import {path!r} ({error}); it must be importable "
+                "from the training process (PYTHONPATH or an installed package)."
+            ) from error
+    return tuple(modules)
+
+
 def add_loss_module(mod, module_name=None, overwrite=True):
     LossModules().add_module(mod, module_name=module_name, overwrite=overwrite)
 
@@ -51,6 +77,7 @@ def register_loss_module(_cls=None, *_, **wkargs):
         mod_name = wkargs.get("module_name", None)
         overwrite = wkargs.get("overwrite", True)
         LossModules().add_module(cls, module_name=mod_name, overwrite=overwrite)
+        return cls
 
     return decorator if _cls is None else decorator(_cls)
 

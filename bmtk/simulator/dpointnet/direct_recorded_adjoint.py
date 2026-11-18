@@ -60,7 +60,7 @@ from .custom_ops.glif_state_ops import (
 from .custom_ops.record_store_ops import (
     DEFAULT_PREFETCH, HostRecordStore, host_record_store_available, record_store_op_status,
 )
-from .spike_statistics import SpikeStatistics, _window
+from .spike_statistics import ProjectedSpikeTraces, SpikeStatistics, _window
 
 RECORD_FORMAT = "direct_step_record_v1"
 
@@ -746,6 +746,7 @@ class DirectRecordedAdjointRunner:
         specifications together; the per-specification outputs are split by
         their ``rows * per_trial`` extents.
         """
+        sampled_traces = [spec for spec in sampled_traces if not isinstance(spec, ProjectedSpikeTraces)]
         if not sampled_traces:
             return None
         indices, masks, extents, groups, offset = [], [], [], [], 0
@@ -779,6 +780,30 @@ class DirectRecordedAdjointRunner:
             )
         plan.update(extents=tuple(extents), total=offset)
         return plan
+
+    def _projected_trace(self, stacked, step, spec, chunk=50):
+        """FP32 ``[rows * features, window]`` projected trace from the packed spike records.
+
+        The window is unpacked ``chunk`` steps at a time ([chunk * batch, words] ->
+        [chunk * batch, neurons]) and projected with one matmul per chunk; a per-step
+        loop costs ~100x more (one small unpack and matmul per step).
+        """
+        begin, end = spec.batch_range
+        start, stop = spec.window
+        projection = spec.projection
+        features = int(projection.shape[1])
+        batch = int(stacked.shape[1])
+        pieces = []
+        for first in range(start, stop, chunk):
+            last = min(first + chunk, stop)
+            with step.device_scope():
+                rows = tf.range(first + step.delay, last + step.delay, dtype=tf.int64)
+            words = tf.reshape(tf.gather(stacked, rows), [(last - first) * batch, -1])
+            spikes = tf.reshape(step.unpack(words)[0], [last - first, batch, -1])[:, begin:end]
+            projected = tf.matmul(tf.reshape(tf.cast(spikes, tf.float32), [-1, spikes.shape[-1]]), projection)
+            pieces.append(tf.reshape(projected, [last - first, end - begin, features]))
+        traces = tf.transpose(tf.concat(pieces, axis=0), (1, 2, 0))  # [rows, features, window]
+        return tf.reshape(traces, [(end - begin) * features, stop - start])
 
     # -- record storage ------------------------------------------------------------------
 
@@ -859,6 +884,15 @@ class DirectRecordedAdjointRunner:
             noise_steps = initial_state[6]
             offload_voltage = "voltage" in self.record_offload
             offload_history = "history" in self.record_offload
+            if offload_history and any(isinstance(spec, ProjectedSpikeTraces) for spec in sampled_traces):
+                # Streamed per-chunk statistics reduce each staged word frame; the
+                # projected trace needs the unpacked spike matrix, computed after the
+                # loop from the resident records only.
+                raise ValueError(
+                    "Projected spike traces are not available with record_offload='history'; "
+                    "keep the history records resident (offload 'voltage' only) for losses that "
+                    "declare projected traces."
+                )
             # Per-step FP32 records as separate allocations land in oversized free
             # chunks (about 1.5x their size on the full network); a loop-carried
             # contiguous buffer makes Grappler's memory optimizer swap loop state to
@@ -1175,16 +1209,19 @@ class DirectRecordedAdjointRunner:
                         for begin, end in self.count_windows
                     )
                     trace_outputs = ()
-                    if trace_plan is not None:
-                        offset = 0
-                        for spec, extent in zip(sampled_traces, trace_plan["extents"]):
-                            traces = record_traces(
-                                stacked, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
-                                neurons, trace_plan["total"], spec.window[0] + step.delay,
-                                spec.window[1] + step.delay,
-                            )
-                            trace_outputs += (tf.cast(traces[offset:offset + extent], step.spike_dtype),)
-                            offset += extent
+                    offset, extents = 0, iter(trace_plan["extents"] if trace_plan is not None else ())
+                    for spec in sampled_traces:
+                        if isinstance(spec, ProjectedSpikeTraces):
+                            trace_outputs += (self._projected_trace(stacked, step, spec),)
+                            continue
+                        extent = next(extents)
+                        traces = record_traces(
+                            stacked, trace_plan["indices"], trace_plan["mask32"], trace_plan["groups"],
+                            neurons, trace_plan["total"], spec.window[0] + step.delay,
+                            spec.window[1] + step.delay,
+                        )
+                        trace_outputs += (tf.cast(traces[offset:offset + extent], step.spike_dtype),)
+                        offset += extent
             # The rollout entry is rewritten by the reverse trace; the offload
             # surfaces and their pinned-host footprint keep their own entry.
             acceleration = getattr(cell, "acceleration_report", None)
@@ -1239,12 +1276,29 @@ class DirectRecordedAdjointRunner:
             # contributions outside a window cost one small scatter but no
             # host-side conditional per step.
             trace_columns = None
+            sampled_pairs = [
+                (gradient, spec) for gradient, spec in zip(trace_gradients, sampled_traces)
+                if not isinstance(spec, ProjectedSpikeTraces)
+            ]
             if trace_plan is not None:
                 trace_columns = tf.transpose(tf.concat([
                     tf.zeros([extent, length], tf.float32) if gradient is None
                     else tf.pad(tf.cast(gradient, tf.float32), ((0, 0), (spec.window[0], length - spec.window[1])))
-                    for gradient, spec, extent in zip(trace_gradients, sampled_traces, trace_plan["extents"])
+                    for (gradient, spec), extent in zip(sampled_pairs, trace_plan["extents"])
                 ], axis=0))
+            # Projected traces: dense per-step spike credit ``g_t @ P^T`` on the spec's batch rows.
+            projected_credit = []
+            for gradient, spec in zip(trace_gradients, sampled_traces):
+                if not isinstance(spec, ProjectedSpikeTraces) or gradient is None:
+                    continue
+                rows = spec.batch_range[1] - spec.batch_range[0]
+                features = int(spec.projection.shape[1])
+                columns = tf.transpose(
+                    tf.reshape(tf.cast(gradient, tf.float32), [rows, features, spec.window[1] - spec.window[0]]),
+                    (2, 0, 1),
+                )
+                columns = tf.pad(columns, ((spec.window[0], length - spec.window[1]), (0, 0), (0, 0)))
+                projected_credit.append((columns, spec))
             penalty_gradient = (
                 tf.zeros([batch, length], tf.float32) if penalty_gradient is None else penalty_gradient
             )
@@ -1258,6 +1312,11 @@ class DirectRecordedAdjointRunner:
                 parts = [constant_spike_cotangent]
                 for value, begin, end in windowed:
                     parts.append(tf.cast(value * host_mask(time, begin, end), S))
+                for columns, spec in projected_credit:
+                    credit = tf.matmul(tf.gather(columns, time), spec.projection, transpose_b=True)
+                    parts.append(tf.cast(
+                        tf.pad(credit, ((spec.batch_range[0], batch - spec.batch_range[1]), (0, 0))), S,
+                    ))
                 return tf.add_n(parts) if len(parts) > 1 else parts[0]
 
             def trace_at(time):

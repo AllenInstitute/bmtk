@@ -126,6 +126,123 @@ Use a unique registration name. Reusing a built-in name replaces its
 implementation in that Python process; that should be an intentional choice,
 not a way to select a different objective accidentally.
 
+.. _dpointnet-streaming-custom-losses:
+
+Streaming-capable custom losses
+-------------------------------
+
+``MeanRateMSE`` above receives the dense ``[batch, time, neurons]`` spike
+tensor, so a configuration using it runs on the dense route and the training
+log says ``Training route: dense spike sequences; ... MeanRateMSE: undeclared``.
+The fast routes (checkpointed streaming and the direct recorded adjoint, see
+:doc:`dpointnet_training`) never materialize that tensor; they hand losses a
+``SpikeSummary`` of FP32 spike counts over declared windows plus declared trace
+plans. A project loss joins those routes by declaring the
+``StreamingSpikeLoss`` contract; nothing in BMTK needs to change:
+
+.. code-block:: python
+
+   import numpy as np
+   import tensorflow as tf
+   from bmtk.simulator.dpointnet import StreamingSpikeLoss, register_loss_module
+   from bmtk.simulator.dpointnet.spike_summary import SpikeSummary
+   from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+
+
+   @register_loss_module(module_name="ReadoutEnergy")
+   class ReadoutEnergy(StreamingSpikeLoss):
+       """Mean squared projected activity over a window, plus a count penalty."""
+
+       streaming_plan_kinds = ("counts", "projected traces")
+
+       def __init__(self, rnn, projection_file, window, cost=1.0, pre_delay=50, **kwargs):
+           self.projection = tf.constant(np.load(projection_file), tf.float32)  # [neurons, features]
+           self.window = tuple(window)
+           self.cost = float(cost)
+           self._pre_delay, self._post_delay = int(pre_delay), 0  # default count_windows() reads these
+
+       def streaming_unmet(self, context):
+           if context.sequence_length is not None and self.window[1] > context.sequence_length:
+               return (f"ReadoutEnergy window {self.window} exceeds the sequence length.",)
+           return ()
+
+       def prepare_spike_statistics(self, batch_size, dtype, sequence_length, batch_start=0):
+           return ProjectedSpikeTraces(self.projection, self.window, (batch_start, batch_start + batch_size))
+
+       def __call__(self, spikes, **kwargs):
+           if isinstance(spikes, SpikeSummary):
+               counts = spikes.trim(self._pre_delay, self._post_delay).temporal_sum()
+               traces = spikes.trace_for_loss(self.name)          # [batch * features, window]
+           else:                                                   # dense route, e.g. validation
+               counts = tf.reduce_sum(tf.cast(spikes[:, self._pre_delay:], tf.float32), axis=1)
+               start, stop = self.window
+               traces = tf.reshape(tf.einsum(
+                   "btn,nf->bft", tf.cast(spikes[:, start:stop], tf.float32), self.projection,
+               ), [-1, stop - start])
+           return self.cost * (tf.reduce_mean(tf.square(traces)) + 1e-3 * tf.reduce_mean(counts))
+
+The contract:
+
+* ``supports_streaming`` (class attribute, ``True`` from the mixin) is the
+  declaration. Set it to ``False`` to keep a subclass of a streaming loss on the
+  dense route explicitly. A loss without the attribute is *undeclared*.
+* ``streaming_unmet(context)`` returns user-facing sentences when this instance
+  cannot stream in ``context`` (``sequence_length``, per-group ``batch_sizes``,
+  ``cell``, ``neuron_partition``, ``replicas``); an empty tuple admits it.
+* ``count_windows(sequence_length)`` lists the ``(start, stop)`` count windows the
+  loss reads with ``SpikeSummary.trim(...).temporal_sum()``; the default uses
+  ``_pre_delay``/``_post_delay`` when present. The full window is always there.
+* ``prepare_spike_statistics(batch_size, dtype, sequence_length, batch_start)``
+  returns at most **one** trace plan for one parameter group: a
+  ``SampledSpikeTraces`` (sparse per-neuron traces, as the synchronization loss
+  uses) or a ``ProjectedSpikeTraces`` (``spikes @ P`` for a static FP32
+  projection), covering exactly the group's batch rows; ``()`` for counts only.
+  Plans are data interpreted by BMTK's runners, never callbacks, so the streaming
+  kernels, memory bounds and credit paths stay in BMTK while the objective stays
+  in your project. The loss reads its plan back with
+  ``spikes.trace_for_loss(self.name)`` (``name`` is the configuration key unless
+  the loss defines one; plans are keyed by it, hence one plan per loss — a loss
+  needing several statistics is configured as several losses) and may appear once
+  per parameter group.
+* ``streaming_plan_kinds`` describes the plans for the route report
+  (``"counts"``, ``"sampled traces"``, ``"projected traces"``).
+* ``__call__`` must accept a ``SpikeSummary``; keep a dense branch if the loss is
+  also used where full spike tensors are produced.
+
+Verify a streaming loss the way BMTK verifies its own: run a small network through
+the dense route (``stream_spike_statistics: false``) and through ``"auto"`` and
+compare values and gradients (``tests/simulator/dpointnet/test_streaming_loss_protocol.py``
+is a template). With the declaration in place, ``"auto"`` selects the fastest
+route the loss qualifies for, and the route line names it: ``Training route:
+checkpointed streaming + direct recorded adjoint; ...; losses: readout
+[ReadoutEnergy: declared by my_project.losses, counts, projected traces]``.
+Assert ``rnn.training_engine.training_route_report["mode"]`` in configurations
+that expect the fast route.
+
+To register from configuration without an import in the launcher, list the
+modules under ``training.loss_modules``; they are imported (and therefore
+registered) before any loss is looked up:
+
+.. code-block:: json
+
+   "training": {
+     "loss_modules": ["my_project.losses"],
+     "parameters": [
+       {
+         "name": "evoked",
+         "inputs": ["lgn"],
+         "loss_functions": {
+           "readout": {
+             "module": "ReadoutEnergy",
+             "projection_file": "readout_projection.npy",
+             "window": [50, 500],
+             "cost": 1.0
+           }
+         }
+       }
+     ]
+   }
+
 Callback interface
 ------------------
 

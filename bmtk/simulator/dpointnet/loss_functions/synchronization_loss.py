@@ -4,6 +4,7 @@ import numpy as np
 
 from . import loss_utils
 from ..spike_summary import SpikeSummary
+from .streaming import StreamingSpikeLoss
 
 FANO_SAMPLE_SIZE_MEAN = 70
 FANO_SAMPLE_SIZE_STDDEV = 30
@@ -84,7 +85,7 @@ def _gather_population_traces(
     )
 
 
-class SynchronizationLoss(tf.keras.layers.Layer):
+class SynchronizationLoss(tf.keras.layers.Layer, StreamingSpikeLoss):
     def __init__(
         self,
         rnn,
@@ -277,6 +278,19 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             fanos = fanos.write(i, fano)
 
         return fanos.stack()
+
+    streaming_plan_kinds = ("counts", "sampled traces")
+
+    def streaming_unmet(self, context):
+        if self._t_start_idx < 0 or self._t_end_idx < 0:
+            return ("Streamed synchronization requires nonnegative time bounds.",)
+        return ()
+
+    def prepare_spike_statistics(self, batch_size, dtype, sequence_length, batch_start=0):
+        if self._sync_cost <= 0:
+            return ()
+        plan = self.prepare_sampled_statistics(batch_size, dtype, sequence_length, batch_start)
+        return () if plan is None else (plan,)
 
     def prepare_sampled_statistics(self, batch_size, dtype, sequence_length, batch_start=0):
         from ..spike_statistics import SampledSpikeTraces

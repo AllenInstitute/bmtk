@@ -1,6 +1,7 @@
 from time import time
 from enum import IntEnum
 from datetime import datetime
+import json
 import os
 import csv
 import subprocess
@@ -152,11 +153,39 @@ class Callbacks:
 
         if self.verbosity >= Verbosity.on_train:
             io.log_info(f"> Training Started @ {self.time}")
+        self._record_training_route()
 
         allocator = os.environ.get("TF_GPU_ALLOCATOR", "")
         self._append_performance_to_csv(
             "tf_gpu_allocator", None, None, allocator or "default"
         )
+
+    def _record_training_route(self):
+        """Write the resolved training route beside the other callback outputs and restate it.
+
+        ``training_route.json`` names the mode, the selected/automatic choices, the
+        per-loss admission basis and any explicit deviations, so a finished run's
+        route is auditable without its log.
+        """
+        engine = getattr(self.rnn, "training_engine", None)
+        report = getattr(engine, "training_route_report", None)
+        if not isinstance(report, dict) or self.callbacks_dir is None:
+            return
+        path = Path(self.callbacks_dir) / "training_route.json"
+        try:
+            path.parent.mkdir(exist_ok=True, parents=True)
+            with open(path, "w") as handle:
+                json.dump(report, handle, indent=2, default=str)
+        except OSError as error:
+            io.log_warning(f"Could not write {path}: {error}")
+        if self.verbosity >= Verbosity.on_train:
+            io.log_info(
+                f"> Training route: {report.get('mode')}; losses: {engine.describe_route_losses(report)}"
+                f" (details in {path})"
+            )
+        if self.verbosity >= Verbosity.full:
+            for line in engine.training_route_checklist(report):
+                io.log_info("  route detail: " + line)
 
     def on_train_end(self, metrics=None, normalizers=None):
         self.training_time = time() - self.train_start_time

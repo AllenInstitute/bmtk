@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 
 from . import loss_utils
+from .streaming import StreamingSpikeLoss
 
 
-class OrientationSelectivityLoss:
+class OrientationSelectivityLoss(StreamingSpikeLoss):
     def __init__(self, rnn, osi_cost=20.0, pre_delay=None, post_delay=None, dtype=tf.float32,
                  core_mask=None, method="crowd_osi", subtraction_ratio=1.0, layer_info=None,
                  data_dir='GLIF_network', neuropixels_df="Neuropixels_data/v1_OSI_DSI_DF.csv",
@@ -64,6 +65,11 @@ class OrientationSelectivityLoss:
     @staticmethod
     def module():
         return 'OrientationSelectivityLoss'
+
+    def streaming_unmet(self, context):
+        if self._method not in ("crowd_osi", "crowd_spikes"):
+            return ("Spike statistics require a rate-based orientation objective.",)
+        return ()
 
     @property
     def uses_ema_normalizer(self):

@@ -266,21 +266,40 @@ backward pass constructs only chunk-sized spike cotangents. The ordinary dense
 output route remains the default, including for unsupported custom losses and
 local learning rules; an explicit unsupported streaming request raises.
 
-Supported consumers are ``TargetFiringRate``, ``SpikeRateDistributionTarget``,
+A loss is admitted to streaming by **declaration**, not by its class name:
+every built-in loss (``TargetFiringRate``, ``SpikeRateDistributionTarget``,
 the ``crowd_osi`` and ``crowd_spikes`` orientation methods,
 ``SynchronizationLoss``, ``LowRateFloor``, ``VoltageRateFloor``,
-``VoltageRegularization`` and ``EMDWeightRegularization``. Single, series,
+``VoltageRegularization`` and ``EMDWeightRegularization``) declares the
+``StreamingSpikeLoss`` contract, and a project-local loss that declares it is
+treated identically (see :ref:`dpointnet-streaming-custom-losses`). An
+undeclared loss, or one with ``supports_streaming = False``, keeps the dense
+route and the route log says so. Single, series,
 series-accumulated and concatenated parallel parameter groups retain their
 existing update and normalization semantics. FP32 temporal adjoints and multiple
 replicas are not currently supported by this option. Non-spike sequences and
 complete terminal states remain available; streaming spikes does not remove
 requested full voltage sequences.
 
-Custom loops can use ``SpikeStatisticsRunner`` and ``SampledSpikeTraces`` from
-``bmtk.simulator.dpointnet.spike_statistics``. They return ``SpikeStatistics``
-with ``counts``, ``traces``, secondary ``sequences`` and ``final_state`` tuples.
-The typed ``SpikeSummary`` loss input records its count windows explicitly and
-rejects requests for an uncollected window rather than inventing counts.
+Custom loops can use ``SpikeStatisticsRunner`` with ``SampledSpikeTraces`` and
+``ProjectedSpikeTraces`` from ``bmtk.simulator.dpointnet.spike_statistics``
+(the latter streams ``spikes @ P`` for a static FP32 ``[neurons, features]``
+projection; it is not available together with ``record_offload: "history"``).
+They return ``SpikeStatistics`` with ``counts``, ``traces``, secondary
+``sequences`` and ``final_state`` tuples. The typed ``SpikeSummary`` loss input
+records its count windows explicitly and rejects requests for an uncollected
+window rather than inventing counts.
+
+Which route a run is in is always stated. The engine logs one line at build,
+``Training route: <mode>; ...; losses: <name> [<Class>: built-in | declared by
+<module> | undeclared | opted-out, <plans>]``, where ``<mode>`` is ``dense spike
+sequences``, ``checkpointed streaming`` or ``checkpointed streaming + direct
+recorded adjoint``; ``training_route_report["mode"]`` and
+``training_route_report["losses"]`` carry the same facts for assertions, the
+``Callbacks`` write them to ``<callbacks_dir>/training_route.json`` and restate
+the mode at ``verbose: "on_train"`` or higher (``"full"`` prints the complete
+prerequisite checklist; the same checklist is logged at ``DEBUG`` level by the
+engine).
 
 Recorded NEST adjoint
 ~~~~~~~~~~~~~~~~~~~~~

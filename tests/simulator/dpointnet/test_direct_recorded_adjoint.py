@@ -526,7 +526,7 @@ def test_training_engine_auto_keeps_dense_route_for_unsupported_losses():
         assert "CustomLoss" in engine.training_route_report["reasons"]["stream_spike_statistics"]
         assert engine.training_route_report["reasons"]["recorded_adjoint"] == "recorded routes require streamed statistics"
         explicit = _engine_for(cell, states, model, losses, stream_spike_statistics=True)
-        with pytest.raises(ValueError, match="does not support CustomLoss"):
+        with pytest.raises(ValueError, match="CustomLoss does not declare streaming support"):
             explicit.prepare_gradient_checkpointing()
     finally:
         cell.close_fused_cuda()
@@ -673,3 +673,63 @@ def test_direct_record_bytes_admission():
     assert direct_record_bytes(cell, None, 100, 25, free_bytes=2**30) == (
         None, "record payload unknown (static batch, sequence length and neuron count required)")
     assert direct_record_bytes(SimpleNamespace(_n_neurons=0), 4, 100, 25, free_bytes=2**30)[0] is None
+
+
+@pytest.mark.parametrize("batch", [4, 32])
+def test_direct_projected_traces_match_streaming_reference(batch):
+    """Projected traces (mixed with sampled traces) through the direct adjoint equal the
+    checkpointed streaming reference: values to FP32 summation order, all VJPs likewise."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+
+    cell = make_cell("nest", selective=True, batch_size=batch, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)
+    try:
+        initial = _initial_state(cell, batch)
+        model = _model(cell, initial)
+        options = dict(sequence_length=7, chunk_size=3, differentiate_inputs=False, count_windows=((0, 7),))
+        reference = SpikeStatisticsRunner(model, n_sequence_outputs=2, pack_spike_checkpoints=True, **options)
+        direct = DirectRecordedAdjointRunner(model, cell, **options)
+        neurons = int(reference.sequence_specs[0].shape[-1])
+        projection = tf.constant(np.random.default_rng(0).normal(size=(neurons, 3)), tf.float32)
+        traces = (
+            ProjectedSpikeTraces(projection, (1, 7), (1, 3)),
+            SampledSpikeTraces(tf.constant([[0, 0], [1, 0]], tf.int64), tf.ones((2, 1, 2), cell.compute_dtype), (1, 7), (0, 2)),
+            ProjectedSpikeTraces(projection * 0.5, (0, 5), (0, batch)),
+        )
+        inputs = tf.zeros((batch, 7, 0), cell.compute_dtype)
+        floating = tuple(value for value in initial if value.dtype.is_floating)
+
+        @tf.function
+        def evaluate():
+            comparisons = []
+            for runner in (reference, direct):
+                with tf.GradientTape() as tape:
+                    tape.watch(floating)
+                    output = runner(inputs, initial, sampled_traces=traces)
+                    values = output.counts + output.traces
+                    loss = tf.add_n([
+                        tf.reduce_sum(tf.square(tf.cast(value, tf.float32))) * (index + 1)
+                        for index, value in enumerate(values)
+                    ])
+                gradients = tape.gradient(
+                    loss, (*floating, *model.trainable_variables),
+                    unconnected_gradients=tf.UnconnectedGradients.ZERO,
+                )
+                comparisons.append((values, gradients))
+            return comparisons
+
+        expected, observed = evaluate()
+        assert observed[0][1].dtype == tf.float32 and observed[0][3].dtype == tf.float32
+        # Values: FP32 projection, summation order only.
+        for target, value in zip(tf.nest.flatten(expected[0]), tf.nest.flatten(observed[0])):
+            np.testing.assert_allclose(value, target, rtol=1e-5, atol=1e-6)
+        # VJPs: overlapping projected specs add their per-step spike credit in the
+        # compute dtype in a different order than the reference tape, so differences
+        # are bounded by compute-dtype (FP16) rounding of the spike cotangent.
+        for target, value in zip(tf.nest.flatten(expected[1]), tf.nest.flatten(observed[1])):
+            np.testing.assert_allclose(value, target, rtol=2e-3, atol=1e-4)
+        assert np.any(observed[0][1].numpy() != 0)
+        assert cell.acceleration_report["rollout_selected"]["temporal_path"] == "direct_recorded_vjp"
+    finally:
+        cell.close_fused_cuda()

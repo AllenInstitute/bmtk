@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from . import loss_utils
 from ..spike_summary import SpikeSummary
+from .streaming import StreamingSpikeLoss
 
 
 def low_rate_floor(spikes, neuron_ids=None, dt=1.0, floor_hz=0.1, cost=1.0):
@@ -25,7 +26,7 @@ def low_rate_floor(spikes, neuron_ids=None, dt=1.0, floor_hz=0.1, cost=1.0):
     )
 
 
-class LowRateFloor:
+class LowRateFloor(StreamingSpikeLoss):
     """Opt-in one-sided firing-rate regularizer with configurable neuron selection."""
 
     def __init__(

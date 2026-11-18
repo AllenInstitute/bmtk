@@ -100,3 +100,50 @@ def test_wrong_sequence_length_and_trace_indices_raise():
     )
     with pytest.raises(tf.errors.InvalidArgumentError):
         runner(tf.zeros((2, 7, 3)), (tf.zeros((2, 3)),), sampled_traces=(bad,))
+
+
+@pytest.mark.parametrize("graph", [False, True])
+@pytest.mark.parametrize("chunk", [1, 3, 7])
+def test_projected_traces_and_vjps_match_dense_projection(graph, chunk):
+    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+
+    model = _model()
+    kwargs = dict(sequence_length=7, chunk_size=chunk, n_sequence_outputs=2,
+                  differentiate_inputs=True)
+    dense = SegmentedRecomputeRunner(model, **kwargs)
+    streamed = SpikeStatisticsRunner(model, count_windows=((0, 7),), **kwargs)
+    projection = tf.constant([[0.5, -1.0], [2.0, 0.25], [-0.75, 1.5]], tf.float32)
+    spec = ProjectedSpikeTraces(projection, (2, 7), (1, 3))
+    inputs = tf.reshape(tf.cast(tf.range(63) % 5, tf.float32), (3, 7, 3)) * 0.25
+    initial = tf.ones((3, 3), tf.float32)
+    targets = (inputs, initial, *model.trainable_variables)
+    weights = tf.reshape(tf.range(1, 21, dtype=tf.float32), (4, 5)) / 7.0
+
+    def evaluate():
+        results = []
+        for summary in (False, True):
+            with tf.GradientTape() as tape:
+                tape.watch((inputs, initial))
+                if summary:
+                    trace = streamed(inputs, (initial,), sampled_traces=(spec,)).traces[0]
+                else:
+                    spikes, _, _ = dense(inputs, (initial,))
+                    trace = tf.reshape(
+                        tf.einsum("btn,nf->bft", spikes[1:3], projection), (4, 7)
+                    )[:, 2:7]
+                loss = tf.reduce_sum(tf.square(trace) * weights)
+            results.append((trace, tape.gradient(loss, targets)))
+        return results
+
+    reference, actual = tf.function(evaluate)() if graph else evaluate()
+    for expected, observed in zip(tf.nest.flatten(reference), tf.nest.flatten(actual)):
+        np.testing.assert_allclose(observed.numpy(), expected.numpy(), rtol=2e-6, atol=2e-6)
+
+
+def test_projected_trace_projection_shape_is_validated():
+    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+
+    runner = SpikeStatisticsRunner(_model(), 7, 3, 2)
+    bad = ProjectedSpikeTraces(tf.ones((4, 2), tf.float32), (0, 7), (0, 2))
+    with pytest.raises(ValueError, match="Projected traces"):
+        runner(tf.zeros((2, 7, 3)), (tf.zeros((2, 3)),), sampled_traces=(bad,))

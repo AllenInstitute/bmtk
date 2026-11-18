@@ -95,6 +95,13 @@ class TrainingParameters:
 
     def add_loss_function(self, name, loss_mod):
         self._loss_functions[name] = loss_mod
+        # Streamed trace plans are keyed by the loss's name; a loss without one
+        # takes its configuration key (Keras-layer losses already have a name).
+        if getattr(loss_mod, "name", None) is None:
+            try:
+                loss_mod.name = name
+            except AttributeError:
+                pass
 
     @property
     def loss_functions(self):
@@ -160,6 +167,8 @@ class TrainingEngine:
     # Class-level fallbacks for engines built without __init__ (test doubles):
     # explicit dense requests, so preparation never resolves a route for them.
     record_offload = ()
+    require_route = None
+    _streaming_losses_built = False
     _stream_spike_statistics_request = False
     _recorded_adjoint_request = False
     training_route_report = None
@@ -199,6 +208,11 @@ class TrainingEngine:
         # Pinned-host offload of the direct route's records; validated against
         # the resolved route in prepare_gradient_checkpointing (no silent fallback).
         self.record_offload = normalize_record_offload(kwargs.get("record_offload", ()))
+        # ``require_route`` turns an automatic fallback into an error: "direct",
+        # "streaming" (streaming with or without a recorded adjoint) or None.
+        self.require_route = kwargs.get("require_route", None)
+        if self.require_route not in (None, "direct", "streaming"):
+            raise ValueError(f"require_route must be None, 'streaming' or 'direct', got {self.require_route!r}.")
         if self.record_offload and self._recorded_adjoint_request not in ("auto", "direct"):
             raise ValueError(
                 f"record_offload={self.record_offload!r} requires the direct recorded adjoint "
@@ -735,19 +749,24 @@ class TrainingEngine:
             self.rnn.cell.advance_noise_seed()
             init_state = self.rnn.cell.reset_voltage_penalty_state(init_state)
             if self.stream_spike_statistics:
-                from .loss_functions import SynchronizationLoss
+                from .loss_functions import streaming
 
                 groups = self.parameters if parameters is None else parameters
                 traces, keys, start = [], [], 0
                 for parameter in groups:
-                    for loss in parameter.loss_functions.values():
-                        if type(loss) is SynchronizationLoss and loss._sync_cost > 0:
-                            plan = loss.prepare_sampled_statistics(
-                                parameter.batch_size, x.dtype, x.shape[1], start
+                    planned = set()
+                    for key, loss in parameter.loss_functions.items():
+                        plans = streaming.prepare_spike_statistics(
+                            loss, parameter.batch_size, x.dtype, x.shape[1], start
+                        )
+                        if plans and id(loss) in planned:
+                            raise ValueError(
+                                f"Loss {key} with trace plans cannot be reused twice in one statistics batch group."
                             )
-                            if plan is not None:
-                                traces.append(plan)
-                                keys.append((loss.name, *plan.batch_range))
+                        planned.add(id(loss))
+                        for plan in plans:
+                            traces.append(plan)
+                            keys.append((getattr(loss, "name", None) or key, *plan.batch_range))
                     start += parameter.batch_size
                 if start != x.shape[0]:
                     raise ValueError("Spike statistics batch groups do not match extractor inputs.")
@@ -893,6 +912,7 @@ class TrainingEngine:
                     "stream_spike_statistics resolved to False: "
                     + report["reasons"]["stream_spike_statistics"]
                 )
+        report["native"] = self._native_library_status()
         report["selected"] = {"stream_spike_statistics": bool(stream), "recorded_adjoint": adjoint}
         report["automatic"] = {"stream_spike_statistics": bool(auto_stream), "recorded_adjoint": auto_adjoint}
         report["record_offload"] = tuple(self.record_offload)
@@ -909,17 +929,46 @@ class TrainingEngine:
             if getattr(self, f"_{name}_request") != "auto"
             and report["selected"][name] != report["automatic"][name]
         }
+        if self.require_route == "direct" and adjoint != "direct":
+            raise ValueError(
+                "require_route='direct' but the training route resolved to "
+                f"{self.training_route_mode({'selected': {'stream_spike_statistics': bool(stream), 'recorded_adjoint': adjoint}})}: "
+                f"stream_spike_statistics: {report['reasons']['stream_spike_statistics']}; recorded_adjoint: "
+                f"{report['reasons']['recorded_adjoint']}; native libraries: {report['native']}"
+            )
+        if self.require_route == "streaming" and not stream:
+            raise ValueError(
+                "require_route='streaming' but the training route resolved to dense spike sequences: "
+                f"{report['reasons']['stream_spike_statistics']}; native libraries: {report['native']}"
+            )
         self.stream_spike_statistics = bool(stream)
         self.recorded_adjoint = adjoint
+        # Per-loss admission: which losses are on the streaming routes and why
+        # (built-in or declared by a project module), so the mode the software
+        # is in is visible in the log and auditable from the report.
+        report["losses"] = self.streaming_loss_declarations()
+        report["mode"] = self.training_route_mode(report)
         self.training_route_report = report
         acceleration = getattr(cell, "acceleration_report", None)
         if isinstance(acceleration, dict):
             acceleration["training_route"] = report
+        native_note = ""
+        if adjoint != "direct":
+            degraded = {
+                name: status for name, status in report["native"].items()
+                if not str(status).startswith("loaded from")
+            }
+            if degraded:
+                native_note = "; native libraries: " + ", ".join(f"{k}: {v}" for k, v in degraded.items())
         io.log_info(
-            "Training route: stream_spike_statistics=%s (%s); recorded_adjoint=%s (%s)."
-            % (report["selected"]["stream_spike_statistics"], report["reasons"]["stream_spike_statistics"],
-               report["selected"]["recorded_adjoint"], report["reasons"]["recorded_adjoint"])
+            "Training route: %s; stream_spike_statistics=%s (%s); recorded_adjoint=%s (%s); losses: %s%s."
+            % (report["mode"],
+               report["selected"]["stream_spike_statistics"], report["reasons"]["stream_spike_statistics"],
+               report["selected"]["recorded_adjoint"], report["reasons"]["recorded_adjoint"],
+               self.describe_route_losses(report), native_note)
         )
+        for line in self.training_route_checklist(report):
+            io.log_debug("Training route detail: " + line)
         if report["explicit_deviations"]:
             io.log_warning(
                 "Explicit training-route requests differ from the automatic (fastest qualified) "
@@ -929,6 +978,79 @@ class TrainingEngine:
                 ) + ". Remove inherited stream_spike_statistics/recorded_adjoint flags unless the "
                 "override is intended."
             )
+
+    @staticmethod
+    def _native_library_status():
+        """Load/compatibility status of each native library (named in the route report so a
+        missing library or ``.archs`` manifest is a visible reason, not a silent slower route)."""
+        from .custom_ops import csr_spike_ops, glif_state_ops, record_store_ops
+
+        status = {"csr": csr_spike_ops.cuda_op_status(), "state": glif_state_ops.glif_state_op_status()}
+        try:
+            status["record_store"] = record_store_ops.record_store_op_status()
+        except Exception as error:  # pragma: no cover - status helpers must not break routing
+            status["record_store"] = f"status unavailable: {error}"
+        return status
+
+    @staticmethod
+    def training_route_mode(report):
+        """One phrase naming the selected training route."""
+        selected = report.get("selected", {})
+        if not selected.get("stream_spike_statistics"):
+            return "dense spike sequences"
+        adjoint = selected.get("recorded_adjoint")
+        if adjoint == "direct":
+            offload = report.get("record_offload") or ()
+            return "checkpointed streaming + direct recorded adjoint" + (
+                f" (record offload: {', '.join(offload)})" if offload else ""
+            )
+        if adjoint:
+            return "checkpointed streaming + tape-driven recorded adjoint"
+        return "checkpointed streaming"
+
+    @staticmethod
+    def describe_route_losses(report):
+        """``name [basis, plans]`` for every loss; declared losses name their module."""
+        parts = []
+        for entry in report.get("losses", ()):
+            basis = entry["basis"]
+            if basis == "declared":
+                basis = f"declared by {entry['module']}"
+            if entry["plans"]:
+                detail = ", ".join(entry["plans"])
+            elif entry["basis"] in ("built-in", "declared"):
+                detail = "no spike statistics"
+            else:
+                detail = "dense only"
+            unmet = f"; unmet: {' '.join(entry['unmet'])}" if entry.get("unmet") else ""
+            parts.append(f"{entry['key']} [{entry['class']}: {basis}, {detail}{unmet}]")
+        return ", ".join(parts) if parts else "none"
+
+    def training_route_checklist(self, report):
+        """Verbose, line-per-fact description of the route decision."""
+        lines = [f"mode: {report.get('mode')}"]
+        for name in ("stream_spike_statistics", "recorded_adjoint"):
+            lines.append(
+                f"{name}: requested={report['requested'][name]!r} selected={report['selected'][name]!r} "
+                f"automatic={report['automatic'][name]!r} ({report['reasons'][name]})"
+            )
+        for library, status in (report.get("native") or {}).items():
+            lines.append(f"native {library} library: {status}")
+        if report.get("record_payload"):
+            lines.append(f"record payload: {report['record_payload']['estimate']}")
+        if report["selected"]["stream_spike_statistics"]:
+            try:
+                lines.append("count windows: " + ", ".join(f"{a}-{b}" for a, b in self._statistics_windows()))
+            except ValueError as error:
+                lines.append(f"count windows: {error}")
+        for entry in report.get("losses", ()):
+            lines.append(
+                f"loss {entry['key']} ({entry['group']}): {entry['module']}.{entry['class']} basis={entry['basis']} "
+                f"plans={list(entry['plans'])}" + (f" unmet={list(entry['unmet'])}" if entry.get("unmet") else "")
+            )
+        for name, value in report.get("explicit_deviations", {}).items():
+            lines.append(f"explicit deviation: {name}={value['explicit']!r} (automatic {value['automatic']!r})")
+        return lines
 
     def prepare_gradient_checkpointing(self):
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
@@ -942,6 +1064,8 @@ class TrainingEngine:
             self._validate_neuron_partition_training()
         if self.stream_spike_statistics:
             self._validate_spike_statistics()
+            # Eager build hooks of the admitted losses, once, before the first trace.
+            self.build_streaming_losses()
         if getattr(cell, "temporal_gradient_precision", "compute") == "float32":
             if self.gradient_checkpointing and (
                 cell.temporal_checkpoint_chunk_size
@@ -1067,17 +1191,70 @@ class TrainingEngine:
             raise ValueError("Neuron-partitioned training requires " + "; ".join(unmet) + ".")
 
     def _statistics_windows(self):
+        from .loss_functions import streaming
+
         length = self.adjusted_seq_len
         windows = [(0, length)]
         for parameter in self.parameters:
             for loss in parameter.loss_functions.values():
-                if hasattr(loss, "_pre_delay"):
-                    window = (loss._pre_delay or 0, length - (loss._post_delay or 0))
-                    if not 0 <= window[0] < window[1] <= length:
-                        raise ValueError(f"Invalid spike-statistics loss window {window}.")
+                for window in streaming.count_windows(loss, length):
                     if window not in windows:
                         windows.append(window)
         return tuple(windows)
+
+    def _streaming_context(self):
+        from .loss_functions.streaming import StreamingContext
+
+        rnn = getattr(self, "rnn", None)
+        strategy = getattr(rnn, "strategy", None)
+        parameters = getattr(self, "_parameters", None) or ()
+        try:
+            length = self.adjusted_seq_len
+        except (AttributeError, IndexError, TypeError, ValueError):
+            length = None
+        return StreamingContext(
+            sequence_length=length,
+            batch_sizes=tuple(getattr(parameter, "batch_size", None) for parameter in parameters),
+            cell=getattr(rnn, "cell", None),
+            neuron_partition=getattr(rnn, "neuron_partition", None),
+            replicas=strategy.num_replicas_in_sync if strategy is not None else 1,
+            dt=float(getattr(rnn, "dt", 1.0) or 1.0),
+        )
+
+    def build_streaming_losses(self):
+        """Run every declared loss's eager ``build_streaming`` hook once (outside tracing)."""
+        if getattr(self, "_streaming_losses_built", False):
+            return
+        from .loss_functions import streaming
+
+        context = self._streaming_context()
+        built = set()
+        for parameter in getattr(self, "_parameters", None) or ():
+            for loss in (getattr(parameter, "loss_functions", None) or {}).values():
+                # One call per loss instance, also when the instance is shared
+                # by several parameter groups.
+                if id(loss) in built or streaming.streaming_basis(loss) not in ("built-in", "declared"):
+                    continue
+                built.add(id(loss))
+                hook = getattr(loss, "build_streaming", None)
+                if hook is not None:
+                    hook(context)
+        self._streaming_losses_built = True
+
+    def streaming_loss_declarations(self):
+        """Per-loss admission basis for the streaming routes (also in ``training_route_report``)."""
+        from .loss_functions import streaming
+
+        context = self._streaming_context()
+        entries = []
+        for parameter in getattr(self, "_parameters", None) or ():
+            for key, loss in (getattr(parameter, "loss_functions", None) or {}).items():
+                entry = streaming.streaming_declaration(loss)
+                entry["key"] = key
+                entry["group"] = getattr(parameter, "name", None)
+                entry["unmet"] = tuple(streaming.streaming_unmet(loss, context))
+                entries.append(entry)
+        return tuple(entries)
 
     def _spike_statistics_unmet(self, automatic=False):
         """Streaming prerequisites that do not hold, as user-facing sentences.
@@ -1086,14 +1263,8 @@ class TrainingEngine:
         request (a GLIF3 cell whose first state is the binary spike buffer);
         explicit ``True`` keeps the contract of the original validation.
         """
-        from . import loss_functions as losses
+        from .loss_functions import streaming
 
-        supported = (
-            losses.TargetFiringRate, losses.SpikeRateDistributionTarget,
-            losses.OrientationSelectivityLoss, losses.SynchronizationLoss,
-            losses.VoltageRegularization, losses.EMDWeightRegularization,
-            losses.LowRateFloor, losses.VoltageRateFloor,
-        )
         unmet = []
         if not self.gradient_checkpointing:
             unmet.append("stream_spike_statistics requires gradient_checkpointing.")
@@ -1117,25 +1288,25 @@ class TrainingEngine:
             unmet.append("stream_spike_statistics currently requires a single process (no data_parallel distribution).")
         if automatic and not self.parameters:
             unmet.append("automatic streaming requires at least one parameter group with losses")
+        context = self._streaming_context()
         for parameter in self.parameters:
-            sampled = set()
+            planned = set()
             loss_functions = getattr(parameter, "loss_functions", None)
             if not loss_functions:
                 if automatic:
                     unmet.append("automatic streaming requires every parameter group to define losses")
                 continue
-            for loss in loss_functions.values():
-                if type(loss) not in supported:
-                    unmet.append(f"stream_spike_statistics does not support {type(loss).__name__}.")
+            for key, loss in loss_functions.items():
+                # Admission is by declaration (StreamingSpikeLoss), never by class
+                # name: a project-local loss and a built-in one are treated alike.
+                reasons = streaming.streaming_unmet(loss, context)
+                if reasons:
+                    unmet.extend(reasons)
                     continue
-                if type(loss) is losses.OrientationSelectivityLoss and loss._method not in ("crowd_osi", "crowd_spikes"):
-                    unmet.append("Spike statistics require a rate-based orientation objective.")
-                if type(loss) is losses.SynchronizationLoss:
-                    if id(loss) in sampled:
-                        unmet.append("A synchronization loss cannot be reused twice in one statistics batch group.")
-                    sampled.add(id(loss))
-                    if getattr(loss, "_t_start_idx", 0) < 0 or getattr(loss, "_t_end_idx", 0) < 0:
-                        unmet.append("Streamed synchronization requires nonnegative time bounds.")
+                if streaming.declares_trace_plans(loss):
+                    if id(loss) in planned:
+                        unmet.append(f"Loss {key} with trace plans cannot be reused twice in one statistics batch group.")
+                    planned.add(id(loss))
         if not unmet:
             try:
                 self._statistics_windows()

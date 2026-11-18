@@ -16,7 +16,7 @@ from .io_tools import io
 from .input_modules import InputModules
 from .state_modules import StateModules
 from .results import RNNExtractorResults
-from .loss_functions import LossModules
+from .loss_functions import LossModules, import_loss_modules
 from .learning_rules import LearningRules
 from . import optimizers
 from .training import TrainingEngine
@@ -74,7 +74,7 @@ class Inference:
 
 # Training-engine route requests a config may name; omitted keys keep the
 # engine's "auto" defaults rather than being passed as None.
-TRAINING_ROUTE_OPTIONS = ("stream_spike_statistics", "recorded_adjoint", "record_offload")
+TRAINING_ROUTE_OPTIONS = ("stream_spike_statistics", "recorded_adjoint", "record_offload", "require_route")
 
 
 def training_route_options(train_dict):
@@ -1355,6 +1355,11 @@ class RNN:
         #     network.add_input(name=input_name, mod=input_mod)
 
         #     network._inference_inputs[input_name] = input_mod
+
+        # Project loss modules named in the configuration are imported before
+        # any loss lookup; importing registers their ``register_loss_module``
+        # classes, so a project-local loss is configured like a built-in one.
+        import_loss_modules((config.get("training") or {}).get("loss_modules", ()))
 
         # Reserve online state channels before any state/weight loss constructor
         # can build the model. JSON loss ordering must not change state layout.
