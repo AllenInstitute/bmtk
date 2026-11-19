@@ -1,7 +1,7 @@
 import os
 import logging
 from subprocess import call
-from distutils.dir_util import copy_tree
+from shutil import copytree
 
 
 logger = logging.getLogger(__name__)
@@ -28,4 +28,4 @@ def copy_modfiles(mechanisms_dir, cached_dir=None):
         cached_dir = os.path.join(local_path, '..', 'scripts/bionet/mechanisms')
 
     logger.info('Copying mod files from {} to {}'.format(cached_dir, mechanisms_dir))
-    copy_tree(cached_dir, mechanisms_dir)
+    copytree(cached_dir, mechanisms_dir, dirs_exist_ok=True)

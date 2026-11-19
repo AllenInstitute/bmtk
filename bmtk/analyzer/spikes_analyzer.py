@@ -24,8 +24,8 @@ import pandas as pd
 import numpy as np
 
 try:
-    from distutils.version import LooseVersion
-    use_sort_values = LooseVersion(pd.__version__) >= LooseVersion('0.19.0')
+    from packaging.version import Version
+    use_sort_values = Version(pd.__version__) >= Version('0.19.0')
 
 except:
     use_sort_values = False
