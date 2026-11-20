@@ -865,7 +865,8 @@ class TrainingEngine:
         else:
             unmet = list(direct_records_supported(cell))
             variables = getattr(getattr(self.rnn, "model", None), "trainable_variables", None)
-            if variables is not None and type(cell) is GLIF3Cell:
+            from .direct_recorded_adjoint import direct_extension_declared
+            if variables is not None and (type(cell) is GLIF3Cell or direct_extension_declared(cell)):
                 masters = {id(cell.recurrent_weight_values)} | {
                     id(net["input_weight_values"]) for net in cell.inputs.values()
                 }
@@ -929,6 +930,13 @@ class TrainingEngine:
             if getattr(self, f"_{name}_request") != "auto"
             and report["selected"][name] != report["automatic"][name]
         }
+        if adjoint != "direct" and getattr(cell, "direct_route_gradients_only", False):
+            raise ValueError(
+                f"{type(cell).__name__} has exact gradients only on the direct recorded adjoint "
+                "(other routes drop the credit of its internal inputs), but the training route resolved "
+                f"recorded_adjoint={adjoint!r}: {report['reasons']['recorded_adjoint']}; "
+                f"native libraries: {report['native']}"
+            )
         if self.require_route == "direct" and adjoint != "direct":
             raise ValueError(
                 "require_route='direct' but the training route resolved to "
@@ -1483,6 +1491,17 @@ class TrainingEngine:
         return counts, samples
 
     def _apply_gradients(self, grads, rate_statistics=None):
+        # Cells with tied weight copies (e.g. recurrent release) fold the copies'
+        # gradients into their masters before the optimizer sees them.
+        cell = getattr(self.rnn, "_cell", None)
+        if getattr(cell, "direct_route_gradients_only", False) and getattr(self, "recorded_adjoint", None) != "direct":
+            raise ValueError(
+                f"{type(cell).__name__} has exact gradients only on the direct recorded adjoint; this "
+                f"update came from recorded_adjoint={getattr(self, 'recorded_adjoint', None)!r}."
+            )
+        fold = getattr(cell, "fold_variable_gradients", None)
+        if fold is not None:
+            grads = fold(self.rnn.model.trainable_variables, grads)
         parallel = getattr(self.rnn, "data_parallel", None)
         if getattr(parallel, "process_based", False):
             # External graph arguments have no device for Keras' local reduction.

@@ -554,6 +554,13 @@ class RNN:
         else:
             network = self.recurrent_network
             inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
+        # A cell class may add internal named inputs derived from the recurrent network
+        # (e.g. recurrent release); they take no external input columns.
+        extend_network_dicts = getattr(self.cell_cls, "extend_network_dicts", None)
+        if extend_network_dicts is not None:
+            if getattr(self, "neuron_partition", None) is not None:
+                raise ValueError(f"{self.cell_cls.__name__} does not support neuron partitioning.")
+            inputs_dicts = extend_network_dicts(network, inputs_dicts, cell_params, dt=self.dt)
         has_external_continuous_inputs = any(
             item.get("options", {}).get("input_type", item["input_type"]) == "current"
             and item["n_inputs"] > 0
@@ -622,7 +629,7 @@ class RNN:
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
         combined_auto = False
-        if self.cell_cls is GLIF3Cell:
+        if self.cell_cls is GLIF3Cell or getattr(self.cell_cls, "standard_acceleration", False):
             from .acceleration import (
                 performance_projection_context, select_performance_projection,
             )
@@ -1283,7 +1290,8 @@ class RNN:
         cell_model_params = dict(config['rnn_cell_params'])
         cell_model_str = cell_model_params.pop('cell_model')
         basis_weights_file = cell_model_params.pop('basis_weights_file', None)
-        cell_model_cls = cell_models.get(cell_model_str, GLIF3Cell)
+        from .cell_models import get_cell_model
+        cell_model_cls = get_cell_model(cell_model_str, GLIF3Cell)
 
         network = cls(
             cell_cls=cell_model_cls,
