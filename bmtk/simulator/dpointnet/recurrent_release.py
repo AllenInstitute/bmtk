@@ -237,7 +237,8 @@ def build_release_layout(network, spec, dt=1.0, max_delay=_DEFAULT_MAX_DELAY):
         "weights": np.concatenate([weights[release], -weights[release]]),
         "delays": np.concatenate([delays_ms, delays_ms]),
         "syn_ids": np.concatenate([syn_ids[release], syn_ids[release]]),
-        "options": {"trainable": True},
+        # Pair metadata admits the input to the fused accumulate backward.
+        "options": {"trainable": True, "compact_pairs": True},
     }
     report = {
         "recurrent_edges": int(indices.shape[0]),
@@ -253,6 +254,49 @@ def build_release_layout(network, spec, dt=1.0, max_delay=_DEFAULT_MAX_DELAY):
         np.concatenate([np.ones(release.size), -np.ones(release.size)]).astype(np.float32),
         float(limit), report,
     )
+
+
+# -- fused per-step math ------------------------------------------------------------------
+
+
+class _ReleaseMath:
+    """XLA-fused per-step release math shared by the ordinary path and the extension.
+
+    Each function gathers the key events from ``[batch, neurons]`` spikes and runs the
+    elementwise release math in one compiled cluster; both paths call the same
+    compiled functions, so their arithmetic is identical.
+    """
+
+    def __init__(self, key_source, parameters, neurons):
+        def events(spikes):
+            return tf.gather(tf.cast(spikes, tf.float32), key_source, axis=1)
+
+        @tf.function(jit_compile=True)
+        def step(spikes, facilitation, availability):
+            e = events(spikes)
+            response, new_f, new_a = release_transition(e, facilitation, availability, parameters)
+            return correction_frames(e, response), new_f, new_a
+
+        @tf.function(jit_compile=True)
+        def frames(spikes, facilitation, availability):
+            e = events(spikes)
+            response, _, _ = release_transition(e, facilitation, availability, parameters)
+            return correction_frames(e, response)
+
+        @tf.function(jit_compile=True)
+        def transition(spikes, facilitation, availability):
+            _, new_f, new_a = release_transition(events(spikes), facilitation, availability, parameters)
+            return new_f, new_a
+
+        @tf.function(jit_compile=True)
+        def vjp(spikes, facilitation, availability, credit, grad_f, grad_a):
+            event_credit, grad_f, grad_a = release_vjp(
+                events(spikes), facilitation, availability, parameters, credit, grad_f, grad_a,
+            )
+            spike_credit = tf.math.unsorted_segment_sum(tf.transpose(event_credit), key_source, neurons)
+            return tf.transpose(spike_credit), grad_f, grad_a
+
+        self.step, self.frames, self.transition, self.vjp = step, frames, transition, vjp
 
 
 # -- cell -------------------------------------------------------------------------------
@@ -337,6 +381,7 @@ class ReleaseGLIF3Cell(GLIF3Cell):
             self._release_tie_index = tf.identity(tf.constant(recurrent_live, tf.int64))
             self._release_tie_sign = tf.identity(tf.constant(layout.edge_sign[input_canonical], tf.float32))
         self._release_shadow = net["input_weight_values"]
+        self._release_math = _ReleaseMath(self._release_key_source, self._release_parameters, self._n_neurons)
         self._release_extensions = {}
         self.release_report = dict(layout.report)
         self.refresh_recurrent_weight_shadow()
@@ -415,9 +460,7 @@ class ReleaseGLIF3Cell(GLIF3Cell):
 
     def release_step(self, newest_spikes, facilitation, availability):
         """``(frames, facilitation', availability')`` for spikes ``z(t - 1)`` ``[batch, neurons]``."""
-        events = tf.gather(tf.cast(newest_spikes, tf.float32), self._release_key_source, axis=1)
-        response, new_f, new_a = release_transition(events, facilitation, availability, self._release_parameters)
-        return correction_frames(events, response), new_f, new_a
+        return self._release_math.step(newest_spikes, facilitation, availability)
 
     def _call_impl(self, inputs, states, **kwargs):
         n_base = self._release_base_states
@@ -538,9 +581,6 @@ class ReleaseExtension:
                 )))
         return ops
 
-    def _events(self, spikes):
-        return tf.gather(tf.cast(spikes, tf.float32), self.cell._release_key_source, axis=1)
-
     def forward(self, time, spikes):
         with self._scope():
             clock = self._clock.read_value()
@@ -553,9 +593,7 @@ class ReleaseExtension:
             recorded = tf.raw_ops.ResourceScatterUpdate(
                 resource=self._spikes.handle, indices=clock[None], updates=tf.bitcast(words, tf.float32)[None],
             )
-            events = self._events(spikes)
-            response, new_f, new_a = release_transition(events, f, a, self.cell._release_parameters)
-            frames = correction_frames(events, response)
+            frames, new_f, new_a = self.cell._release_math.step(spikes, f, a)
             with tf.control_dependencies([snapshot, recorded]):
                 updates = [self._f.assign(new_f), self._a.assign(new_a), self._clock.assign_add(1)]
             with tf.control_dependencies(updates):
@@ -593,8 +631,7 @@ class ReleaseExtension:
                 resource=self._window.handle, indices=(time - start)[None], updates=tf.stack([f, a])[None],
             )
             with tf.control_dependencies([written]):
-                events = self._events(self._recorded_spikes(time))
-                _, new_f, new_a = release_transition(events, f, a, self.cell._release_parameters)
+                new_f, new_a = self.cell._release_math.transition(self._recorded_spikes(time), f, a)
             return time + 1, new_f, new_a
 
         result = tf.while_loop(lambda time, *_: time < stop, body, (start, state[0], state[1]),
@@ -609,9 +646,7 @@ class ReleaseExtension:
 
     def _frame(self, time, start):
         f, a = self._state_at(time, start)
-        events = self._events(self._recorded_spikes(time))
-        response, _, _ = release_transition(events, f, a, self.cell._release_parameters)
-        return correction_frames(events, response)
+        return self.cell._release_math.frames(self._recorded_spikes(time), f, a)
 
     def replay(self, time):
         """``[batch, width * (history + 1)]``: ``x(time), x(time - 1), ..., x(time - history)``."""
@@ -649,14 +684,10 @@ class ReleaseExtension:
             time = tf.cast(time, tf.int64)
             start = tf.gather(self._block_start, time // self.chunk)
             f, a = self._state_at(time, start)
-            events = self._events(self._recorded_spikes(time))
-            event_credit, grad_f, grad_a = release_vjp(
-                events, f, a, self.cell._release_parameters, tf.cast(credit, tf.float32),
+            spike_credit, grad_f, grad_a = self.cell._release_math.vjp(
+                self._recorded_spikes(time), f, a, tf.cast(credit, tf.float32),
                 self._grad_f.read_value(), self._grad_a.read_value(),
             )
             updates = [self._grad_f.assign(grad_f), self._grad_a.assign(grad_a)]
-            spike_credit = tf.transpose(tf.math.unsorted_segment_sum(
-                tf.transpose(event_credit), self.cell._release_key_source, self.neurons,
-            ))
             with tf.control_dependencies(updates):
                 return tf.identity(spike_credit)

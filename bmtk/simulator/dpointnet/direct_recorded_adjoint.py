@@ -292,7 +292,7 @@ class DirectRecordedStep:
     returns per-population tuples in that order.
     """
 
-    def __init__(self, cell, batch, initial_state, exchanged=()):
+    def __init__(self, cell, batch, initial_state, exchanged=(), graded=()):
         unsupported = direct_records_supported(cell)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
@@ -329,6 +329,7 @@ class DirectRecordedStep:
                 "connectivity": net["fused_connectivity"],
                 "variable": net["input_weight_values"],
                 "exchanged": name in exchanged,
+                "graded": name in graded,
             })
         unknown = set(exchanged) - set(cell.inputs)
         if unknown:
@@ -538,7 +539,13 @@ class DirectRecordedStep:
                 n_edges=connectivity["n_edges"], n_pairs=connectivity["n_pairs"],
                 **csr_spike_ops._uint8_type_options(connectivity),
             )
-            if population["recurrent"]:
+            # Graded (extension) inputs can be as large as the recurrence and need source
+            # credit every step; with pair metadata they take the fused accumulate kernel.
+            fused_graded = (
+                population.get("graded") and credit and accumulator is not None
+                and int(connectivity["n_pairs"]) > 0
+            )
+            if population["recurrent"] or fused_graded:
                 if not credit:
                     raise ValueError("The recurrent population always receives source credit.")
                 if accumulator is None:
@@ -912,7 +919,10 @@ class DirectRecordedAdjointRunner:
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
+            step = DirectRecordedStep(
+                cell, batch, initial_state, exchanged=tuple(self.spike_exchanges),
+                graded=tuple(name for name in self.spike_exchanges if self._graded(name)),
+            )
             neurons = step.neurons
             tables = self._prepare_noise(step, inputs, initial_state)
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
@@ -1301,7 +1311,10 @@ class DirectRecordedAdjointRunner:
         history_store = words if isinstance(words, HostRecordStore) else None
         asc_store = asc_snapshots if isinstance(asc_snapshots, HostRecordStore) else None
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
+            step = DirectRecordedStep(
+                cell, batch, initial_state, exchanged=tuple(self.spike_exchanges),
+                graded=tuple(name for name in self.spike_exchanges if self._graded(name)),
+            )
             neurons, delay, S, T = step.neurons, step.delay, step.spike_dtype, step.state_dtype
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
                 "temporal_path": "direct_recorded_vjp",

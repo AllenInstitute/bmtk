@@ -318,12 +318,16 @@ def test_training_refuses_non_direct_routes(adjoint):
 # -- GPU: direct recorded adjoint -------------------------------------------------------
 
 
-def _direct_and_reference(batch, length, chunk, mixed):
+def _direct_and_reference(batch, length, chunk, mixed, javier=False):
     tf.keras.mixed_precision.set_global_policy("mixed_float16" if mixed else "float32")
     precision = dict(state_precision="selective" if mixed else "compute")
-    cell = make(True, batch_size=batch, **precision, **DIRECT)
+    cell = make(True, batch_size=batch, **precision, **DIRECT,
+                **({"use_javier_recurrent_vjp": True} if javier else {}))
+    assert bool(cell.use_javier_recurrent_vjp) == javier
     reference = make_reference(batch_size=batch, return_voltage_sequences=False, **precision)
     assert not direct_records_supported(cell)
+    # Pair metadata routes the correction input through the fused accumulate backward.
+    assert int(cell.inputs["recurrent_release"]["fused_connectivity"]["n_pairs"]) > 0
     rng = np.random.default_rng(5)
     initial = list(cell.zero_state(batch, cell.compute_dtype))
     initial[1] = tf.cast(-60.0 + 8 * rng.random(initial[1].shape), initial[1].dtype)
@@ -373,11 +377,15 @@ def _direct_and_reference(batch, length, chunk, mixed):
     return direct(), tape()
 
 
-@pytest.mark.parametrize("mixed,tolerance", [(False, 1e-5), (True, 5e-3)])
-def test_direct_route_gradients_match_arrival_reference(mixed, tolerance):
+@pytest.mark.parametrize("mixed,tolerance,batch,javier", [
+    (False, 1e-5, 8, False), (True, 5e-3, 8, False),
+    # The training configuration: FP16 Javier batch-32 fused accumulate backward.
+    (True, 5e-3, 32, True),
+])
+def test_direct_route_gradients_match_arrival_reference(mixed, tolerance, batch, javier):
     if not fused_cuda_available():
         pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
-    (counts, grads), (reference_counts, reference_grads) = _direct_and_reference(8, 120, 20, mixed)
+    (counts, grads), (reference_counts, reference_grads) = _direct_and_reference(batch, 120, 20, mixed, javier)
     assert float(tf.reduce_sum(reference_counts[0])) > 0
     np.testing.assert_array_equal(counts[1].numpy(), reference_counts[1].numpy())
     if not mixed:

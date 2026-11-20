@@ -2295,7 +2295,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         build_compact_pairs=(
                             self._use_packed_sm120_external_backward is not False
                             and input_trainable
-                        ),
+                        ) or bool(input_options.get("compact_pairs", False)),
                         build_fixed4_incoming=self._use_fixed4_input_forward,
                         sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
                         host_lifecycle=self._csr_host_lifecycle,
@@ -2401,7 +2401,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         build_compact_pairs=(
                             self._use_packed_sm120_external_backward is not False
                             and input_trainable
-                        ),
+                        ) or bool(input_options.get("compact_pairs", False)),
                         build_fixed4_incoming=self._use_fixed4_input_forward,
                         sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
                     )
