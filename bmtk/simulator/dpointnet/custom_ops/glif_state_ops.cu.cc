@@ -2373,7 +2373,9 @@ __global__ void DirectReverseRecordKernel(
     threshold[index] = NestAdd(voltage, FromFloat<T>(-ToFloat(v_th[neuron_v_th ? neuron : 0])));
     blocked[index] = static_cast<R>(refractory ? 1 : 0);
     spikes[index] = FromFloat<S>(fired ? 1.0f : 0.0f);
-    spike_cotangent[index] = spike_base[index];
+    if (spike_cotangent != nullptr) {
+      spike_cotangent[index] = spike_base[index];
+    }
     const float value = ToFloat(fired ? v_reset[neuron_v_reset ? neuron : 0] : voltage);
     const float upstream = grad_penalty[sample] * inverse_neurons;
     float grad;
@@ -2446,16 +2448,22 @@ class DirectReverseRecordOp : public OpKernel {
     const Tensor& trace_groups = context->input(11);
     OP_REQUIRES(context, spike_base.shape() == grad_v.shape(),
                 errors::InvalidArgument("spike_base must have shape [batch, neurons]"));
+    OP_REQUIRES(context, trace_indices.dims() == 2 && trace_indices.dim_size(1) == 2,
+                errors::InvalidArgument("trace indices must have shape [entries, 2]"));
     const int64 entries = trace_indices.dim_size(0);
-    OP_REQUIRES(context, trace_indices.dims() == 2 && trace_indices.dim_size(1) == 2
-                && trace_mask.NumElements() == entries && trace_groups.NumElements() == entries,
+    OP_REQUIRES(context, trace_mask.NumElements() == entries && trace_groups.NumElements() == entries,
                 errors::InvalidArgument("trace indices [entries, 2], mask [entries] and groups [entries] required"));
-    Tensor *threshold, *blocked, *total, *spikes, *cotangent;
+    Tensor *threshold, *blocked, *total, *spikes, *cotangent = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(0, grad_v.shape(), &threshold));
     OP_REQUIRES_OK(context, context->allocate_output(1, grad_v.shape(), &blocked));
     OP_REQUIRES_OK(context, context->allocate_output(2, grad_v.shape(), &total));
     OP_REQUIRES_OK(context, context->allocate_output(3, grad_v.shape(), &spikes));
-    OP_REQUIRES_OK(context, context->allocate_output(4, grad_v.shape(), &cotangent));
+    if (entries == 0) {
+      // Without a scatter this output is exactly the input, including its rounding.
+      context->set_output(4, spike_base);
+    } else {
+      OP_REQUIRES_OK(context, context->allocate_output(4, grad_v.shape(), &cotangent));
+    }
     const int64 count = grad_v.NumElements();
     if (count == 0) return;
     auto& device = context->eigen_device<GPUDevice>();
@@ -2467,7 +2475,7 @@ class DirectReverseRecordOp : public OpKernel {
         context->input(5).flat<T>().data(), v_th_count == neurons,
         context->input(6).flat<T>().data(), v_reset_count == neurons, spike_base.flat<S>().data(),
         mode_, threshold->flat<T>().data(), blocked->flat<R>().data(), total->flat<T>().data(),
-        spikes->flat<S>().data(), cotangent->flat<S>().data()));
+        spikes->flat<S>().data(), cotangent == nullptr ? nullptr : cotangent->flat<S>().data()));
     if (entries > 0) {
       auto trace_config = GetGpuLaunchConfig(entries, device);
       OP_REQUIRES_OK(context, GpuLaunchKernel(
