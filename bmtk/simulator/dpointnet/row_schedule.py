@@ -59,6 +59,12 @@ def spectral_coordinates(pre, post, n_neurons, seed=0):
         @ adjacency
         @ sparse.diags(1.0 / np.sqrt(np.maximum(columns, 1.0)))
     )
+    if n_neurons < 3:
+        return np.zeros((n_neurons, 2))
+    if n_neurons <= 4096:
+        # Small networks: dense SVD (svds needs k < n and is not faster here).
+        vectors, values, _ = np.linalg.svd(normalized.toarray())
+        return vectors[:, 1:3]
     vectors, values, _ = svds(normalized, k=3, random_state=seed)
     order = np.argsort(-values)
     return vectors[:, order[1:3]]

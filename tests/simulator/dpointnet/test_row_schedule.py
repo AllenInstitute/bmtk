@@ -55,6 +55,14 @@ def test_schedule_is_a_slab_major_class_grouped_permutation(use_positions):
     assert ("positions" in report) == use_positions and "classes" in report
 
 
+@pytest.mark.parametrize("n", [1, 2, 3, 4, 7])
+def test_spectral_schedule_handles_tiny_networks(n):
+    """Test-sized networks (fewer neurons than three singular vectors) still schedule."""
+    edges = np.array([[(i + 1) % n, i + n * (i % 2)] for i in range(n)])
+    schedule, report = locality_row_schedule(edges, np.zeros(n, np.int64), n, 2 * n)
+    assert np.array_equal(np.sort(schedule), np.arange(2 * n)) and "spectral" in report
+
+
 def test_schedule_rejects_partial_slabs_and_bad_positions():
     indices, types, position, _, n_sources = _network()
     n = position.shape[0]
