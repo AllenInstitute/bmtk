@@ -1437,7 +1437,19 @@ constexpr int kDpointnetWideSlice = 64;
 // Rows (one warp each) per block of the FP16 Javier-derived spike-gradient kernel.
 // Wide blocks keep consecutive (scheduled) rows on one SM, where gathers of the
 // projected lines they share hit L1; block geometry never changes a row's sum.
-constexpr int kDpointnetSpikeGradRows = 32;
+// 32 rows on 1536-thread SMs (RTX 3090, L40S: fastest measured); 24 where an SM
+// holds 2048 threads, since a 1024-thread block at the kernel's register use
+// leaves one block per SM there (A100 batch 64: 4.93 ms at 32 rows vs 4.11 at 24).
+inline int SpikeGradRowsPerBlock() {
+  int device = 0;
+  int threads = 0;
+  if (cudaGetDevice(&device) != cudaSuccess ||
+      cudaDeviceGetAttribute(&threads, cudaDevAttrMaxThreadsPerMultiProcessor, device) != cudaSuccess) {
+    cudaGetLastError();
+    return 24;
+  }
+  return threads >= 2048 ? 24 : 32;
+}
 
 template <typename T, typename Index, bool kPositiveOnly = false>
 __global__ __launch_bounds__(kDpointnetEventThreads)
@@ -2557,16 +2569,18 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           }
           if (n_pre > 0) {
             if (compute_spike_gradient_) {
-#define LAUNCH_HALF_ROWS(SLICE) \
+            const int rows_per_block = SpikeGradRowsPerBlock();
+#define LAUNCH_HALF_ROWS_GEOMETRY(SLICE, ROWS) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel< \
-                    T, Index, SLICE, W, kDpointnetSpikeGradRows>, \
-                static_cast<int>((n_pre + kDpointnetSpikeGradRows - 1) / kDpointnetSpikeGradRows), \
-                32 * kDpointnetSpikeGradRows, 0, device.stream(), \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W, ROWS>, \
+                static_cast<int>((n_pre + ROWS - 1) / ROWS), 32 * ROWS, 0, device.stream(), \
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
                 weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
                 scale, static_cast<Index>(n_pairs_), row_schedule))
+#define LAUNCH_HALF_ROWS(SLICE) \
+            if (rows_per_block == 32) { LAUNCH_HALF_ROWS_GEOMETRY(SLICE, 32); } \
+            else { LAUNCH_HALF_ROWS_GEOMETRY(SLICE, 24); }
             switch (slice) {
               case 1: LAUNCH_HALF_ROWS(1); break;
               case 2: LAUNCH_HALF_ROWS(2); break;
@@ -2577,6 +2591,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               default: LAUNCH_HALF_ROWS(kDpointnetWideSlice); break;
             }
 #undef LAUNCH_HALF_ROWS
+#undef LAUNCH_HALF_ROWS_GEOMETRY
             }
             const int64_t capacity =
                 n_pre + n_edges_ / kDpointnetEventChunk + 1;

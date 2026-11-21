@@ -280,6 +280,43 @@ Implementation details are in :doc:`dpointnet_csr_masters` and
 source (built tables, tile shapes and bytes). These describe selection and
 allocation, not proof that every kernel executed.
 
+Recurrent backward row schedule
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The FP16 Javier-derived recurrent backward computes each source row's spike
+cotangent in one warp, gathering one projected ``(target, type)`` line per edge,
+and runs 32 rows (warps) per block on GPUs with 1536 threads per SM (RTX 3090,
+L40S) and 24 where an SM holds 2048 threads (A100), so that consecutive rows
+share an SM and its L1 without halving occupancy. ``rnn_cell_params.use_locality_row_schedule`` additionally reorders the rows:
+presynaptic class (identical sets of outgoing synapse types) first, then a
+Hilbert curve over the neurons' ``x``/``z`` positions when the network provides
+them, or else over a two-dimensional spectral embedding of the connectivity
+(a truncated SVD computed once at build). Neighbouring rows then share many
+targets, so their gathers hit cached lines. A schedule only reassigns rows to
+warps: spike cotangents and weight gradients are bitwise those of the natural
+order, and it does not change checkpoints or the operator used without it.
+
+Under the automatic profile the option resolves to ``"auto"`` when CSR masters,
+the Javier-derived backward and the rebuilt
+``DpointnetCsrSpikeGradAccumulateCsrMasterScheduled`` operator are present; the
+cell then builds a schedule when the projected operand (pairs x slice x 2 bytes)
+exceeds the GPU's L2 cache, as for the 203k-neuron network on an RTX 3090, A100
+or L40S. Explicit ``true``/``false`` are honored; ``true`` raises when the
+prerequisites are missing. The cell logs ``DPointNet recurrent backward row
+schedule: ...`` naming the order in use and its basis, stores it as
+``cell.recurrent_row_schedule``, and records it in
+``acceleration_report["reasons"]["use_locality_row_schedule"]``.
+
+On the 203k-neuron CSR on an RTX 3090 the standalone kernel took, per step, at
+batch 64: 8.24 ms in natural order with 4 rows per block, 7.19 ms with 32 rows per
+block and 5.88 ms with the positional schedule (6.05 ms with the spectral
+embedding); at batch 32: 5.95, 5.33 and 3.75 ms (3.80 ms spectral). On an A100
+(40 MiB L2) at batch 64: 4.74 ms natural with 4 rows, 4.11 ms with 24 rows and
+3.99 ms scheduled (32 rows: 4.93 ms); on an L40S (96 MiB L2) at batch 64: 3.46,
+2.97 (32 rows) and 2.56 ms. Outputs were bitwise equal.
+Benchmark full accepted updates on the intended workload before quoting an
+end-to-end speedup.
+
 Scalar named-input projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

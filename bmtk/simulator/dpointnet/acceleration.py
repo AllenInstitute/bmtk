@@ -75,12 +75,12 @@ LARGE_NETWORK_TILES = (5120, 4096, 3072)
 # previous dense route. Explicit ``use_adaptive_routing=True`` is still honored.
 ADAPTIVE_ROUTING_MIN_BATCH = 8
 # Automatic locality row schedule when the recurrent projected operand
-# (n_pairs x slice x 2 bytes) exceeds this multiple of the GPU L2. Basis: the
-# 203k-neuron B64 recurrent spike-gradient kernel on an RTX 3090 (6 MiB L2; 204 MiB
-# operand) took 5.88 ms with the schedule versus 7.19 ms in natural order (both 32
-# rows per block), bitwise equal; an LRU model predicts little gain once the
-# operand is within a few L2 sizes (unchanged at 96 MiB, ~2x).
-LOCALITY_SCHEDULE_L2_RATIO = 4
+# (n_pairs x slice x 2 bytes) exceeds this multiple of the GPU L2 (below it the
+# gathers are L2-resident). Basis: the 203k-neuron recurrent spike-gradient
+# kernel (204 MiB operand at batch 64), bitwise equal in every case, scheduled
+# versus natural order at the wide block geometry: RTX 3090 (6 MiB L2) 7.19 ->
+# 5.88 ms, A100 (40 MiB) 4.11 -> 3.99 ms, L40S (96 MiB) 2.97 -> 2.56 ms.
+LOCALITY_SCHEDULE_L2_RATIO = 1
 
 
 def pair_projection_predicates(
