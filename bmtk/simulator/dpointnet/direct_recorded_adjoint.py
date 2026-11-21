@@ -535,7 +535,8 @@ class DirectRecordedStep:
                     source, currents_grad, _metadata(connectivity), population["variable"],
                     self.basis, self.recurrent_scale, accumulator,
                     use_javier_batch32_backward=self.cell.use_javier_recurrent_vjp,
-                    compute_spike_gradient=True, **attributes,
+                    compute_spike_gradient=True,
+                    row_schedule=csr_spike_ops._row_schedule_for(connectivity, True), **attributes,
                 )
                 source_cotangents.append(source_grad)
                 new_accumulators.append(accumulated)

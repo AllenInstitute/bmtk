@@ -15,7 +15,6 @@ from bmtk.simulator.dpointnet.custom_ops import master_projection as primitive
 KERNELS = (
     "DpointnetCombinedSweepKernel", "DpointnetCombinedAccumulateEdge",
     "CsrSpikeGradKernel", "CsrSpikeGradSmallBatchKernel",
-    "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel",
     "CsrSpikeGradPairBatch32Kernel", "CsrSpikeGradPairVariableBatchKernel",
     "CsrSpikeGradPairPackedBatch32Kernel",
 )
@@ -59,6 +58,8 @@ DEVELOP_WEIGHT_KERNEL_SHA256 = {
     "CsrWeightGradKernel": "8aa8de273a92b5c1cce1fa54ba8ce6d60eaa45c8978db8bff555e85f299f5245",
     "CsrWeightGradPairPackedBatch32Kernel": "6230f7b4e97721e7685a65fe3979cb3db42eb00dcbb7583fb5148196668d9de4",
 }
+# Whitespace-free SHA-256 of the pinned row-per-warp body above (0f6920f4...).
+DEVELOP_ROW_PER_WARP_SHA256 = "8ab14e21302844de40d7de51baf0332301d0de66b7280a93151f10c947d97079"
 
 
 def sha256(text):
@@ -108,6 +109,21 @@ def test_weight_only_kernel_changes_only_output_destination(name):
     assert after.count(replacement) == 1
     # Undoing the single destination change must give the develop body exactly.
     assert sha256(after.replace(replacement, expression)) == DEVELOP_WEIGHT_KERNEL_SHA256[name]
+
+
+def test_row_per_warp_kernel_changes_only_row_assignment():
+    """The optional row schedule only maps a warp's slot to its source row."""
+    import re
+    after = re.sub(r"\s+", "", kernel_body(candidate_source(), "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel"))
+    original = "constintpre=blockIdx.x*kRows+row_lane;if(pre>=n_pre)return;"
+    scheduled = re.sub(r"\s+", "", (
+        "const int scheduled = blockIdx.x * kRows + row_lane;"
+        "if (scheduled >= n_pre) return;"
+        "// The schedule (a permutation) only assigns rows to warps; every row's sum is unchanged."
+        "const int pre = row_schedule ? static_cast<int>(row_schedule[scheduled]) : scheduled;"
+    ))
+    assert after.count(scheduled) == 1
+    assert sha256(after.replace(scheduled, original)) == DEVELOP_ROW_PER_WARP_SHA256
 
 
 @pytest.mark.parametrize("carrier_enabled", [False, True])

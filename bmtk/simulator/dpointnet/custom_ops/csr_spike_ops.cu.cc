@@ -1262,7 +1262,7 @@ template <typename T, typename Index, int kSlice = 32, typename W = const T*>
 __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
   int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
-    const float* inverse_scale, Index sentinel_pair) {
+    const float* inverse_scale, Index sentinel_pair, const Index* row_schedule) {
   constexpr int kPack = kSlice < 8 ? kSlice : 8;
   constexpr int kLanesPerEdge = kSlice / kPack;
   constexpr int kSlots = 32 / kLanesPerEdge;
@@ -1273,8 +1273,10 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   const int row_lane = threadIdx.x >> 5;
   const int slot = lane / kLanesPerEdge;
   const int sub = lane % kLanesPerEdge;
-  const int pre = blockIdx.x * kRows + row_lane;
-  if (pre >= n_pre) return;
+  const int scheduled = blockIdx.x * kRows + row_lane;
+  if (scheduled >= n_pre) return;
+  // The schedule (a permutation) only assigns rows to warps; every row's sum is unchanged.
+  const int pre = row_schedule ? static_cast<int>(row_schedule[scheduled]) : scheduled;
   const int sample_base = sub * kPack;
   float grad[kPartials][kPack] = {};
   const Index start = row_splits[pre];
@@ -2335,6 +2337,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     if constexpr (kAccumulate) {
       OP_REQUIRES_OK(
           context, context->GetAttr("compute_spike_gradient", &compute_spike_gradient_));
+      // The scheduled operator appends one row-schedule resource input.
+      n_schedule_ = context->num_inputs() > 7 ? 1 : 0;
     }
   }
 
@@ -2441,6 +2445,18 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
+    core::RefCountPtr<Var> schedule_variable;
+    const Index* row_schedule = nullptr;
+    if (n_schedule_ == 1) {
+      if (!LookupVariable<Index>(context, 7, "row_schedule", &schedule_variable)) {
+        return;
+      }
+      const Tensor& schedule = *schedule_variable->tensor();
+      OP_REQUIRES(
+          context, TensorShapeUtils::IsVector(schedule.shape()) && schedule.NumElements() == n_pre,
+          errors::InvalidArgument("row_schedule must hold one entry per source row."));
+      row_schedule = schedule.flat<Index>().data();
+    }
     Tensor* spike_grad = nullptr;
     Tensor* weight_grad = nullptr;
     OP_REQUIRES_OK(
@@ -2545,7 +2561,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
                 weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
-                scale, static_cast<Index>(n_pairs_)))
+                scale, static_cast<Index>(n_pairs_), row_schedule))
             switch (slice) {
               case 1: LAUNCH_HALF_ROWS(1); break;
               case 2: LAUNCH_HALF_ROWS(2); break;
@@ -2814,6 +2830,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   bool use_small_batch_backward_;
   bool compute_spike_gradient_;
   bool uint8_types_ = false;
+  int n_schedule_ = 0;
 };
 
 template <typename T, typename Index>
@@ -3611,6 +3628,14 @@ REGISTER_KERNEL_BUILDER(
     DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
 REGISTER_KERNEL_BUILDER(
     Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<float, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMasterScheduled").Device(DEVICE_GPU)
+      .TypeConstraint<Eigen::half>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMasterScheduled").Device(DEVICE_GPU)
       .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
     DpointnetCsrSpikeGradOp<float, uint32, true, true>);
 

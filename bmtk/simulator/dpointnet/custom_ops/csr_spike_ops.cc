@@ -517,3 +517,40 @@ REGISTER_OP("DpointnetCsrSpikeGradAccumulateCsrMaster")
       context->set_output(1, weights);
       return absl::OkStatus();
     });
+
+// DpointnetCsrSpikeGradAccumulateCsrMaster plus a source-row permutation (a uint32
+// resource, one entry per row) that reassigns rows to warps in the FP16
+// Javier-derived spike-gradient kernel for cache locality. Results are bitwise
+// those of the unscheduled operator.
+REGISTER_OP("DpointnetCsrSpikeGradAccumulateCsrMasterScheduled")
+    .Attr("uint8_types: bool = false")
+    .Input("spikes: T")
+    .Input("current_grad: T")
+    .Input("metadata: resource")
+    .Input("weights: float")
+    .Input("basis: T")
+    .Input("spike_gradient_scale: T")
+    .Input("accumulator: float")
+    .Input("row_schedule: resource")
+    .Attr("T: {half, float}")
+    .Attr("Tindex: {uint32}")
+    .Attr("n_post: int >= 1")
+    .Attr("n_edges: int >= 0")
+    .Attr("n_pairs: int >= 1")
+    .Attr("use_packed_sm120_backward: bool = false")
+    .Attr("write_csr_weight_gradient: bool = true")
+    .Attr("use_small_batch_backward: bool = false")
+    .Attr("use_javier_batch32_backward: bool = false")
+    .Attr("compute_spike_gradient: bool = true")
+    .Output("spike_grad: T")
+    .Output("weight_grad: float")
+    .SetShapeFn([](InferenceContext* context) -> absl::Status {
+      ShapeHandle spikes, weights, accumulator;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(3), 1, &weights));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(6), 1, &accumulator));
+      TF_RETURN_IF_ERROR(context->Merge(weights, accumulator, &weights));
+      context->set_output(0, spikes);
+      context->set_output(1, weights);
+      return absl::OkStatus();
+    });
