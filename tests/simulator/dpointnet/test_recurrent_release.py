@@ -29,7 +29,9 @@ from bmtk.simulator.dpointnet.training import TrainingEngine
 
 @pytest.fixture(autouse=True)
 def restore_policy():
+    # Other modules can leave a mixed policy behind; tests here choose their precision.
     previous = tf.keras.mixed_precision.global_policy()
+    tf.keras.mixed_precision.set_global_policy("float32")
     yield
     tf.keras.mixed_precision.set_global_policy(previous)
 
