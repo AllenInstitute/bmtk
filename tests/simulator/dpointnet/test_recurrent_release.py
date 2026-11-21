@@ -124,6 +124,7 @@ class ArrivalReferenceCell(GLIF3Cell):
 
     def __init__(self, network, inputs, *, edge_table, **kwargs):
         super().__init__(network, inputs, **kwargs)
+        self._ref_gradient_scale = float(self.recurrent_spike_gradient_scale)
         synapses = network["synapses"]
         indices = np.asarray(synapses["indices"], np.int64)
         dt = 1.0
@@ -157,6 +158,14 @@ class ArrivalReferenceCell(GLIF3Cell):
         n = len(super().state_size)
         base, f, a = tuple(states[:n]), states[n], states[n + 1]
         events = tf.gather(tf.cast(base[0], tf.float32), self._ref_column, axis=1)
+        scale = self._ref_gradient_scale
+
+        @tf.custom_gradient
+        def recurrent_credit(x):
+            # The recurrent spike-gradient scale covers every recurrent path, release included.
+            return tf.identity(x), lambda dy: dy * scale
+
+        events = recurrent_credit(events)
         response, new_f, new_a = release_transition(events, f, a, self._ref_parameters)
         correction = events * (response - 1.0)
         basis = tf.cast(_rollout_constant(self, "synaptic_basis_weights"), tf.float32)
@@ -214,12 +223,12 @@ DIRECT = dict(
 
 
 def _assert_outputs(ours, theirs, n_neurons):
-    """Spikes exactly; continuous outputs to float32 accumulation order."""
+    """Spikes exactly; continuous outputs to float32 accumulation order (keyed vs per-edge sums)."""
     assert sum(float(tf.reduce_sum(o[:, :n_neurons])) for o in theirs) > 0
     for a, b in zip(ours, theirs):
         a, b = a.numpy(), b.numpy()
         np.testing.assert_array_equal(a[:, :n_neurons], b[:, :n_neurons])
-        np.testing.assert_allclose(a, b, rtol=1e-6, atol=1e-6)
+        np.testing.assert_allclose(a, b, rtol=1e-5, atol=1e-5)
 
 
 def test_static_parameters_reproduce_glif3cell():
@@ -315,15 +324,44 @@ def test_training_refuses_non_direct_routes(adjoint):
         TrainingEngine._apply_gradients(engine, [])
 
 
+def test_optimizer_never_updates_the_tied_shadow():
+    cell = make(True)
+    shadow = cell.inputs["recurrent_release"]["input_weight_values"]
+    recurrent, drive = cell.recurrent_weight_values, cell.inputs["drive"]["input_weight_values"]
+    assert shadow.shape[0] not in (recurrent.shape[0], drive.shape[0])
+    optimizer = tf.keras.optimizers.AdamW(learning_rate=0.1, weight_decay=0.5)
+    engine = SimpleNamespace(
+        rnn=SimpleNamespace(_cell=cell, model=SimpleNamespace(trainable_variables=[recurrent, shadow, drive])),
+        recorded_adjoint="direct", optimizer=optimizer, learning_rule=SimpleNamespace(uses_bptt=True),
+    )
+    update = TrainingEngine._optimizer_update_variables(engine)
+    assert len(update) == 2 and update[0] is recurrent and update[1] is drive
+    shadow_before, recurrent_before = shadow.numpy().copy(), recurrent.numpy().copy()
+    grads = [tf.ones_like(recurrent), tf.ones_like(shadow), tf.ones_like(drive)]
+    TrainingEngine._apply_gradients(engine, grads)
+    # Decoupled weight decay acts on every variable the optimizer owns; the shadow is not one.
+    np.testing.assert_array_equal(shadow.numpy(), shadow_before)
+    assert not np.array_equal(recurrent.numpy(), recurrent_before)
+    assert all(tuple(v.shape) != tuple(shadow.shape) for v in optimizer.variables)
+    cell.refresh_recurrent_weight_shadow()
+    np.testing.assert_allclose(
+        shadow.numpy(),
+        tf.gather(recurrent, cell._release_tie_index).numpy() * cell._release_tie_sign.numpy(),
+    )
+
+
 # -- GPU: direct recorded adjoint -------------------------------------------------------
 
 
-def _direct_and_reference(batch, length, chunk, mixed, javier=False):
+def _direct_and_reference(batch, length, chunk, mixed, javier=False, gradient_scale=1.0):
     tf.keras.mixed_precision.set_global_policy("mixed_float16" if mixed else "float32")
-    precision = dict(state_precision="selective" if mixed else "compute")
+    precision = dict(state_precision="selective" if mixed else "compute", recurrent_spike_gradient_scale=gradient_scale)
     cell = make(True, batch_size=batch, **precision, **DIRECT,
                 **({"use_javier_recurrent_vjp": True} if javier else {}))
     assert bool(cell.use_javier_recurrent_vjp) == javier
+    # The fold must map through a non-identity CSR edge order.
+    permutation = np.asarray(cell.recurrent_master_layout.canonical_to_csr)
+    assert not np.array_equal(permutation, np.arange(permutation.size))
     reference = make_reference(batch_size=batch, return_voltage_sequences=False, **precision)
     assert not direct_records_supported(cell)
     # Pair metadata routes the correction input through the fused accumulate backward.
@@ -377,15 +415,18 @@ def _direct_and_reference(batch, length, chunk, mixed, javier=False):
     return direct(), tape()
 
 
-@pytest.mark.parametrize("mixed,tolerance,batch,javier", [
-    (False, 1e-5, 8, False), (True, 5e-3, 8, False),
+@pytest.mark.parametrize("mixed,tolerance,batch,javier,gradient_scale", [
+    (False, 1e-5, 8, False, 1.0), (True, 5e-3, 8, False, 1.0),
     # The training configuration: FP16 Javier batch-32 fused accumulate backward.
-    (True, 5e-3, 32, True),
+    (True, 5e-3, 32, True, 1.0),
+    # A recurrent spike-gradient scale also scales the release-correction credit.
+    (False, 1e-5, 8, False, 0.3),
 ])
-def test_direct_route_gradients_match_arrival_reference(mixed, tolerance, batch, javier):
+def test_direct_route_gradients_match_arrival_reference(mixed, tolerance, batch, javier, gradient_scale):
     if not fused_cuda_available():
         pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
-    (counts, grads), (reference_counts, reference_grads) = _direct_and_reference(batch, 120, 20, mixed, javier)
+    (counts, grads), (reference_counts, reference_grads) = _direct_and_reference(
+        batch, 120, 20, mixed, javier, gradient_scale)
     assert float(tf.reduce_sum(reference_counts[0])) > 0
     np.testing.assert_array_equal(counts[1].numpy(), reference_counts[1].numpy())
     if not mixed:

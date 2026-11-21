@@ -407,6 +407,11 @@ class ReleaseGLIF3Cell(GLIF3Cell):
     def _same(variable, owner):
         return variable is owner or getattr(variable, "value", None) is owner or getattr(owner, "value", None) is variable
 
+    def tied_weight_copies(self):
+        """Variables derived from the recurrent master; the optimizer never updates them."""
+        shadow = getattr(self, "_release_shadow", None)
+        return () if shadow is None else (shadow,)
+
     def fold_variable_gradients(self, variables, gradients):
         """Fold the correction input's weight gradient into the recurrent master's."""
         variables, gradients = list(variables), list(gradients)

@@ -24,6 +24,24 @@ def _live_master_gradients(variables, gradients):
     return gradients
 
 
+def _same_variable(variable, other):
+    return (variable is other or getattr(variable, "value", None) is other
+            or getattr(other, "value", None) is variable)
+
+
+def _optimizer_mask(rnn, variables):
+    """Which trainable variables the optimizer updates.
+
+    A cell's tied weight copies (``tied_weight_copies()``, e.g. the recurrent-release
+    correction weights) are trainable only so their gradient can be folded into the
+    master; the optimizer never builds slots for them or applies updates (or weight
+    decay) to them, and the cell re-ties them from the master after every update.
+    """
+    copies = getattr(getattr(rnn, "_cell", None), "tied_weight_copies", None)
+    copies = tuple(copies()) if copies is not None else ()
+    return [not any(_same_variable(v, c) for c in copies) for v in variables]
+
+
 def _binary_spike_checkpoint_state(rnn):
     """Whether the RNN cell's first state is the binary GLIF3 spike buffer."""
     from .cell_models.glif3_cell import GLIF3Cell
@@ -344,7 +362,10 @@ class TrainingEngine:
     def _optimizer_update_variables(self):
         if self.learning_rule.uses_bptt:
             model = getattr(self.rnn, "model", None)
-            return None if model is None else list(model.trainable_variables)
+            if model is None:
+                return None
+            variables = list(model.trainable_variables)
+            return [v for v, keep in zip(variables, _optimizer_mask(self.rnn, variables)) if keep]
         surfaces = getattr(self.learning_rule, "weight_surfaces", None)
         return [surface.variable for surface in surfaces] if surfaces else None
 
@@ -1492,16 +1513,20 @@ class TrainingEngine:
 
     def _apply_gradients(self, grads, rate_statistics=None):
         # Cells with tied weight copies (e.g. recurrent release) fold the copies'
-        # gradients into their masters before the optimizer sees them.
+        # gradients into their masters; the optimizer never sees the copies.
         cell = getattr(self.rnn, "_cell", None)
         if getattr(cell, "direct_route_gradients_only", False) and getattr(self, "recorded_adjoint", None) != "direct":
             raise ValueError(
                 f"{type(cell).__name__} has exact gradients only on the direct recorded adjoint; this "
                 f"update came from recorded_adjoint={getattr(self, 'recorded_adjoint', None)!r}."
             )
+        variables = list(self.rnn.model.trainable_variables)
         fold = getattr(cell, "fold_variable_gradients", None)
         if fold is not None:
-            grads = fold(self.rnn.model.trainable_variables, grads)
+            grads = fold(variables, grads)
+        mask = _optimizer_mask(self.rnn, variables)
+        grads = [g for g, keep in zip(grads, mask) if keep]
+        variables = [v for v, keep in zip(variables, mask) if keep]
         parallel = getattr(self.rnn, "data_parallel", None)
         if getattr(parallel, "process_based", False):
             # External graph arguments have no device for Keras' local reduction.
@@ -1509,7 +1534,7 @@ class TrainingEngine:
                 grads = [None if value is None else tf.identity(value) for value in grads]
         losses = getattr(self.rnn, "_online_voltage_losses", ())
         if not losses:
-            self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+            self.optimizer.apply_gradients(zip(grads, variables))
             return
         if rate_statistics is None:
             raise ValueError("VoltageRateFloor requires measured rates for every optimizer update.")
@@ -1525,7 +1550,7 @@ class TrainingEngine:
             finite = finite == self.rnn.strategy.num_replicas_in_sync
         before = tf.identity(self.optimizer.iterations)
         with tf.control_dependencies([before]):
-            self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+            self.optimizer.apply_gradients(zip(grads, variables))
         accepted = self.optimizer.iterations > before
         if optimizers.optimizer_supports_loss_scaling(self.optimizer):
             accepted = tf.logical_and(accepted, finite)
