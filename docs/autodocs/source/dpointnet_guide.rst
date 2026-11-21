@@ -312,6 +312,7 @@ Next steps
 
    dpointnet_alpha_basis
    dpointnet_lgn_pipeline
+   dpointnet_recurrent_release
 
 .. toctree::
    :maxdepth: 1
