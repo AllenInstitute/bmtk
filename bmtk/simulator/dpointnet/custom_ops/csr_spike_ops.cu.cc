@@ -1258,8 +1258,8 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
 // and the fold below combines them in the 32-sample butterfly's order, so the
 // result is bitwise the two-launch result (adapted from Javier's
 // BackwardRowTileKernel kPartials scheme).
-template <typename T, typename Index, int kSlice = 32, typename W = const T*>
-__global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
+template <typename T, typename Index, int kSlice = 32, typename W = const T*, int kRows = 4>
+__global__ __launch_bounds__(32 * kRows) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
   int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
     const float* inverse_scale, Index sentinel_pair, const Index* row_schedule) {
@@ -1268,7 +1268,6 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   constexpr int kSlots = 32 / kLanesPerEdge;
   constexpr int kPartials = kSlice > 32 ? kSlice / 32 : 1;
   static_assert(kLanesPerEdge % kPartials == 0, "partials must tile the edge steps");
-  constexpr int kRows = 4;
   const int lane = threadIdx.x & 31;
   const int row_lane = threadIdx.x >> 5;
   const int slot = lane / kLanesPerEdge;
@@ -1435,6 +1434,10 @@ constexpr int kDpointnetEventBlocks = 4512;
 // Widest FP16 backward slice: one 128-byte projected line per pair (two 32-bit
 // event mask words). Advertised to Python by DpointnetCsrBackwardWideSlice.
 constexpr int kDpointnetWideSlice = 64;
+// Rows (one warp each) per block of the FP16 Javier-derived spike-gradient kernel.
+// Wide blocks keep consecutive (scheduled) rows on one SM, where gathers of the
+// projected lines they share hit L1; block geometry never changes a row's sum.
+constexpr int kDpointnetSpikeGradRows = 32;
 
 template <typename T, typename Index, bool kPositiveOnly = false>
 __global__ __launch_bounds__(kDpointnetEventThreads)
@@ -2556,8 +2559,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             if (compute_spike_gradient_) {
 #define LAUNCH_HALF_ROWS(SLICE) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W>, \
-                static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel< \
+                    T, Index, SLICE, W, kDpointnetSpikeGradRows>, \
+                static_cast<int>((n_pre + kDpointnetSpikeGradRows - 1) / kDpointnetSpikeGradRows), \
+                32 * kDpointnetSpikeGradRows, 0, device.stream(), \
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
                 weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \

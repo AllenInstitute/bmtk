@@ -112,7 +112,8 @@ def test_weight_only_kernel_changes_only_output_destination(name):
 
 
 def test_row_per_warp_kernel_changes_only_row_assignment():
-    """The optional row schedule only maps a warp's slot to its source row."""
+    """Rows per block became a template parameter and an optional schedule maps a
+    warp's slot to its source row; nothing else in the body changed."""
     import re
     after = re.sub(r"\s+", "", kernel_body(candidate_source(), "DpointnetSpikeGradRowPerWarpHalfBatch32Kernel"))
     original = "constintpre=blockIdx.x*kRows+row_lane;if(pre>=n_pre)return;"
@@ -122,8 +123,10 @@ def test_row_per_warp_kernel_changes_only_row_assignment():
         "// The schedule (a permutation) only assigns rows to warps; every row's sum is unchanged."
         "const int pre = row_schedule ? static_cast<int>(row_schedule[scheduled]) : scheduled;"
     ))
-    assert after.count(scheduled) == 1
-    assert sha256(after.replace(scheduled, original)) == DEVELOP_ROW_PER_WARP_SHA256
+    assertion = 'static_assert(kLanesPerEdge%kPartials==0,"partialsmusttiletheedgesteps");'
+    assert after.count(scheduled) == 1 and after.count(assertion) == 1 and "constexprintkRows" not in after
+    restored = after.replace(scheduled, original).replace(assertion, assertion + "constexprintkRows=4;")
+    assert sha256(restored) == DEVELOP_ROW_PER_WARP_SHA256
 
 
 @pytest.mark.parametrize("carrier_enabled", [False, True])
