@@ -405,6 +405,21 @@ def _static_batch(spikes):
     return int(batch) if batch is not None else None
 
 
+def projected_slice_width(batch):
+    """Widest per-launch sample slice of the FP16 Javier-derived accumulate backward,
+    whose projected operand holds ``(n_pairs + 1) * width`` FP16 values: exactly 64
+    for batch 64 on a rebuilt library, otherwise launches of at most 32 samples, each
+    rounded up to a power of two (unknown batch: 32)."""
+    if batch == WIDE_BACKWARD_BATCH and wide_accumulate_backward_available():
+        return WIDE_BACKWARD_BATCH
+    if not isinstance(batch, int) or isinstance(batch, bool) or batch <= 0 or batch >= NATIVE_BACKWARD_BATCH:
+        return NATIVE_BACKWARD_BATCH
+    width = 1
+    while width < batch:
+        width *= 2
+    return width
+
+
 def _batch_slices(batch, width=None):
     width = NATIVE_BACKWARD_BATCH if width is None else width
     return [(start, min(start + width, batch)) for start in range(0, batch, width)]

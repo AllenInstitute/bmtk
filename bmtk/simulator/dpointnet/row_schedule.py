@@ -82,26 +82,55 @@ def presynaptic_classes(pre, types, n_neurons):
     return np.argsort(np.argsort(first))[classes]
 
 
-def gpu_l2_cache_bytes():
-    """L2 cache bytes of the selected GPU from the CUDA runtime, or ``None``."""
+def cuda_ordinal_for_device(device):
+    """CUDA ordinal (within ``CUDA_VISIBLE_DEVICES``) backing TensorFlow device ``device``
+    (for example a resource handle's ``.device``), or ``None``.
+
+    TensorFlow numbers logical GPUs over the *visible* physical GPUs, each expanded by
+    its virtual-device configuration, while a physical GPU's name carries its CUDA
+    ordinal; so logical ``GPU:0`` can be physical GPU 1 after ``set_visible_devices``.
+    """
+    import tensorflow as tf
+
+    try:
+        spec = tf.DeviceSpec.from_string(device or "")
+    except (TypeError, ValueError):
+        return None
+    if (spec.device_type or "").upper() != "GPU" or spec.device_index is None:
+        return None
+    logical = []
+    for physical in tf.config.get_visible_devices("GPU"):
+        try:
+            configured = tf.config.get_logical_device_configuration(physical)
+        except (RuntimeError, ValueError):
+            configured = None
+        logical.extend([physical] * max(1, len(configured or ())))
+    if not 0 <= spec.device_index < len(logical):
+        return None
+    try:
+        return int(logical[spec.device_index].name.rsplit(":", 1)[1])
+    except (IndexError, ValueError):
+        return None
+
+
+def gpu_l2_cache_bytes(device="/device:GPU:0"):
+    """L2 cache bytes of the CUDA device backing TensorFlow device ``device``, or ``None``."""
     import ctypes
     import ctypes.util
 
-    import tensorflow as tf
-
-    if not tf.config.list_physical_devices("GPU"):
+    ordinal = cuda_ordinal_for_device(device)
+    if ordinal is None:
         return None
     for name in ("libcudart.so.12", "libcudart.so", ctypes.util.find_library("cudart")):
         if not name:
             continue
         try:
             runtime = ctypes.CDLL(name)
-            device = int(tf.config.list_logical_devices("GPU")[0].name.rsplit(":", 1)[1])
             value = ctypes.c_int()
             # cudaDevAttrL2CacheSize
-            if runtime.cudaDeviceGetAttribute(ctypes.byref(value), 38, device) == 0 and value.value > 0:
+            if runtime.cudaDeviceGetAttribute(ctypes.byref(value), 38, ordinal) == 0 and value.value > 0:
                 return int(value.value)
-        except (OSError, AttributeError, IndexError, ValueError):
+        except (OSError, AttributeError):
             continue
     return None
 

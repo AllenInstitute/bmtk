@@ -2811,21 +2811,35 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         requested = self._use_locality_row_schedule
         connectivity = self.recurrent_fused_connectivity
-        checks = {"native recurrent CSR connectivity": connectivity is not None}
         if requested is False:
             self.recurrent_row_schedule = "natural order (use_locality_row_schedule=False)"
             return
+        from ..custom_ops.csr_spike_ops import (
+            projected_slice_width, scheduled_accumulate_backward_available,
+        )
+
+        # Rechecked here: compatibility profiles pass an explicit "auto" through
+        # without the resolver's prerequisites.
+        checks = {
+            "native recurrent CSR connectivity": connectivity is not None,
+            "use_csr_master_weights=True": bool(self._csr_master_weights),
+            "use_javier_recurrent_vjp=True": bool(self.use_javier_recurrent_vjp),
+            "loaded row-scheduled accumulate ABI": scheduled_accumulate_backward_available(),
+        }
         if connectivity is not None:
             n_sources = int(connectivity["n_sources"])
             checks["uint32 CSR metadata"] = connectivity["index_dtype"] == "uint32"
             checks["sources are whole delay slabs"] = n_sources % self._n_neurons == 0
-            width = 64 if batch_size == 64 else 32
-            projected = int(connectivity["n_pairs"]) * width * 2
-            l2 = gpu_l2_cache_bytes()
-            ratio = f"projected operand {projected / 2**20:.0f} MiB"
             if requested == "auto":
+                batch = int(batch_size) if isinstance(batch_size, Integral) and not isinstance(batch_size, bool) else None
+                width = projected_slice_width(batch)
+                # Plus the kernel's zero sentinel pair.
+                projected = (int(connectivity["n_pairs"]) + 1) * width * 2
+                handles = connectivity.metadata_resource_handles
+                l2 = gpu_l2_cache_bytes(handles[0].device if handles else None)
                 checks[
-                    f"{ratio} > {LOCALITY_SCHEDULE_L2_RATIO}x L2 "
+                    f"projected operand {projected / 2**20:.1f} MiB ({width}-sample slice) > "
+                    f"{LOCALITY_SCHEDULE_L2_RATIO}x L2 "
                     f"({'unknown' if l2 is None else f'{l2 / 2**20:.0f} MiB'})"
                 ] = l2 is not None and projected > LOCALITY_SCHEDULE_L2_RATIO * l2
         enabled = all(checks.values())

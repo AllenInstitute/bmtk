@@ -253,3 +253,79 @@ def test_gpu_cell_schedule_is_reported_and_leaves_the_direct_route_unchanged(bat
     finally:
         cell.close_fused_cuda()
         tf.keras.mixed_precision.set_global_policy(previous)
+
+
+@pytest.mark.parametrize(
+    "batch, wide, expected",
+    [(1, True, 1), (5, True, 8), (8, True, 8), (17, True, 32), (32, True, 32), (48, True, 32),
+     (64, True, 64), (64, False, 32), (100, True, 32), (None, True, 32)],
+)
+def test_projected_slice_width_matches_the_kernel(monkeypatch, batch, wide, expected):
+    monkeypatch.setattr(ops, "wide_accumulate_backward_available", lambda: wide)
+    assert ops.projected_slice_width(batch) == expected
+
+
+def test_cuda_ordinal_follows_visible_and_virtual_devices(monkeypatch):
+    from bmtk.simulator.dpointnet import row_schedule
+
+    physical = [SimpleNamespace(name=f"/physical_device:GPU:{index}") for index in range(3)]
+    visible = [physical[1], physical[2]]
+    virtual = {id(physical[1]): None, id(physical[2]): [object(), object()]}
+    monkeypatch.setattr(tf.config, "get_visible_devices", lambda kind: visible)
+    monkeypatch.setattr(tf.config, "get_logical_device_configuration", lambda device: virtual[id(device)])
+    ordinal = row_schedule.cuda_ordinal_for_device
+    assert ordinal("/job:localhost/replica:0/task:0/device:GPU:0") == 1
+    assert ordinal("/device:GPU:1") == 2 and ordinal("/device:GPU:2") == 2
+    assert ordinal("/device:GPU:3") is None and ordinal("/device:CPU:0") is None and ordinal("") is None
+
+
+def _settle(monkeypatch, *, masters=True, javier=True, abi=True, l2=6 * 2**20, batch=8, requested="auto"):
+    from bmtk.simulator.dpointnet import row_schedule
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    indices, types, position, _, n_sources = _network(n=60, slabs=3)
+    conn = ops.build_csr_connectivity(indices, types, n_sources, 60, 8, build_compact_pairs=True)
+    monkeypatch.setattr(ops, "scheduled_accumulate_backward_available", lambda: abi)
+    monkeypatch.setattr(ops, "wide_accumulate_backward_available", lambda: True)
+    queried = []
+    monkeypatch.setattr(row_schedule, "gpu_l2_cache_bytes", lambda device=None: queried.append(device) or l2)
+    cell = SimpleNamespace(
+        _use_locality_row_schedule=requested, recurrent_fused_connectivity=conn,
+        _csr_master_weights=masters, use_javier_recurrent_vjp=javier, _n_neurons=60,
+        acceleration_report={"reasons": {}, "selected": {}, "automatic": {}, "predicates": {}},
+    )
+    GLIF3Cell._settle_locality_row_schedule(cell, {"x": position[:, 0], "z": position[:, 1]}, indices, types, batch)
+    return cell, conn, queried
+
+
+@pytest.mark.parametrize("missing", ["masters", "javier", "abi"])
+def test_auto_schedule_settles_false_without_its_prerequisites(monkeypatch, missing):
+    """Compatibility profiles pass "auto" through unresolved; the cell rechecks."""
+    cell, conn, _ = _settle(monkeypatch, l2=1, **{missing: False})
+    try:
+        assert cell._use_locality_row_schedule is False and conn["row_schedule_handle"] is None
+        assert cell.recurrent_row_schedule.startswith("natural order (requires")
+        assert cell.acceleration_report["selected"]["use_locality_row_schedule"] is False
+    finally:
+        conn.close()
+
+
+def test_auto_schedule_sizes_the_operand_by_the_native_slice(monkeypatch):
+    cell, conn, queried = _settle(monkeypatch, l2=1, batch=8)
+    try:
+        projected = (conn["n_pairs"] + 1) * 8 * 2
+        assert cell._use_locality_row_schedule is True and conn["row_schedule_handle"] is not None
+        assert queried == [conn.metadata_resource_handles[0].device]
+        assert any(f"({8}-sample slice)" in name for name in cell.acceleration_report["predicates"]["use_locality_row_schedule"])
+    finally:
+        conn.close()
+    cell, conn, _ = _settle(monkeypatch, l2=projected, batch=8)
+    try:
+        assert cell._use_locality_row_schedule is False, "an operand within the L2 keeps natural order"
+    finally:
+        conn.close()
+    cell, conn, _ = _settle(monkeypatch, l2=projected, batch=64)
+    try:
+        assert cell._use_locality_row_schedule is True, "batch 64 projects 64-sample lines"
+    finally:
+        conn.close()
