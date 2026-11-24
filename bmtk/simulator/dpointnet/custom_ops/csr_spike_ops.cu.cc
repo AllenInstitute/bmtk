@@ -1258,23 +1258,24 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
 // and the fold below combines them in the 32-sample butterfly's order, so the
 // result is bitwise the two-launch result (adapted from Javier's
 // BackwardRowTileKernel kPartials scheme).
-template <typename T, typename Index, int kSlice = 32, typename W = const T*>
-__global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
+template <typename T, typename Index, int kSlice = 32, typename W = const T*, int kRows = 4>
+__global__ __launch_bounds__(32 * kRows) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
   int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
-    const float* inverse_scale, Index sentinel_pair) {
+    const float* inverse_scale, Index sentinel_pair, const Index* row_schedule) {
   constexpr int kPack = kSlice < 8 ? kSlice : 8;
   constexpr int kLanesPerEdge = kSlice / kPack;
   constexpr int kSlots = 32 / kLanesPerEdge;
   constexpr int kPartials = kSlice > 32 ? kSlice / 32 : 1;
   static_assert(kLanesPerEdge % kPartials == 0, "partials must tile the edge steps");
-  constexpr int kRows = 4;
   const int lane = threadIdx.x & 31;
   const int row_lane = threadIdx.x >> 5;
   const int slot = lane / kLanesPerEdge;
   const int sub = lane % kLanesPerEdge;
-  const int pre = blockIdx.x * kRows + row_lane;
-  if (pre >= n_pre) return;
+  const int scheduled = blockIdx.x * kRows + row_lane;
+  if (scheduled >= n_pre) return;
+  // The schedule (a permutation) only assigns rows to warps; every row's sum is unchanged.
+  const int pre = row_schedule ? static_cast<int>(row_schedule[scheduled]) : scheduled;
   const int sample_base = sub * kPack;
   float grad[kPartials][kPack] = {};
   const Index start = row_splits[pre];
@@ -1433,6 +1434,22 @@ constexpr int kDpointnetEventBlocks = 4512;
 // Widest FP16 backward slice: one 128-byte projected line per pair (two 32-bit
 // event mask words). Advertised to Python by DpointnetCsrBackwardWideSlice.
 constexpr int kDpointnetWideSlice = 64;
+// Rows (one warp each) per block of the FP16 Javier-derived spike-gradient kernel.
+// Wide blocks keep consecutive (scheduled) rows on one SM, where gathers of the
+// projected lines they share hit L1; block geometry never changes a row's sum.
+// 32 rows on 1536-thread SMs (RTX 3090, L40S: fastest measured); 24 where an SM
+// holds 2048 threads, since a 1024-thread block at the kernel's register use
+// leaves one block per SM there (A100 batch 64: 4.93 ms at 32 rows vs 4.11 at 24).
+inline int SpikeGradRowsPerBlock() {
+  int device = 0;
+  int threads = 0;
+  if (cudaGetDevice(&device) != cudaSuccess ||
+      cudaDeviceGetAttribute(&threads, cudaDevAttrMaxThreadsPerMultiProcessor, device) != cudaSuccess) {
+    cudaGetLastError();
+    return 24;
+  }
+  return threads >= 2048 ? 24 : 32;
+}
 
 template <typename T, typename Index, bool kPositiveOnly = false>
 __global__ __launch_bounds__(kDpointnetEventThreads)
@@ -2335,6 +2352,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     if constexpr (kAccumulate) {
       OP_REQUIRES_OK(
           context, context->GetAttr("compute_spike_gradient", &compute_spike_gradient_));
+      // The scheduled operator appends one row-schedule resource input.
+      n_schedule_ = context->num_inputs() > 7 ? 1 : 0;
     }
   }
 
@@ -2441,6 +2460,18 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
+    core::RefCountPtr<Var> schedule_variable;
+    const Index* row_schedule = nullptr;
+    if (n_schedule_ == 1) {
+      if (!LookupVariable<Index>(context, 7, "row_schedule", &schedule_variable)) {
+        return;
+      }
+      const Tensor& schedule = *schedule_variable->tensor();
+      OP_REQUIRES(
+          context, TensorShapeUtils::IsVector(schedule.shape()) && schedule.NumElements() == n_pre,
+          errors::InvalidArgument("row_schedule must hold one entry per source row."));
+      row_schedule = schedule.flat<Index>().data();
+    }
     Tensor* spike_grad = nullptr;
     Tensor* weight_grad = nullptr;
     OP_REQUIRES_OK(
@@ -2538,14 +2569,18 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           }
           if (n_pre > 0) {
             if (compute_spike_gradient_) {
-#define LAUNCH_HALF_ROWS(SLICE) \
+            const int rows_per_block = SpikeGradRowsPerBlock();
+#define LAUNCH_HALF_ROWS_GEOMETRY(SLICE, ROWS) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W>, \
-                static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W, ROWS>, \
+                static_cast<int>((n_pre + ROWS - 1) / ROWS), 32 * ROWS, 0, device.stream(), \
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
                 weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
-                scale, static_cast<Index>(n_pairs_)))
+                scale, static_cast<Index>(n_pairs_), row_schedule))
+#define LAUNCH_HALF_ROWS(SLICE) \
+            if (rows_per_block == 32) { LAUNCH_HALF_ROWS_GEOMETRY(SLICE, 32); } \
+            else { LAUNCH_HALF_ROWS_GEOMETRY(SLICE, 24); }
             switch (slice) {
               case 1: LAUNCH_HALF_ROWS(1); break;
               case 2: LAUNCH_HALF_ROWS(2); break;
@@ -2556,6 +2591,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               default: LAUNCH_HALF_ROWS(kDpointnetWideSlice); break;
             }
 #undef LAUNCH_HALF_ROWS
+#undef LAUNCH_HALF_ROWS_GEOMETRY
             }
             const int64_t capacity =
                 n_pre + n_edges_ / kDpointnetEventChunk + 1;
@@ -2814,6 +2850,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   bool use_small_batch_backward_;
   bool compute_spike_gradient_;
   bool uint8_types_ = false;
+  int n_schedule_ = 0;
 };
 
 template <typename T, typename Index>
@@ -3611,6 +3648,14 @@ REGISTER_KERNEL_BUILDER(
     DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
 REGISTER_KERNEL_BUILDER(
     Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<float, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMasterScheduled").Device(DEVICE_GPU)
+      .TypeConstraint<Eigen::half>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMasterScheduled").Device(DEVICE_GPU)
       .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
     DpointnetCsrSpikeGradOp<float, uint32, true, true>);
 

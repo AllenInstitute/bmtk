@@ -123,10 +123,10 @@ class CsrConnectivity(Mapping):
             "_replica_values",
             tuple({"metadata_handle": handle} for handle in self._handles),
         )
-        self._finalizers = tuple(
+        self._finalizers = [
             weakref.finalize(self, _destroy_metadata_resource, handle)
             for handle in self._handles
-        )
+        ]
 
     def __getitem__(self, key):
         if key in self._replica_values[0] and len(self._replica_values) > 1:
@@ -147,6 +147,38 @@ class CsrConnectivity(Mapping):
     def close(self):
         for finalizer in self._finalizers:
             finalizer()
+
+    def attach_row_schedule(self, schedule, report=None):
+        """Attach a permutation of the source rows that the FP16 Javier-derived
+        accumulate backward uses to assign rows to warps (``row_schedule.py``).
+        One resource per replica, beside (not in) the metadata census; results
+        never change."""
+        if self._values.get("row_schedule_handle") is not None:
+            raise ValueError("A row schedule is already attached.")
+        if self._values["index_dtype"] != "uint32":
+            raise ValueError("A row schedule requires uint32 CSR metadata.")
+        n_sources = int(self._values["n_sources"])
+        schedule = np.asarray(schedule)
+        if (
+            schedule.shape != (n_sources,)
+            or not np.issubdtype(schedule.dtype, np.integer)
+            or np.any(schedule < 0)
+            or np.any(schedule >= n_sources)
+            or np.any(np.bincount(schedule.astype(np.int64), minlength=n_sources) != 1)
+        ):
+            raise ValueError("row_schedule must be a permutation of the source rows.")
+        schedule = schedule.astype(np.uint32)
+        handles = []
+        for handle in self._handles:
+            with tf.init_scope(), tf.device(handle.device):
+                handles.append(_create_metadata_resource(schedule, tf.uint32))
+            self._finalizers.append(weakref.finalize(self, _destroy_metadata_resource, handles[-1]))
+        for values, handle in zip(self._replica_values, handles):
+            values["row_schedule_handle"] = handle
+        self._values.update(
+            row_schedule_handle=handles[0], row_schedule_bytes=int(schedule.nbytes),
+            row_schedule_report=report,
+        )
 
     @property
     def metadata_resource_handles(self):
@@ -373,6 +405,21 @@ def _static_batch(spikes):
     return int(batch) if batch is not None else None
 
 
+def projected_slice_width(batch):
+    """Widest per-launch sample slice of the FP16 Javier-derived accumulate backward,
+    whose projected operand holds ``(n_pairs + 1) * width`` FP16 values: exactly 64
+    for batch 64 on a rebuilt library, otherwise launches of at most 32 samples, each
+    rounded up to a power of two (unknown batch: 32)."""
+    if batch == WIDE_BACKWARD_BATCH and wide_accumulate_backward_available():
+        return WIDE_BACKWARD_BATCH
+    if not isinstance(batch, int) or isinstance(batch, bool) or batch <= 0 or batch >= NATIVE_BACKWARD_BATCH:
+        return NATIVE_BACKWARD_BATCH
+    width = 1
+    while width < batch:
+        width *= 2
+    return width
+
+
 def _batch_slices(batch, width=None):
     width = NATIVE_BACKWARD_BATCH if width is None else width
     return [(start, min(start + width, batch)) for start in range(0, batch, width)]
@@ -383,16 +430,30 @@ def _slice_currents(dcurrents, n_post, start, stop):
     return dcurrents[start * n_post:stop * n_post]
 
 
+def scheduled_accumulate_backward_available():
+    """Whether the loaded library has the row-scheduled CSR-master accumulate backward."""
+    return _OPS is not None and hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate_csr_master_scheduled")
+
+
 def spike_grad_accumulate_batched(operator, spikes, dcurrents, metadata, weights, basis, scale,
-                                  accumulator, *, n_post, **attributes):
+                                  accumulator, *, n_post, row_schedule=None, **attributes):
     """``operator(spikes, dcurrents, ...)`` in slices of at most 32 (FP16 Javier
     backward on a rebuilt library: 64) samples.
 
     Returns ``(spike_cotangent, accumulator)`` as the single launch would: the
     per-sample spike cotangents of the slices concatenated, the FP32 weight
     accumulator carried through the slices (FP32 atomic sums; order already
-    unspecified within one launch).
+    unspecified within one launch). A ``row_schedule`` resource (CSR-master
+    accumulate only) runs the row-scheduled operator, whose results are bitwise
+    the unscheduled ones.
     """
+    if row_schedule is not None:
+        if operator is not getattr(_OPS, "dpointnet_csr_spike_grad_accumulate_csr_master", None):
+            raise ValueError("A row schedule applies only to the CSR-master accumulate backward.")
+        scheduled = _OPS.dpointnet_csr_spike_grad_accumulate_csr_master_scheduled
+
+        def operator(*inputs, **options):
+            return scheduled(*inputs, row_schedule, **options)
     batch = _static_batch(spikes)
     width = accumulate_backward_batch(spikes, attributes)
     if batch is None or batch <= width:
@@ -789,6 +850,7 @@ def build_csr_connectivity(
                 replica_values.append(
                     {
                         "metadata_handle": handles[-1],
+                        "row_schedule_handle": None,
                         "incoming_pre_ids": tf.constant(incoming_pre_ids, dtype=index_dtype),
                         "incoming_edge_ids": tf.constant(incoming_edge_ids, dtype=index_dtype),
                         "incoming_types": tf.constant(incoming_types, dtype=index_dtype),
@@ -800,6 +862,8 @@ def build_csr_connectivity(
                 "metadata_handle": metadata_handle,
                 "_replica_handles": tuple(handles),
                 "_replica_values": tuple(replica_values),
+                "row_schedule_handle": None,
+                "row_schedule_bytes": 0,
                 "index_dtype": index_dtype.name,
                 "n_edges": int(indices.shape[0]),
                 "n_sources": int(n_source_neurons),
@@ -1027,6 +1091,15 @@ def _projection_metadata_in_current_graph(metadata):
     return metadata
 
 
+def _row_schedule_for(connectivity, csr_master_weights):
+    """The connectivity's row-schedule resource in the current graph, or ``None``
+    when it has none or the CSR-master scheduled backward cannot use it."""
+    handle = connectivity.get("row_schedule_handle")
+    if handle is None or not csr_master_weights or not scheduled_accumulate_backward_available():
+        return None
+    return _projection_metadata_in_current_graph(handle)
+
+
 def fused_recurrent_accumulation_available():
     return (
         _OPS is not None
@@ -1124,6 +1197,7 @@ def fused_recurrent_weight_carry(
             else connectivity["metadata_handle"] if tf.executing_eagerly()
             else currents.op.inputs[2]
         )
+        row_schedule = _row_schedule_for(connectivity, csr_master_weights)
         def grad(dcurrents, dcarrier):
             if dcarrier is None:
                 dcarrier = tf.zeros_like(carrier)
@@ -1148,6 +1222,7 @@ def fused_recurrent_weight_carry(
                 n_edges=connectivity["n_edges"],
                 n_pairs=connectivity["n_pairs"],
                 use_javier_batch32_backward=use_javier_batch32_backward,
+                row_schedule=row_schedule,
                 **spike_options,
                 **_uint8_type_options(connectivity),
             )

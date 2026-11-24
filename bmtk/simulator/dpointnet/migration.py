@@ -17,7 +17,7 @@ PROFILE_EXECUTION_OPTIONS = (
     "use_combined_current_sweep", "use_cooperative_row_projection",
     "use_fanout_row_projection", "use_target_gather_projection",
     "use_csr_master_weights", "use_uint8_synapse_types", "use_adaptive_routing",
-    "use_scalar_input_projection",
+    "use_scalar_input_projection", "use_locality_row_schedule",
 )
 
 

@@ -1103,7 +1103,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             "use_prepacked_nest_coefficients", "use_type_indexed_nest_coefficients",
             "use_static_type_indexed_nest_dispatch", "use_cooperative_row_projection",
             "use_fanout_row_projection", "use_target_gather_projection",
-            "use_scalar_input_projection",
+            "use_scalar_input_projection", "use_locality_row_schedule",
         ):
             options[name] = getattr(self, "_" + name)
         options.update(
@@ -1185,6 +1185,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_uint8_synapse_types=UNSET,
         use_adaptive_routing=UNSET,
         use_scalar_input_projection=UNSET,
+        use_locality_row_schedule=UNSET,
         spike_surrogate=UNSET,
         spike_surrogate_width=UNSET,
         spike_surrogate_gain=UNSET,
@@ -1582,6 +1583,22 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 )
             if not scalar_input_projection_available():
                 raise RuntimeError("Rebuild both CUDA operators for scalar input projection.")
+        schedule = execution.get("use_locality_row_schedule", False)
+        self._locality_row_schedule_auto = schedule == "auto"
+        if not self._locality_row_schedule_auto:
+            validate_bool_option(schedule, "use_locality_row_schedule")
+        self._use_locality_row_schedule = schedule
+        self.recurrent_row_schedule = "natural order (row schedule not requested)"
+        if schedule is True:
+            from ..custom_ops.csr_spike_ops import scheduled_accumulate_backward_available
+
+            if not (self._csr_master_weights and self.use_javier_recurrent_vjp):
+                raise ValueError(
+                    "use_locality_row_schedule=True requires CSR-master weights and the FP16 "
+                    "Javier-derived recurrent backward (use_javier_recurrent_vjp)."
+                )
+            if not scheduled_accumulate_backward_available():
+                raise RuntimeError("Rebuild the CSR operators for the row-scheduled accumulate backward.")
         validate_bool_option(use_cooperative_row_projection, "use_cooperative_row_projection")
         self._use_cooperative_row_projection = use_cooperative_row_projection
         validate_bool_option(use_fanout_row_projection, "use_fanout_row_projection")
@@ -2085,11 +2102,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 uint8_types=self._uint8_synapse_types,
             )
             self.pre_ind_table = None
+            self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
         else:
             self.recurrent_fused_connectivity = None
             self.pre_ind_table = make_pre_ind_table(
                 indices, n_source_neurons=self.recurrent_dense_shape[1]
             )
+        if self._use_locality_row_schedule == "auto":
+            self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
 
         if self._csr_master_weights:
             from ..csr_master import CsrMasterLayout, canonical_checkpoint
@@ -2783,6 +2803,72 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 **item,
             }
         return report
+
+    def _settle_locality_row_schedule(self, glif_network, indices, syn_ids, batch_size):
+        """Attach the recurrent locality row schedule, or settle ``"auto"`` to False, and say which."""
+        from ..acceleration import LOCALITY_SCHEDULE_L2_RATIO
+        from ..row_schedule import gpu_l2_cache_bytes, locality_row_schedule
+
+        requested = self._use_locality_row_schedule
+        connectivity = self.recurrent_fused_connectivity
+        if requested is False:
+            self.recurrent_row_schedule = "natural order (use_locality_row_schedule=False)"
+            return
+        from ..custom_ops.csr_spike_ops import (
+            projected_slice_width, scheduled_accumulate_backward_available,
+        )
+
+        # Rechecked here: compatibility profiles pass an explicit "auto" through
+        # without the resolver's prerequisites.
+        checks = {
+            "native recurrent CSR connectivity": connectivity is not None,
+            "use_csr_master_weights=True": bool(self._csr_master_weights),
+            "use_javier_recurrent_vjp=True": bool(self.use_javier_recurrent_vjp),
+            "loaded row-scheduled accumulate ABI": scheduled_accumulate_backward_available(),
+        }
+        if connectivity is not None:
+            n_sources = int(connectivity["n_sources"])
+            checks["uint32 CSR metadata"] = connectivity["index_dtype"] == "uint32"
+            checks["sources are whole delay slabs"] = n_sources % self._n_neurons == 0
+            if requested == "auto":
+                batch = int(batch_size) if isinstance(batch_size, Integral) and not isinstance(batch_size, bool) else None
+                width = projected_slice_width(batch)
+                # Plus the kernel's zero sentinel pair.
+                projected = (int(connectivity["n_pairs"]) + 1) * width * 2
+                handles = connectivity.metadata_resource_handles
+                l2 = gpu_l2_cache_bytes(handles[0].device if handles else None)
+                checks[
+                    f"projected operand {projected / 2**20:.1f} MiB ({width}-sample slice) > "
+                    f"{LOCALITY_SCHEDULE_L2_RATIO}x L2 "
+                    f"({'unknown' if l2 is None else f'{l2 / 2**20:.0f} MiB'})"
+                ] = l2 is not None and projected > LOCALITY_SCHEDULE_L2_RATIO * l2
+        enabled = all(checks.values())
+        if requested is True and not enabled:
+            raise ValueError(
+                "use_locality_row_schedule=True requires "
+                + "; ".join(name for name, held in checks.items() if not held)
+            )
+        if enabled:
+            positions = None
+            if all(np.size(glif_network.get(axis, ())) == self._n_neurons for axis in ("x", "z")):
+                positions = np.column_stack((glif_network["x"], glif_network["z"]))
+            schedule, self.recurrent_row_schedule = locality_row_schedule(
+                indices, syn_ids, self._n_neurons, n_sources, positions=positions,
+            )
+            connectivity.attach_row_schedule(schedule, self.recurrent_row_schedule)
+        else:
+            self.recurrent_row_schedule = "natural order (requires " + "; ".join(
+                name for name, held in checks.items() if not held
+            ) + ")"
+        self._use_locality_row_schedule = enabled
+        if self.acceleration_report is not None:
+            name = "use_locality_row_schedule"
+            self.acceleration_report["reasons"][name] = self.recurrent_row_schedule
+            self.acceleration_report["selected"][name] = enabled
+            if requested == "auto":
+                self.acceleration_report["automatic"][name] = enabled
+            self.acceleration_report["predicates"].setdefault(name, {}).update(checks)
+        io.log_info(f"DPointNet recurrent backward row schedule: {self.recurrent_row_schedule}")
 
     def close_fused_cuda(self):
         connectivity = getattr(self, "recurrent_fused_connectivity", None)

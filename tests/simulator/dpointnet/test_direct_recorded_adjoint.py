@@ -101,6 +101,34 @@ def test_step_record_pack_unpack_roundtrip(dtype, refractory, neurons):
 
 
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("resource", [False, True])
+def test_reverse_record_forwards_cotangent_only_without_trace(dtype, resource):
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    from bmtk.simulator.dpointnet.custom_ops import glif_state_ops as ops
+
+    with tf.device("/GPU:0"):
+        voltage = tf.constant([[1.1, 0.9]], tf.float32)
+        if resource:
+            voltage = tf.Variable(voltage[None], trainable=False)
+        words = ops.pack_step_record(tf.constant([[1, 0]], dtype), tf.zeros((1, 2), tf.int8))
+        base = tf.constant([[0.5, -0.75]], dtype)
+        args = voltage, words, tf.ones((1, 2)), tf.ones((1,)), tf.constant(1.), tf.constant(0.)
+        options = dict(spike_base=base, refractory_dtype=tf.int8, penalty_mode="range")
+        no_trace = ops.direct_reverse_record(*args, **options)
+        with_trace = ops.direct_reverse_record(
+            *args, **options,
+            trace=(tf.constant([0.25]), tf.constant([[0, 1]], tf.int64),
+                   tf.constant([1.]), tf.constant([0], tf.int64)),
+        )
+    for left, right in zip(no_trace[:4], with_trace[:4]):
+        np.testing.assert_array_equal(left.numpy(), right.numpy())
+    np.testing.assert_array_equal(no_trace[4].numpy(), [[0.5, -0.75]])
+    np.testing.assert_array_equal(with_trace[4].numpy(), [[0.5, -0.5]])
+    np.testing.assert_array_equal(base.numpy(), [[0.5, -0.75]])
+
+
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
 @pytest.mark.parametrize("compact", [True, False])
 @pytest.mark.parametrize("steps,stride", [(0, 1), (1, 1), (4, 1), (7, 3), (25, 5), (23, 5)])
 @pytest.mark.parametrize("neurons", [31, 33, 1000])
@@ -681,6 +709,17 @@ def test_direct_projected_traces_match_streaming_reference(batch):
     checkpointed streaming reference: values to FP32 summation order, all VJPs likewise."""
     if not fused_cuda_available():
         pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    # Both routes project with FP32 matmuls; on SM80 TensorFlow may run either in TF32
+    # (10-bit mantissa) depending on shape, so compare them in strict FP32.
+    tf32 = tf.config.experimental.tensor_float_32_execution_enabled()
+    tf.config.experimental.enable_tensor_float_32_execution(False)
+    try:
+        _check_direct_projected_traces(batch)
+    finally:
+        tf.config.experimental.enable_tensor_float_32_execution(tf32)
+
+
+def _check_direct_projected_traces(batch):
     from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
 
     cell = make_cell("nest", selective=True, batch_size=batch, hard_reset_gradient_mode="soft_surrogate", **DIRECT_OPTIONS)

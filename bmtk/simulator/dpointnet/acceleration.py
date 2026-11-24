@@ -74,6 +74,13 @@ LARGE_NETWORK_TILES = (5120, 4096, 3072)
 # B8 -1.6%, B16 -2.3%, B32 -2.3%. Batches 2..7 were not measured and keep the
 # previous dense route. Explicit ``use_adaptive_routing=True`` is still honored.
 ADAPTIVE_ROUTING_MIN_BATCH = 8
+# Automatic locality row schedule when the recurrent projected operand
+# (n_pairs x slice x 2 bytes) exceeds this multiple of the GPU L2 (below it the
+# gathers are L2-resident). Basis: the 203k-neuron recurrent spike-gradient
+# kernel (204 MiB operand at batch 64), bitwise equal in every case, scheduled
+# versus natural order at the wide block geometry: RTX 3090 (6 MiB L2) 7.19 ->
+# 5.88 ms, A100 (40 MiB) 4.11 -> 3.99 ms, L40S (96 MiB) 2.97 -> 2.56 ms.
+LOCALITY_SCHEDULE_L2_RATIO = 1
 
 
 def pair_projection_predicates(
@@ -167,6 +174,7 @@ def finalize_acceleration_report(report, requested, effective, *, predicates=Non
             "use_pair_projection", "use_direct_csr_recurrent_gradient",
         ),
         "use_javier_recurrent_vjp": ("use_fused_recurrent_accumulation", "use_pair_projection"),
+        "use_locality_row_schedule": ("use_csr_master_weights", "use_javier_recurrent_vjp"),
         "use_csr_master_weights": ("use_combined_current_sweep",),
         "use_uint8_synapse_types": ("use_csr_master_weights",),
         "use_adaptive_routing": ("use_uint8_synapse_types",),
@@ -829,6 +837,33 @@ def resolve_acceleration_options(
         raise ValueError(
             "use_javier_recurrent_vjp=True requires compatible FP16 native accumulation."
         )
+    # The locality row schedule never changes results; whether it pays depends on
+    # the projected operand and the GPU's L2, known at build, where "auto" is settled.
+    schedule_predicates = {
+        "use_csr_master_weights=True": options.get("use_csr_master_weights") is True,
+        "use_javier_recurrent_vjp=True": options["use_javier_recurrent_vjp"] is True,
+        "loaded row-scheduled accumulate ABI": csr_spike_ops.scheduled_accumulate_backward_available(),
+    }
+    schedule_possible = all(schedule_predicates.values())
+    if "use_locality_row_schedule" in options and options["use_locality_row_schedule"] != "auto":
+        report["reasons"]["use_locality_row_schedule"] = "explicit override; constructor validation retained"
+        report["provenance"]["use_locality_row_schedule"] = "explicit_override"
+    else:
+        options["use_locality_row_schedule"] = "auto" if schedule_possible else False
+        report["reasons"]["use_locality_row_schedule"] = (
+            "CSR-master FP16 Javier-derived backward with the scheduled ABI; the cell builds a "
+            "schedule when the projected operand exceeds "
+            f"{LOCALITY_SCHEDULE_L2_RATIO}x the GPU L2" if schedule_possible else
+            "natural row order kept; requires " + _option_names_requiring(
+                [name for name, held in schedule_predicates.items() if not held]
+            )
+        )
+        report["provenance"]["use_locality_row_schedule"] = (
+            "explicit_auto" if cell_params.get("use_locality_row_schedule") == "auto" else "profile"
+        )
+    report["selected"]["use_locality_row_schedule"] = options["use_locality_row_schedule"]
+    report["automatic"]["use_locality_row_schedule"] = schedule_possible
+    report["predicates"]["use_locality_row_schedule"] = schedule_predicates
     report["resolver_selected"] = dict(report["selected"])
     # Stale explicit execution flags carried into an automatic profile are the
     # usual way a configuration ends up slower than the policy: name every one
