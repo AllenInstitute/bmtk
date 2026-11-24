@@ -434,6 +434,9 @@ Changing condition layout can change the number and meaning of updates.
 ``use_device_poisson`` remains false by default. Its device sampler is still
 Poisson, but changes seeded realizations. Treat enabling it as an input-policy
 change and check replay, rather than assuming it is an identical speed switch.
+This option applies to cell-generated Poisson inputs, not external NumPy
+generators. See :ref:`dpointnet-background-inputs` for the module choices,
+aliases, timestep handling and seed controls.
 
 FP32 derivatives across time
 ----------------------------
