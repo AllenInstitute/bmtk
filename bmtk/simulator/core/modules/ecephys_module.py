@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import h5py
 import fnmatch
+import operator
 
 from .simulator_module import SimulatorMod
 from bmtk.simulator.core.io_tools import io
@@ -397,6 +398,17 @@ class SamplingStrategy(MappingStrategy):
         }).set_index('node_ids').to_dict()['unit_ids']
 
 
+# Comparisons a units or interval filter may use, e.g. {"operation": "<", "value": 0.5}.
+_FILTER_OPERATIONS = {
+    '==': operator.eq,
+    '!=': operator.ne,
+    '<': operator.lt,
+    '<=': operator.le,
+    '>': operator.gt,
+    '>=': operator.ge,
+}
+
+
 def filter_table(table_df, filters_dict):
     if filters_dict:
         # Filter out only those specified units
@@ -413,9 +425,13 @@ def filter_table(table_df, filters_dict):
                     col = filter_val.get('column', col_name)
                     op = filter_val['operation']
                     val = filter_val['value']
-                    val = '"{}"'.format(val) if isinstance(val, str) else val
-                    expr = 'table_df["{}"] {} {}'.format(col, op, val)
-                    mask &= eval(expr)
+                    if op not in _FILTER_OPERATIONS:
+                        raise ValueError(
+                            'ECEphysUnitsModule: unsupported filter operation {!r} for column "{}"; use one of {}'.format(
+                                op, col, ', '.join(_FILTER_OPERATIONS)
+                            )
+                        )
+                    mask &= _FILTER_OPERATIONS[op](table_df[col], val)
 
                 else:
                     mask &= table_df[col_name] == filter_val
