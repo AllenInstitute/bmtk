@@ -126,6 +126,8 @@ If a stimulus seed is absent, a configured run seed supplies the generator
 seed. Preserve both the seed policy and trial assignment when reproducing
 an experiment. This visual-input generator retains its Bernoulli-from-rate
 spike sampling; it does not replace the separate Poisson background generator.
+For BKG module choices and their independent seed controls, see
+:ref:`dpointnet-background-inputs`.
 
 Initial-state warmup uses the host-reference iterator even when training
 or inference uses device generation. That is an intentional placement
