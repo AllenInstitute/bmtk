@@ -21,7 +21,7 @@ from bmtk.simulator.dpointnet.loss_functions import (  # noqa: E402
     LossModules, StreamingSpikeLoss, import_loss_modules, streaming,
 )
 from bmtk.simulator.dpointnet.spike_summary import SpikeSummary  # noqa: E402
-from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, SampledSpikeTraces  # noqa: E402
+from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, SampledSpikeTraces, strict_fp32_matmul  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -67,7 +67,13 @@ class _ProjectedTraceLoss(StreamingSpikeLoss):
             traces = spikes.trace_for_loss(self.name)
         else:
             start, stop = self.window
-            projected = tf.einsum("btn,nf->bft", tf.cast(spikes[:, start:stop], tf.float32), self.projection)
+            window = tf.cast(spikes[:, start:stop], tf.float32)
+            # The streamed projection is FP32-accurate under TF32; project the dense
+            # spikes the same way so the two routes agree on Ampere GPUs.
+            flat = strict_fp32_matmul(tf.reshape(window, [-1, window.shape[-1]]), self.projection)
+            projected = tf.transpose(
+                tf.reshape(flat, [-1, stop - start, self.projection.shape[1]]), (0, 2, 1)
+            )
             traces = tf.reshape(projected, [-1, stop - start])
         return self.cost * tf.reduce_mean(tf.square(traces))
 

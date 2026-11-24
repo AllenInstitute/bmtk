@@ -105,7 +105,9 @@ def test_wrong_sequence_length_and_trace_indices_raise():
 @pytest.mark.parametrize("graph", [False, True])
 @pytest.mark.parametrize("chunk", [1, 3, 7])
 def test_projected_traces_and_vjps_match_dense_projection(graph, chunk):
-    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+    """The dense reference projects with strict_fp32_matmul too, so both sides are
+    FP32-accurate under TF32 (this model's "spikes" are continuous states)."""
+    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, strict_fp32_matmul
 
     model = _model()
     kwargs = dict(sequence_length=7, chunk_size=chunk, n_sequence_outputs=2,
@@ -128,8 +130,9 @@ def test_projected_traces_and_vjps_match_dense_projection(graph, chunk):
                     trace = streamed(inputs, (initial,), sampled_traces=(spec,)).traces[0]
                 else:
                     spikes, _, _ = dense(inputs, (initial,))
+                    flat = strict_fp32_matmul(tf.reshape(spikes[1:3], (14, 3)), projection)
                     trace = tf.reshape(
-                        tf.einsum("btn,nf->bft", spikes[1:3], projection), (4, 7)
+                        tf.transpose(tf.reshape(flat, (2, 7, 2)), (0, 2, 1)), (4, 7)
                     )[:, 2:7]
                 loss = tf.reduce_sum(tf.square(trace) * weights)
             results.append((trace, tape.gradient(loss, targets)))
@@ -224,3 +227,15 @@ def test_strict_fp32_matmul_is_a_single_matmul_without_tf32(monkeypatch):
         spike_statistics.strict_fp32_matmul(a, b, exact_a=True, _matmul=counting).numpy(), tf.matmul(a, b).numpy(),
     )
     assert calls == [1]
+
+
+def test_runtime_exactness_check_selects_the_exact_or_general_split():
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(11)
+    projection = tf.constant(rng.normal(size=(50, 3)).astype(np.float32))
+    for values in (rng.integers(0, 4, (20, 50)), rng.normal(size=(20, 50))):
+        a = tf.constant(values.astype(np.float32))
+        got = strict_fp32_matmul(a, projection, force_split=True, _matmul=_tf32_matmul).numpy()
+        want = values.astype(np.float64) @ projection.numpy().astype(np.float64)
+        assert np.abs(got - want).max() / np.abs(want).max() < 2e-6

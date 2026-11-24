@@ -42,15 +42,18 @@ def _tf32_may_apply():
     )
 
 
-def strict_fp32_matmul(a, b, *, transpose_b=False, exact_a=False, force_split=False, _matmul=tf.matmul):
+def strict_fp32_matmul(a, b, *, transpose_b=False, exact_a=None, force_split=False, _matmul=tf.matmul):
     """``a @ b`` (``b^T`` with ``transpose_b``) in FP32 accuracy when TF32 may apply.
 
     TensorFlow may run FP32 matmuls in TF32 on Ampere and newer GPUs, rounding both
     operands to 10 mantissa bits, and whether it does depends on the shapes. When
     TF32 is enabled and a GPU is visible (or ``force_split``), operands are split into
-    TF32-exact parts (3xTF32): ``exact_a`` operands (spike counts) times a three-part
-    ``b`` are exact products; general operands use ``a1 b1 + a1 b2 + a2 b1`` with
-    error near FP32 rounding. Gradients use the general form. Otherwise a single matmul.
+    TF32-exact parts (3xTF32). A TF32-exact ``a`` (spike counts up to 2048, or any
+    FP16 value) times a three-part ``b`` gives exact products; other operands use
+    ``a1 b1 + a1 b2 + a2 b1`` with error near FP32 rounding. ``exact_a=True`` asserts
+    exactness, ``False`` takes the general form and ``None`` checks it at run time.
+    Gradients use the general form. Otherwise a single matmul. Dense loss code that
+    must match projected spike traces should project with this function too.
     """
     if not (force_split or _tf32_may_apply()):
         return _matmul(a, b, transpose_b=transpose_b)
@@ -62,14 +65,22 @@ def strict_fp32_matmul(a, b, *, transpose_b=False, exact_a=False, force_split=Fa
                 + _matmul(x1, y - y1, transpose_b=transpose_y)
                 + _matmul(x - x1, y1, transpose_b=transpose_y))
 
+    def exact(a, b):
+        b1 = _tf32_part(b)
+        rest = b - b1
+        b2 = _tf32_part(rest)
+        return (_matmul(a, b1, transpose_b=transpose_b) + _matmul(a, b2, transpose_b=transpose_b)
+                + _matmul(a, rest - b2, transpose_b=transpose_b))
+
     @tf.custom_gradient
     def product(a, b):
-        if exact_a:
-            b1 = _tf32_part(b)
-            rest = b - b1
-            b2 = _tf32_part(rest)
-            value = (_matmul(a, b1, transpose_b=transpose_b) + _matmul(a, b2, transpose_b=transpose_b)
-                     + _matmul(a, rest - b2, transpose_b=transpose_b))
+        if exact_a is None:
+            value = tf.cond(
+                tf.reduce_all(tf.equal(_tf32_part(a), a)),
+                lambda: exact(a, b), lambda: general(a, b, transpose_b),
+            )
+        elif exact_a:
+            value = exact(a, b)
         else:
             value = general(a, b, transpose_b)
 
@@ -182,9 +193,7 @@ class _StatisticsCollector:
             begin, end = spec.batch_range
             if isinstance(spec, ProjectedSpikeTraces):
                 rows = tf.cast(spikes[begin:end], tf.float32)
-                flat = strict_fp32_matmul(
-                    tf.reshape(rows, [-1, tf.shape(rows)[-1]]), spec.projection, exact_a=True,
-                )
+                flat = strict_fp32_matmul(tf.reshape(rows, [-1, tf.shape(rows)[-1]]), spec.projection)
                 projected = tf.transpose(
                     tf.reshape(flat, [end - begin, length, spec.projection.shape[1]]), (0, 2, 1),
                 )
