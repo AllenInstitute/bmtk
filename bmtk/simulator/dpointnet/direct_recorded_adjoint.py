@@ -151,10 +151,23 @@ class SpikeExchange:
         raise NotImplementedError
 
 
+def direct_extension_declared(cell):
+    """Whether ``cell`` is a GLIF3Cell subclass that declares a direct-route extension.
+
+    Such a subclass keeps the base cell's native state and projection routes and
+    provides ``direct_extension(batch, sequence_length, chunk_size)``, returning an
+    object with ``n_states`` (extra cell states after the base states, passed through
+    the rollout), ``exchanges`` (graded spike exchanges for the named inputs listed in
+    the class attribute ``direct_extension_inputs``), ``start_forward(extra_states,
+    initial_state)``, ``final_states()`` and ``start_reverse()``.
+    """
+    return isinstance(cell, GLIF3Cell) and callable(getattr(type(cell), "direct_extension", None))
+
+
 def direct_records_supported(cell):
     """Names of the conditions the cell fails for the direct recorded adjoint."""
-    if type(cell) is not GLIF3Cell:
-        return ("unmodified GLIF3Cell",)
+    if type(cell) is not GLIF3Cell and not direct_extension_declared(cell):
+        return ("unmodified GLIF3Cell or a subclass declaring direct_extension",)
     conditions = {
         "NEST hard forward": cell.dynamics_mode == "nest" and cell._hard_reset,
         "compute temporal gradients": cell.temporal_gradient_precision == "compute",
@@ -279,7 +292,7 @@ class DirectRecordedStep:
     returns per-population tuples in that order.
     """
 
-    def __init__(self, cell, batch, initial_state, exchanged=()):
+    def __init__(self, cell, batch, initial_state, exchanged=(), graded=()):
         unsupported = direct_records_supported(cell)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
@@ -316,6 +329,7 @@ class DirectRecordedStep:
                 "connectivity": net["fused_connectivity"],
                 "variable": net["input_weight_values"],
                 "exchanged": name in exchanged,
+                "graded": name in graded,
             })
         unknown = set(exchanged) - set(cell.inputs)
         if unknown:
@@ -525,7 +539,13 @@ class DirectRecordedStep:
                 n_edges=connectivity["n_edges"], n_pairs=connectivity["n_pairs"],
                 **csr_spike_ops._uint8_type_options(connectivity),
             )
-            if population["recurrent"]:
+            # Graded (extension) inputs can be as large as the recurrence and need source
+            # credit every step; with pair metadata they take the fused accumulate kernel.
+            fused_graded = (
+                population.get("graded") and credit and accumulator is not None
+                and int(connectivity["n_pairs"]) > 0
+            )
+            if population["recurrent"] or fused_graded:
                 if not credit:
                     raise ValueError("The recurrent population always receives source credit.")
                 if accumulator is None:
@@ -627,6 +647,16 @@ class DirectRecordedAdjointRunner:
             raise ValueError("Statistics require at least one count window.")
         self.n_sequence_outputs = 2
         self.spike_exchanges = dict(spike_exchanges or {})
+        self.extension_inputs = (
+            tuple(getattr(cell, "direct_extension_inputs", ())) if direct_extension_declared(cell) else ()
+        )
+        for name in self.extension_inputs:
+            net = cell.inputs.get(name)
+            if net is None or net["input_type"] != "spikes":
+                raise ValueError(f"Direct extension input {name!r} must be a 'spikes' named input of the cell.")
+            if name in self.spike_exchanges:
+                raise ValueError(f"Named input {name!r} is fed by both a spike exchange and the cell extension.")
+        self._extension = None
         for name, exchange in self.spike_exchanges.items():
             net = cell.inputs.get(name)
             if net is None:
@@ -639,7 +669,7 @@ class DirectRecordedAdjointRunner:
         # Replay columns of the named inputs; exchanged inputs take none.
         self.replay_columns, offset = {}, 0
         for index, name in enumerate(cell.inputs):
-            if name in self.spike_exchanges:
+            if name in self.spike_exchanges or name in self.extension_inputs:
                 continue
             width = int(cell.inputs_idx[index + 1]) - int(cell.inputs_idx[index])
             self.replay_columns[name] = (offset, offset + width)
@@ -684,6 +714,24 @@ class DirectRecordedAdjointRunner:
             frame = tf.cast(inputs[:, time, start:stop], step.spike_dtype)
         # A tensor time index drops the static width the sweep validates.
         return tf.ensure_shape(frame, (step.batch, population["width"]))
+
+    def _ensure_extension(self, batch):
+        """Build (once per batch) the cell's direct-route extension and its graded exchanges."""
+        if not self.extension_inputs:
+            return 0
+        if self._extension is None or self._extension.batch != int(batch):
+            extension = self.cell.direct_extension(int(batch), self.sequence_length, self.chunk_size)
+            if set(extension.exchanges) != set(self.extension_inputs):
+                raise ValueError("The cell extension must feed exactly its declared direct_extension_inputs.")
+            for name, exchange in extension.exchanges.items():
+                if not getattr(exchange, "graded", False):
+                    raise ValueError(f"Extension exchange {name!r} must be graded.")
+            self._extension = extension
+            self.spike_exchanges.update(extension.exchanges)
+        return int(self._extension.n_states)
+
+    def _graded(self, name):
+        return bool(getattr(self.spike_exchanges.get(name), "graded", False))
 
     def _begin_exchanges(self, after=()):
         """Control inputs ordering every exchange's ``begin()`` after ``after`` and before a loop.
@@ -868,11 +916,14 @@ class DirectRecordedAdjointRunner:
 
     # -- forward driver ------------------------------------------------------------------
 
-    def _forward(self, inputs, initial_state, sampled_traces, time_check):
+    def _forward(self, inputs, initial_state, sampled_traces, time_check, extra_states=()):
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
+            step = DirectRecordedStep(
+                cell, batch, initial_state, exchanged=tuple(self.spike_exchanges),
+                graded=tuple(name for name in self.spike_exchanges if self._graded(name)),
+            )
             neurons = step.neurons
             tables = self._prepare_noise(step, inputs, initial_state)
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
@@ -1019,6 +1070,10 @@ class DirectRecordedAdjointRunner:
             for population in step.populations[1:]:
                 if not population["exchanged"]:
                     continue
+                if self._graded(population["name"]):
+                    # Graded frames are replayed by their exchange in the reverse.
+                    frames.append(tf.zeros([0], tf.int32))
+                    continue
                 width, history = population["width"], population["history_steps"]
                 no_blocking = tf.zeros([batch, width], step.refractory_dtype)
                 record = tf.raw_ops.EmptyTensorList(
@@ -1048,11 +1103,12 @@ class DirectRecordedAdjointRunner:
                             self.spike_exchanges[population["name"]].forward(time, previous_spikes),
                             step.spike_dtype,
                         ), (batch, population["width"]))
-                        new_frames[index] = tf.raw_ops.TensorListPushBack(
-                            input_handle=frames[index], tensor=pack_step_record(
-                                source, tf.zeros([batch, population["width"]], step.refractory_dtype),
-                            ),
-                        )
+                        if not self._graded(population["name"]):
+                            new_frames[index] = tf.raw_ops.TensorListPushBack(
+                                input_handle=frames[index], tensor=pack_step_record(
+                                    source, tf.zeros([batch, population["width"]], step.refractory_dtype),
+                                ),
+                            )
                     else:
                         source = self._input_frame(step, population, inputs, time, tables, noise_steps, clock)
                     if population["history_steps"]:
@@ -1161,7 +1217,11 @@ class DirectRecordedAdjointRunner:
                     extra = (counts, traces, token)
                 return index + 1, clock, state, voltages, words, penalties, frames, extra
 
-            with tf.control_dependencies([time_check, *self._begin_exchanges()]):
+            started = (
+                self._extension.start_forward(tuple(extra_states), initial_state)
+                if self._extension is not None else []
+            )
+            with tf.control_dependencies([time_check, *self._begin_exchanges(), *started]):
                 state = tuple(tf.identity(value) for value in initial_state)
             # Device-resident int64 step clock beside the host loop counter: device
             # index consumers read it without a per-step host-to-device upload.
@@ -1236,6 +1296,9 @@ class DirectRecordedAdjointRunner:
             history_store if offload_history else words,
             asc_store if offload_history else asc_snapshots, tables, noise_steps, buffered, frames,
         )
+        if self._extension is not None:
+            with tf.control_dependencies([state[1]]):
+                state = tuple(state) + tuple(self._extension.final_states())
         return counts, trace_outputs, (penalty_sequence,), tuple(state), records
 
     # -- reverse driver ------------------------------------------------------------------
@@ -1249,7 +1312,10 @@ class DirectRecordedAdjointRunner:
         history_store = words if isinstance(words, HostRecordStore) else None
         asc_store = asc_snapshots if isinstance(asc_snapshots, HostRecordStore) else None
         with _rollout_context(cell):
-            step = DirectRecordedStep(cell, batch, initial_state, exchanged=tuple(self.spike_exchanges))
+            step = DirectRecordedStep(
+                cell, batch, initial_state, exchanged=tuple(self.spike_exchanges),
+                graded=tuple(name for name in self.spike_exchanges if self._graded(name)),
+            )
             neurons, delay, S, T = step.neurons, step.delay, step.spike_dtype, step.state_dtype
             record_rollout_acceleration(getattr(cell, "acceleration_report", None), {
                 "temporal_path": "direct_recorded_vjp",
@@ -1430,7 +1496,12 @@ class DirectRecordedAdjointRunner:
             def reverse_step(time, carry, window, accumulators, asc_buffer, block_start, pending, words_at):
                 sources = [window]
                 for population, keep in zip(populations[1:], accumulate[1:]):
-                    if population["exchanged"]:
+                    if population["exchanged"] and self._graded(population["name"]):
+                        sources.append(tf.ensure_shape(
+                            tf.cast(self.spike_exchanges[population["name"]].replay(time), S),
+                            (batch, population["width"] * (population["history_steps"] + 1)),
+                        ))
+                    elif population["exchanged"]:
                         sources.append(self._exchanged_source(
                             step, population, frames[exchanged_names.index(population["name"])], time,
                         ))
@@ -1509,7 +1580,10 @@ class DirectRecordedAdjointRunner:
                     primed.append(voltage_store.prefetch(
                         length - 1 - k, after=primed[-1] if primed else tf.identity(final_state[1]),
                     ))
-            with tf.control_dependencies([*self._begin_exchanges(after=final_state), *primed]):
+            reversed_start = (
+                self._extension.start_reverse() if self._extension is not None else []
+            )
+            with tf.control_dependencies([*self._begin_exchanges(after=final_state), *primed, *reversed_start]):
                 carry = tuple(tf.identity(value) for value in (
                     floating_gradient(state_gradients[1], final_state[1]),
                     floating_gradient(state_gradients[3], final_state[3]),
@@ -1586,6 +1660,8 @@ class DirectRecordedAdjointRunner:
         for spec in sampled_traces:
             _window(spec.window, self.sequence_length)
         initial_state = tuple(initial_state)
+        n_extra = self._ensure_extension(inputs.shape[0]) if inputs.shape[0] is not None else 0
+        n_base = len(initial_state) - n_extra
         if inputs.shape[0] is None or inputs.shape[1] != self.sequence_length:
             raise ValueError(
                 "Direct recorded adjoint requires a static batch and input length equal to sequence_length."
@@ -1608,16 +1684,18 @@ class DirectRecordedAdjointRunner:
                 message=f"Spike exchange {name!r} requires a binary initial input history.",
             )
             for name, net in self.cell.inputs.items()
-            if name in self.spike_exchanges and int(net["history_stop"]) > int(net["history_start"])
+            if name in self.spike_exchanges and not self._graded(name)
+            and int(net["history_stop"]) > int(net["history_start"])
             # Only inputs with history reach here; a cell without any has no eighth state.
             for history in [initial_state[7][:, int(net["history_start"]):int(net["history_stop"])]]
         )
 
         @tf.custom_gradient
         def rollout(inputs, *initial_state):
+            base_state, extra_states = initial_state[:n_base], initial_state[n_base:]
             with tf.control_dependencies(checks), record.stop_recording():
                 counts, traces, sequences, state, records = self._forward(
-                    inputs, initial_state, sampled_traces, checks[0],
+                    inputs, base_state, sampled_traces, checks[0], extra_states,
                 )
 
             def grad(*upstream, variables=None):
@@ -1625,11 +1703,12 @@ class DirectRecordedAdjointRunner:
                 count_end = len(self.count_windows)
                 trace_end = count_end + len(sampled_traces)
                 initial_gradients, variable_gradients = self._backward(
-                    inputs, initial_state, state, records, sampled_traces,
+                    inputs, base_state, state, records, sampled_traces,
                     upstream[:count_end], upstream[count_end:trace_end],
                     upstream[trace_end], upstream[output_count:], variables,
                 )
-                arguments = (None,) + initial_gradients
+                # The extension's initial states (e.g. a warm-up's release state) are not differentiated.
+                arguments = (None,) + tuple(initial_gradients) + (None,) * len(extra_states)
                 return (arguments, variable_gradients) if variables else arguments
 
             return counts + traces + sequences + state, grad
