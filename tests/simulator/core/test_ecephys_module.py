@@ -8,6 +8,7 @@ import random
 from bmtk.simulator.core.modules.ecephys_module import ECEphysUnitsModule
 from bmtk.simulator.core.modules.ecephys_module import TimeWindow, NWBFileWrapper
 from bmtk.simulator.core.modules.ecephys_module import MappingStrategy, UnitIdMapStrategy, SamplingStrategy
+from bmtk.simulator.core.modules.ecephys_module import filter_table
 
 try:
     import pynwb
@@ -237,6 +238,33 @@ def test_filter_units():
         filter = {'bad_col': 'x'}
         spikes = MappingStrategy(input_file=nwbfile, units=filter)
         spikes.units_table
+
+
+def test_filter_table_operations():
+    table_df = pd.DataFrame({
+        'y': [-50.0, 50.0, 150.0, 250.0],
+        'location': ['VISp', 'VISl', 'VISp', 'LGd']
+    })
+    for op, expected in [('==', [150.0]), ('!=', [-50.0, 50.0, 250.0]), ('<', [-50.0, 50.0]),
+                         ('<=', [-50.0, 50.0, 150.0]), ('>', [250.0]), ('>=', [150.0, 250.0])]:
+        filtered = filter_table(table_df, {'y': {'operation': op, 'value': 150.0}})
+        assert(list(filtered['y']) == expected)
+
+    filtered = filter_table(table_df, {'loc': {'column': 'location', 'operation': '!=', 'value': 'VISp'}})
+    assert(list(filtered['location']) == ['VISl', 'LGd'])
+
+
+def test_filter_table_rejects_code_in_operation(tmp_path):
+    # A units filter from a shared simulation config must not be able to run code (issue #499).
+    marker = tmp_path / 'marker.txt'
+    op = '.size==999 or open({!r}, "w").write("x") or table_df["x"].size=='.format(str(marker))
+    table_df = pd.DataFrame({'x': [1, 2, 3]})
+    with pytest.raises(ValueError):
+        filter_table(table_df, {'x': {'column': 'x', 'operation': op, 'value': 0}})
+    assert(not marker.exists())
+
+    with pytest.raises(ValueError):
+        filter_table(table_df, {'x': {'operation': 'in', 'value': 2}})
 
 
 @pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
