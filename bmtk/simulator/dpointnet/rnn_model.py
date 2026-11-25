@@ -94,7 +94,12 @@ class RNN:
     
     """
 
-    def __init__(self, seq_len=None, batch_size=None, dtype=None, dt=1.0, default_seed=None, cell_cls=None, cell_params=None, precision=None, distribution=None, **kwargs):
+    def __init__(self, seq_len=None, batch_size=None, dtype=None, dt=1.0, default_seed=None, cell_cls=None, cell_params=None, precision=None, distribution=None, inference_connectivity="auto", **kwargs):
+        if inference_connectivity not in ("auto", "standard", "compact"):
+            raise ValueError('run.inference_connectivity must be "auto", "standard" or "compact".')
+        self.inference_connectivity = inference_connectivity
+        self.connectivity_report = None
+        self._config_inference_only = None
         if cell_cls is None:
             self.cell_cls = cell_models['default']
         elif isinstance(cell_cls, str):
@@ -456,6 +461,8 @@ class RNN:
         return cell_params
 
     def _prepare_training_model(self):
+        if getattr(getattr(self, "_cell", None), "_compact_recurrent", None) is not None:
+            raise ValueError("Cannot train a compact inference model; rebuild with standard connectivity.")
         self._resolve_cell_params(training=True)
         if not self._model_built:
             self.build(training=True)
@@ -628,49 +635,80 @@ class RNN:
                     cell_params["temporal_pack_spike_checkpoints"] = explicit_packing
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
-        combined_auto = False
-        if self.cell_cls is GLIF3Cell or getattr(self.cell_cls, "standard_acceleration", False):
-            from .acceleration import (
-                performance_projection_context, select_performance_projection,
-            )
-            from .custom_ops import csr_spike_ops
+        from .compact_inference import (
+            UnsupportedCompactConnectivity, prepare_recurrent, resolve_connectivity,
+        )
 
-            context = performance_projection_context(
-                network, inputs_dicts, dt=self.dt,
-                max_delay=cell_params.get("max_delay", 5),
-                standard_cell=True,
-                single_replica=(
-                    self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
-                ),
-                sequence_length=self._declared_sequence_length(),
-                bptt_training=(
-                    None if self.training_engine is None
-                    else bool(getattr(self.training_engine.learning_rule, "uses_bptt", True))
-                ),
-            )
-            cell_params["_performance_auto_context"] = context
-            basis = cell_params.get("tau_basis")
-            if isinstance(basis, (str, Path)):
-                basis = np.load(basis)
-            combined_auto, _, _ = select_performance_projection(
-                cell_params, context, compute_dtype=self.dtype,
-                variable_dtype=self.precision_module.global_policy().variable_dtype,
-                batch_size=_batch_size,
-                basis_width=None if basis is None else np.asarray(basis).size,
-                architecture=csr_spike_ops._gpu_compute_architecture(),
-            )
-        if (
-            issubclass(self.cell_cls, GLIF3Cell)
-            and (cell_params.get("use_combined_current_sweep") is True or combined_auto)
-            and tf.executing_eagerly()
-            and not tf.distribute.has_strategy()
-        ):
-            from .cell_models.glif3_cell import _prepare_host_index_variables
+        config_inference_only = getattr(self, "_config_inference_only", None)
+        inference_only = (
+            (config_inference_only is True
+             or (config_inference_only is None
+                 and getattr(self, "inference_connectivity", "auto") == "compact"))
+            and not training and self.training_engine is None
+        )
+        self.connectivity_report = resolve_connectivity(
+            getattr(self, "inference_connectivity", "standard"),
+            inference_only=inference_only, cell_cls=self.cell_cls,
+            params=cell_params, strategy=self.strategy, compute_dtype=self.dtype,
+            neuron_partitioned=getattr(self, "neuron_partition", None) is not None,
+        )
+        if self.connectivity_report["selected"] == "compact":
+            try:
+                cell_params["_compact_recurrent"] = prepare_recurrent(
+                    network, cell_params, cell_params.get("dt", 1.0), self.dtype,
+                    tf.keras.mixed_precision.global_policy().variable_dtype,
+                )
+            except UnsupportedCompactConnectivity as error:
+                if self.inference_connectivity == "compact":
+                    raise
+                self.connectivity_report.update(selected="standard", reason=str(error))
+            else:
+                cell_params["train_recurrent"] = False
+        io.log_info(f"DPointNet resolved inference connectivity: {self.connectivity_report}")
+        if self.connectivity_report["selected"] != "compact":
+            combined_auto = False
+            if self.cell_cls is GLIF3Cell or getattr(self.cell_cls, "standard_acceleration", False):
+                from .acceleration import (
+                    performance_projection_context, select_performance_projection,
+                )
+                from .custom_ops import csr_spike_ops
 
-            # MirroredStrategy overrides device scopes during variable creation.
-            cell_params["_host_index_variables"] = _prepare_host_index_variables(
-                network, inputs_dicts
-            )
+                context = performance_projection_context(
+                    network, inputs_dicts, dt=self.dt,
+                    max_delay=cell_params.get("max_delay", 5),
+                    standard_cell=True,
+                    single_replica=(
+                        self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
+                    ),
+                    sequence_length=self._declared_sequence_length(),
+                    bptt_training=(
+                        None if self.training_engine is None
+                        else bool(getattr(self.training_engine.learning_rule, "uses_bptt", True))
+                    ),
+                )
+                cell_params["_performance_auto_context"] = context
+                basis = cell_params.get("tau_basis")
+                if isinstance(basis, (str, Path)):
+                    basis = np.load(basis)
+                combined_auto, _, _ = select_performance_projection(
+                    cell_params, context, compute_dtype=self.dtype,
+                    variable_dtype=self.precision_module.global_policy().variable_dtype,
+                    batch_size=_batch_size,
+                    basis_width=None if basis is None else np.asarray(basis).size,
+                    architecture=csr_spike_ops._gpu_compute_architecture(),
+                )
+            if (
+                issubclass(self.cell_cls, GLIF3Cell)
+                and (cell_params.get("use_combined_current_sweep") is True or combined_auto)
+                and tf.executing_eagerly()
+                and not tf.distribute.has_strategy()
+            ):
+                from .cell_models.glif3_cell import _prepare_host_index_variables
+
+                # MirroredStrategy overrides device scopes during variable creation.
+                cell_params["_host_index_variables"] = _prepare_host_index_variables(
+                    network, inputs_dicts
+                )
         with self.strategy.scope():
             self._cell = self.cell_cls(network, inputs=inputs_dicts, **cell_params)
             if isinstance(self._cell, GLIF3Cell):
@@ -950,6 +988,8 @@ class RNN:
     def run_inference(self, spikes=None, initial_state=None, inference=None, **kwargs):
         if not self._model_built:
             self.build()
+        if getattr(self._cell, "_compact_recurrent", None) is not None:
+            self._cell.refresh_recurrent_weight_shadow()
 
         inference_obj = None
         if inference is not None or spikes is None or initial_state is None:
@@ -1251,6 +1291,8 @@ class RNN:
         return mod_instances
 
     def set_training(self, training_engine=None, **training_params):
+        if getattr(getattr(self, "_cell", None), "_compact_recurrent", None) is not None:
+            raise ValueError("Cannot attach training to a compact inference model; rebuild with standard connectivity.")
         if training_engine is not None:
             self._training_engine = training_engine
         else:
@@ -1298,6 +1340,7 @@ class RNN:
             cell_params=cell_model_params, 
             **config.run
         )
+        network._config_inference_only = not bool(config.get("training"))
 
         rec_nets, input_nets = NetworkAdaptor.from_dict(config.networks)
         for net in rec_nets + input_nets:

@@ -174,6 +174,12 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 )
 
     def call(self, sequences, initial_state=None, mask=None, training=False):
+        if getattr(self.cell, "_compact_recurrent", None) is not None:
+            if tf.is_tensor(training):
+                tf.debugging.assert_equal(training, False, message="Compact inference cannot execute training")
+            elif training:
+                raise ValueError("Compact inference cannot execute training; use standard connectivity.")
+
         from ..acceleration import record_rollout_acceleration
 
         if self.stateful:

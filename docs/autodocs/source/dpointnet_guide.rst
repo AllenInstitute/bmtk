@@ -489,6 +489,7 @@ Next steps
    :caption: Performance and troubleshooting
 
    dpointnet_performance
+   dpointnet_compact_inference
    dpointnet_input_recovery
    dpointnet_pascal
 

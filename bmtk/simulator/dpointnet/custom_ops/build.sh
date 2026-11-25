@@ -11,6 +11,7 @@ glif_output="${DPOINTNET_GLIF_OP_OUTPUT:-$custom_ops_dir/_glif_state_ops.so}"
 lgn_output="${DPOINTNET_LGN_OP_OUTPUT:-$custom_ops_dir/_lgn_grating_ops.so}"
 movie_output="${DPOINTNET_MOVIE_OP_OUTPUT:-$custom_ops_dir/_lgn_movie_ops.so}"
 store_output="${DPOINTNET_STORE_OP_OUTPUT:-$custom_ops_dir/_record_store_ops.so}"
+compact_output="${DPOINTNET_COMPACT_OP_OUTPUT:-$custom_ops_dir/_compact_inference_ops.so}"
 
 if [[ -n "${NVCC:-}" ]]; then
   nvcc="$NVCC"
@@ -41,6 +42,21 @@ mapfile -t tf_link_flags < <(
   "$python" -c 'import tensorflow as tf; print(*tf.sysconfig.get_link_flags(), sep="\n")'
 )
 
+cuda_include_flags=("-I$prefix/include")
+cuda_link_flags=("-L$prefix/lib")
+for toolkit in "$prefix" "${CUDA_HOME:-$prefix}" "${CUDA_PATH:-$prefix}"; do
+  for directory in "$toolkit/include" "$toolkit/targets/x86_64-linux/include"; do
+    if [[ -d "$directory" ]]; then
+      cuda_include_flags+=("-I$directory")
+    fi
+  done
+  for directory in "$toolkit/lib64" "$toolkit/lib" "$toolkit/targets/x86_64-linux/lib"; do
+    if [[ -d "$directory" ]]; then
+      cuda_link_flags+=("-L$directory")
+    fi
+  done
+done
+
 read -r -a cuda_archs <<<"${DPOINTNET_CUDA_ARCHS:-70 75 80 86 89 90 120}"
 
 gencode_flags=()
@@ -54,7 +70,7 @@ gencode_flags+=(
 
 mkdir -p "$build_dir"
 "$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
-  -I"$prefix/include" \
+  "${cuda_include_flags[@]}" \
   "${tf_compile_flags[@]}" \
   -c "$custom_ops_dir/csr_spike_ops.cc" \
   -o "$build_dir/csr_spike_ops.o"
@@ -62,7 +78,7 @@ mkdir -p "$build_dir"
 "$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
   --expt-relaxed-constexpr \
   -DGOOGLE_CUDA=1 \
-  -I"$prefix/include" \
+  "${cuda_include_flags[@]}" \
   "${tf_compile_flags[@]}" \
   "${gencode_flags[@]}" \
   -c "$custom_ops_dir/csr_spike_ops.cu.cc" \
@@ -72,12 +88,12 @@ mkdir -p "$build_dir"
   "$build_dir/csr_spike_ops.o" \
   "$build_dir/csr_spike_ops.cu.o" \
   "${tf_link_flags[@]}" \
-  -L"$prefix/lib" -lcudart \
+  "${cuda_link_flags[@]}" -lcudart \
   -Wl,-rpath,"$prefix/lib" \
   -o "$output"
 
 "$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
-  -I"$prefix/include" \
+  "${cuda_include_flags[@]}" \
   "${tf_compile_flags[@]}" \
   -c "$custom_ops_dir/glif_state_ops.cc" \
   -o "$build_dir/glif_state_ops.o"
@@ -85,7 +101,7 @@ mkdir -p "$build_dir"
 "$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
   --expt-relaxed-constexpr \
   -DGOOGLE_CUDA=1 \
-  -I"$prefix/include" \
+  "${cuda_include_flags[@]}" \
   "${tf_compile_flags[@]}" \
   "${gencode_flags[@]}" \
   -c "$custom_ops_dir/glif_state_ops.cu.cc" \
@@ -95,7 +111,7 @@ mkdir -p "$build_dir"
   "$build_dir/glif_state_ops.o" \
   "$build_dir/glif_state_ops.cu.o" \
   "${tf_link_flags[@]}" \
-  -L"$prefix/lib" -lcudart \
+  "${cuda_link_flags[@]}" -lcudart \
   -Wl,-rpath,"$prefix/lib" \
   -o "$glif_output"
 
@@ -181,8 +197,23 @@ cp "$arch_file" "${lgn_output%.so}.archs"
 cp "$arch_file" "${movie_output%.so}.archs"
 cp "$arch_file" "${store_output%.so}.archs"
 
+"$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
+  "${cuda_include_flags[@]}" "${tf_compile_flags[@]}" \
+  -c "$custom_ops_dir/compact_inference_ops.cc" \
+  -o "$build_dir/compact_inference_ops.o"
+"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
+  --expt-relaxed-constexpr -DGOOGLE_CUDA=1 \
+  "${cuda_include_flags[@]}" "${tf_compile_flags[@]}" "${gencode_flags[@]}" \
+  -c "$custom_ops_dir/compact_inference_ops.cu.cc" \
+  -o "$build_dir/compact_inference_ops.cu.o"
+"$cxx" -shared "$build_dir/compact_inference_ops.o" "$build_dir/compact_inference_ops.cu.o" \
+  "${tf_link_flags[@]}" "${cuda_link_flags[@]}" -lcudart \
+  -Wl,-rpath,"$prefix/lib" -o "$compact_output"
+cp "$arch_file" "${compact_output%.so}.archs"
+
 echo "$output"
 echo "$glif_output"
 echo "$lgn_output"
 echo "$movie_output"
 echo "$store_output"
+echo "$compact_output"
