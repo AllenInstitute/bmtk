@@ -239,3 +239,48 @@ def test_runtime_exactness_check_selects_the_exact_or_general_split():
         got = strict_fp32_matmul(a, projection, force_split=True, _matmul=_tf32_matmul).numpy()
         want = values.astype(np.float64) @ projection.numpy().astype(np.float64)
         assert np.abs(got - want).max() / np.abs(want).max() < 2e-6
+
+
+@pytest.mark.parametrize("exact_a", [None, False])
+@pytest.mark.parametrize("transpose_b", [False, True])
+def test_strict_fp32_matmul_second_derivatives_are_fp32_accurate(exact_a, transpose_b):
+    """Nested tapes differentiate the backward products strictly too: for (a b)^2 at
+    a=0, b=1+2^-13 the second derivative in a is 2 b^2 = 2.00048828..., which
+    differentiating through the split's bitcasts under TF32 would give as 2.00024414."""
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    a = tf.constant([[0.0]], tf.float32)
+    b_value = np.float32(1 + 2.0 ** -13)
+    b = tf.constant([[b_value]], tf.float32)
+    with tf.GradientTape() as outer:
+        outer.watch(a)
+        with tf.GradientTape() as inner:
+            inner.watch(a)
+            value = strict_fp32_matmul(a, b, transpose_b=transpose_b, exact_a=exact_a,
+                                       force_split=True, _matmul=_tf32_matmul)
+            loss = tf.reduce_sum(tf.square(value))
+        first = inner.gradient(loss, a)
+    second = outer.gradient(first, a).numpy()[0, 0]
+    expected = 2.0 * float(b_value) ** 2
+    assert abs(second - expected) / expected < 1e-6
+
+
+def test_strict_fp32_matmul_hessian_vector_product_is_fp32_accurate():
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(5)
+    a = tf.constant(rng.normal(size=(6, 40)).astype(np.float32))
+    b = tf.constant(rng.normal(size=(40, 3)).astype(np.float32))
+    v = tf.constant(rng.normal(size=(6, 40)).astype(np.float32))
+    with tf.GradientTape() as outer:
+        outer.watch(a)
+        with tf.GradientTape() as inner:
+            inner.watch(a)
+            loss = tf.reduce_sum(tf.square(strict_fp32_matmul(
+                a, b, exact_a=False, force_split=True, _matmul=_tf32_matmul)))
+        first = inner.gradient(loss, a)
+        directional = tf.reduce_sum(first * v)
+    hvp = outer.gradient(directional, a).numpy()
+    bb = b.numpy().astype(np.float64)
+    expected = 2.0 * v.numpy().astype(np.float64) @ bb @ bb.T
+    assert np.abs(hvp - expected).max() / np.abs(expected).max() < 2e-6

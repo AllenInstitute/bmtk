@@ -85,9 +85,14 @@ def strict_fp32_matmul(a, b, *, transpose_b=False, exact_a=None, force_split=Fal
             value = general(a, b, transpose_b)
 
         def grad(upstream):
-            grad_a = general(upstream, b, not transpose_b)
-            grad_b = (general(tf.transpose(upstream), a, False) if transpose_b
-                      else general(tf.transpose(a), upstream, False))
+            # Through this function again, so nested tapes (Hessian-vector products,
+            # gradient penalties) also differentiate the backward products strictly
+            # instead of through the integer bitcasts of the split.
+            strict = lambda x, y, transpose: strict_fp32_matmul(
+                x, y, transpose_b=transpose, exact_a=False, force_split=True, _matmul=_matmul)
+            grad_a = strict(upstream, b, not transpose_b)
+            grad_b = (strict(tf.transpose(upstream), a, False) if transpose_b
+                      else strict(tf.transpose(a), upstream, False))
             return grad_a, grad_b
 
         return value, grad
