@@ -105,7 +105,9 @@ def test_wrong_sequence_length_and_trace_indices_raise():
 @pytest.mark.parametrize("graph", [False, True])
 @pytest.mark.parametrize("chunk", [1, 3, 7])
 def test_projected_traces_and_vjps_match_dense_projection(graph, chunk):
-    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+    """The dense reference projects with strict_fp32_matmul too, so both sides are
+    FP32-accurate under TF32 (this model's "spikes" are continuous states)."""
+    from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, strict_fp32_matmul
 
     model = _model()
     kwargs = dict(sequence_length=7, chunk_size=chunk, n_sequence_outputs=2,
@@ -128,8 +130,9 @@ def test_projected_traces_and_vjps_match_dense_projection(graph, chunk):
                     trace = streamed(inputs, (initial,), sampled_traces=(spec,)).traces[0]
                 else:
                     spikes, _, _ = dense(inputs, (initial,))
+                    flat = strict_fp32_matmul(tf.reshape(spikes[1:3], (14, 3)), projection)
                     trace = tf.reshape(
-                        tf.einsum("btn,nf->bft", spikes[1:3], projection), (4, 7)
+                        tf.transpose(tf.reshape(flat, (2, 7, 2)), (0, 2, 1)), (4, 7)
                     )[:, 2:7]
                 loss = tf.reduce_sum(tf.square(trace) * weights)
             results.append((trace, tape.gradient(loss, targets)))
@@ -147,3 +150,137 @@ def test_projected_trace_projection_shape_is_validated():
     bad = ProjectedSpikeTraces(tf.ones((4, 2), tf.float32), (0, 7), (0, 2))
     with pytest.raises(ValueError, match="Projected traces"):
         runner(tf.zeros((2, 7, 3)), (tf.zeros((2, 3)),), sampled_traces=(bad,))
+
+
+def _tf32_round(value):
+    """Round-to-nearest TF32 emulation (10 explicit mantissa bits), as tensor cores do."""
+    bits = tf.bitcast(value, tf.int32)
+    rounded = tf.bitwise.bitwise_and(bits + 0x1000, tf.constant(-8192, tf.int32))
+    return tf.bitcast(rounded, tf.float32)
+
+
+def _tf32_matmul(a, b, transpose_b=False):
+    return tf.matmul(_tf32_round(a), _tf32_round(b), transpose_b=transpose_b)
+
+
+def test_tf32_parts_are_exact_and_representable():
+    from bmtk.simulator.dpointnet.spike_statistics import _tf32_part
+
+    value = tf.constant(np.random.default_rng(1).normal(size=1000) * 10.0 ** np.arange(-3, 3).repeat(167)[:1000], tf.float32)
+    part = _tf32_part(value)
+    assert np.all(tf.bitcast(part, tf.int32).numpy() & 0x1FFF == 0)
+    np.testing.assert_array_equal((part + (value - part)).numpy(), value.numpy())
+    np.testing.assert_array_equal(_tf32_round(part).numpy(), part.numpy())
+
+
+@pytest.mark.parametrize("transpose_b", [False, True])
+def test_strict_fp32_matmul_recovers_fp32_accuracy_under_tf32(transpose_b):
+    """Emulated TF32 loses ~1e-3 relative accuracy; the split products do not."""
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(7)
+    spikes = rng.integers(0, 3, (40, 300)).astype(np.float32)
+    projection = rng.normal(size=(300, 5)).astype(np.float32)
+    columns = rng.normal(size=(40, 5)).astype(np.float32)
+    exact = spikes.astype(np.float64) @ projection.astype(np.float64)
+    split = strict_fp32_matmul(tf.constant(spikes), tf.constant(projection), exact_a=True,
+                               force_split=True, _matmul=_tf32_matmul).numpy()
+    plain = _tf32_matmul(tf.constant(spikes), tf.constant(projection)).numpy()
+    scale = np.abs(exact).max()
+    assert np.abs(plain - exact).max() / scale > 1e-5
+    assert np.abs(split - exact).max() / scale < 2e-6
+    # General operands (the spike-credit VJP): a1 b1 + a1 b2 + a2 b1.
+    credit_exact = columns.astype(np.float64) @ projection.T.astype(np.float64)
+    credit = strict_fp32_matmul(tf.constant(columns), tf.constant(projection if transpose_b else projection.T.copy()),
+                                transpose_b=transpose_b, force_split=True, _matmul=_tf32_matmul).numpy()
+    assert np.abs(credit - credit_exact).max() / np.abs(credit_exact).max() < 2e-6
+
+
+def test_strict_fp32_matmul_gradients_are_fp32_accurate():
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(3)
+    spikes = tf.constant(rng.integers(0, 2, (16, 200)).astype(np.float32))
+    projection = tf.constant(rng.normal(size=(200, 4)).astype(np.float32))
+    upstream = rng.normal(size=(16, 4)).astype(np.float32)
+    with tf.GradientTape(persistent=True) as tape:
+        tape.watch((spikes, projection))
+        value = strict_fp32_matmul(spikes, projection, exact_a=True, force_split=True, _matmul=_tf32_matmul)
+        loss = tf.reduce_sum(value * upstream)
+    grad_spikes, grad_projection = tape.gradient(loss, (spikes, projection))
+    expect_spikes = upstream.astype(np.float64) @ projection.numpy().astype(np.float64).T
+    expect_projection = spikes.numpy().astype(np.float64).T @ upstream.astype(np.float64)
+    for got, want in ((grad_spikes, expect_spikes), (grad_projection, expect_projection)):
+        assert np.abs(got.numpy() - want).max() / np.abs(want).max() < 2e-6
+
+
+def test_strict_fp32_matmul_is_a_single_matmul_without_tf32(monkeypatch):
+    from bmtk.simulator.dpointnet import spike_statistics
+
+    monkeypatch.setattr(spike_statistics, "_tf32_may_apply", lambda: False)
+    calls = []
+    def counting(a, b, transpose_b=False):
+        calls.append(1)
+        return tf.matmul(a, b, transpose_b=transpose_b)
+    a, b = tf.ones((3, 4)), tf.ones((4, 2))
+    np.testing.assert_array_equal(
+        spike_statistics.strict_fp32_matmul(a, b, exact_a=True, _matmul=counting).numpy(), tf.matmul(a, b).numpy(),
+    )
+    assert calls == [1]
+
+
+def test_runtime_exactness_check_selects_the_exact_or_general_split():
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(11)
+    projection = tf.constant(rng.normal(size=(50, 3)).astype(np.float32))
+    for values in (rng.integers(0, 4, (20, 50)), rng.normal(size=(20, 50))):
+        a = tf.constant(values.astype(np.float32))
+        got = strict_fp32_matmul(a, projection, force_split=True, _matmul=_tf32_matmul).numpy()
+        want = values.astype(np.float64) @ projection.numpy().astype(np.float64)
+        assert np.abs(got - want).max() / np.abs(want).max() < 2e-6
+
+
+@pytest.mark.parametrize("exact_a", [None, False])
+@pytest.mark.parametrize("transpose_b", [False, True])
+def test_strict_fp32_matmul_second_derivatives_are_fp32_accurate(exact_a, transpose_b):
+    """Nested tapes differentiate the backward products strictly too: for (a b)^2 at
+    a=0, b=1+2^-13 the second derivative in a is 2 b^2 = 2.00048828..., which
+    differentiating through the split's bitcasts under TF32 would give as 2.00024414."""
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    a = tf.constant([[0.0]], tf.float32)
+    b_value = np.float32(1 + 2.0 ** -13)
+    b = tf.constant([[b_value]], tf.float32)
+    with tf.GradientTape() as outer:
+        outer.watch(a)
+        with tf.GradientTape() as inner:
+            inner.watch(a)
+            value = strict_fp32_matmul(a, b, transpose_b=transpose_b, exact_a=exact_a,
+                                       force_split=True, _matmul=_tf32_matmul)
+            loss = tf.reduce_sum(tf.square(value))
+        first = inner.gradient(loss, a)
+    second = outer.gradient(first, a).numpy()[0, 0]
+    expected = 2.0 * float(b_value) ** 2
+    assert abs(second - expected) / expected < 1e-6
+
+
+def test_strict_fp32_matmul_hessian_vector_product_is_fp32_accurate():
+    from bmtk.simulator.dpointnet.spike_statistics import strict_fp32_matmul
+
+    rng = np.random.default_rng(5)
+    a = tf.constant(rng.normal(size=(6, 40)).astype(np.float32))
+    b = tf.constant(rng.normal(size=(40, 3)).astype(np.float32))
+    v = tf.constant(rng.normal(size=(6, 40)).astype(np.float32))
+    with tf.GradientTape() as outer:
+        outer.watch(a)
+        with tf.GradientTape() as inner:
+            inner.watch(a)
+            loss = tf.reduce_sum(tf.square(strict_fp32_matmul(
+                a, b, exact_a=False, force_split=True, _matmul=_tf32_matmul)))
+        first = inner.gradient(loss, a)
+        directional = tf.reduce_sum(first * v)
+    hvp = outer.gradient(directional, a).numpy()
+    bb = b.numpy().astype(np.float64)
+    expected = 2.0 * v.numpy().astype(np.float64) @ bb @ bb.T
+    assert np.abs(hvp - expected).max() / np.abs(expected).max() < 2e-6

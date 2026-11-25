@@ -60,7 +60,7 @@ from .custom_ops.glif_state_ops import (
 from .custom_ops.record_store_ops import (
     DEFAULT_PREFETCH, HostRecordStore, host_record_store_available, record_store_op_status,
 )
-from .spike_statistics import ProjectedSpikeTraces, SpikeStatistics, _window
+from .spike_statistics import ProjectedSpikeTraces, SpikeStatistics, _window, strict_fp32_matmul
 
 RECORD_FORMAT = "direct_step_record_v1"
 
@@ -849,7 +849,9 @@ class DirectRecordedAdjointRunner:
                 rows = tf.range(first + step.delay, last + step.delay, dtype=tf.int64)
             words = tf.reshape(tf.gather(stacked, rows), [(last - first) * batch, -1])
             spikes = tf.reshape(step.unpack(words)[0], [last - first, batch, -1])[:, begin:end]
-            projected = tf.matmul(tf.reshape(tf.cast(spikes, tf.float32), [-1, spikes.shape[-1]]), projection)
+            projected = strict_fp32_matmul(
+                tf.reshape(tf.cast(spikes, tf.float32), [-1, spikes.shape[-1]]), projection, exact_a=True,
+            )
             pieces.append(tf.reshape(projected, [last - first, end - begin, features]))
         traces = tf.transpose(tf.concat(pieces, axis=0), (1, 2, 0))  # [rows, features, window]
         return tf.reshape(traces, [(end - begin) * features, stop - start])
@@ -1380,7 +1382,7 @@ class DirectRecordedAdjointRunner:
                 for value, begin, end in windowed:
                     parts.append(tf.cast(value * host_mask(time, begin, end), S))
                 for columns, spec in projected_credit:
-                    credit = tf.matmul(tf.gather(columns, time), spec.projection, transpose_b=True)
+                    credit = strict_fp32_matmul(tf.gather(columns, time), spec.projection, transpose_b=True)
                     parts.append(tf.cast(
                         tf.pad(credit, ((spec.batch_range[0], batch - spec.batch_range[1]), (0, 0))), S,
                     ))

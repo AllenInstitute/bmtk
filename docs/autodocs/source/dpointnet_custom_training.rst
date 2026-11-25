@@ -146,7 +146,7 @@ plans. A project loss joins those routes by declaring the
    import tensorflow as tf
    from bmtk.simulator.dpointnet import StreamingSpikeLoss, register_loss_module
    from bmtk.simulator.dpointnet.spike_summary import SpikeSummary
-   from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces
+   from bmtk.simulator.dpointnet.spike_statistics import ProjectedSpikeTraces, strict_fp32_matmul
 
 
    @register_loss_module(module_name="ReadoutEnergy")
@@ -176,9 +176,11 @@ plans. A project loss joins those routes by declaring the
            else:                                                   # dense route, e.g. validation
                counts = tf.reduce_sum(tf.cast(spikes[:, self._pre_delay:], tf.float32), axis=1)
                start, stop = self.window
-               traces = tf.reshape(tf.einsum(
-                   "btn,nf->bft", tf.cast(spikes[:, start:stop], tf.float32), self.projection,
-               ), [-1, stop - start])
+               window = tf.cast(spikes[:, start:stop], tf.float32)       # [batch, time, neurons]
+               flat = strict_fp32_matmul(tf.reshape(window, [-1, window.shape[-1]]), self.projection)
+               traces = tf.reshape(tf.transpose(                         # [batch * features, window]
+                   tf.reshape(flat, [-1, stop - start, self.projection.shape[1]]), (0, 2, 1)),
+                   [-1, stop - start])
            return self.cost * (tf.reduce_mean(tf.square(traces)) + 1e-3 * tf.reduce_mean(counts))
 
 The contract:
@@ -197,6 +199,11 @@ The contract:
   ``SampledSpikeTraces`` (sparse per-neuron traces, as the synchronization loss
   uses) or a ``ProjectedSpikeTraces`` (``spikes @ P`` for a static FP32
   projection), covering exactly the group's batch rows; ``()`` for counts only.
+  Projected traces and their gradients are FP32-accurate even where TensorFlow
+  would run FP32 matmuls in TF32 (Ampere and newer GPUs). A dense-route branch that
+  must agree with them should project with
+  ``spike_statistics.strict_fp32_matmul``, as above; a plain ``tf.einsum`` or
+  ``tf.matmul`` may differ by about 2e-4 relative on those GPUs.
   Plans are data interpreted by BMTK's runners, never callbacks, so the streaming
   kernels, memory bounds and credit paths stay in BMTK while the objective stays
   in your project. The loss reads its plan back with
