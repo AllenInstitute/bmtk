@@ -1,6 +1,7 @@
 """Neuron-partition planning, rank-local SONATA loading and the MPI transport oracle."""
 
 import os
+from types import SimpleNamespace
 from pathlib import Path
 import shutil
 import subprocess
@@ -10,7 +11,8 @@ import numpy as np
 import pytest
 
 from bmtk.simulator.dpointnet.neuron_partition import (
-    PARTITION_INPUT, NeuronPartition, neuron_partition_requested, plan_partition,
+    PARTITION_INPUT, NeuronPartition, PartitionContext, neuron_partition_requested, plan_partition,
+    spatial_owner,
 )
 
 EXAMPLE = Path(__file__).resolve().parents[3] / "examples" / "dpointnet_all2all"
@@ -298,6 +300,42 @@ def _feedforward_network(directory):
     virts.save(str(directory))
 
 
+def _spatial_network(directory):
+    """A disk of neurons, node order interleaved by type, connected with distance-dependent probability."""
+    from bmtk.builder import NetworkBuilder
+
+    rng = np.random.default_rng(11)
+    net = NetworkBuilder("glifs")
+    for ei, count, pop, params in (("e", 60, "e4Nr5a1", "354833767_glif_lif_asc_config.json"),
+                                   ("i", 30, "i4Vip", "501570114_glif_lif_asc_config.json")):
+        radius, angle = 100 * np.sqrt(rng.uniform(size=count)), rng.uniform(0, 2 * np.pi, count)
+        net.add_nodes(N=count, ei=ei, pop_name=pop, model_type="point_neuron",
+                      model_template="glif_psc_double_alpha", dynamics_params=params,
+                      x=radius * np.cos(angle), y=rng.uniform(0, 50, count), z=radius * np.sin(angle))
+
+    def rule(source, target):
+        distance = np.hypot(source["x"] - target["x"], source["z"] - target["z"])
+        return int(source.node_id != target.node_id and rng.random() < 0.8 * np.exp(-(distance / 60) ** 2))
+
+    for source, target, params, sign in (("e", "e", "glif_e2e.json", 1), ("e", "i", "glif_e2i.json", 1),
+                                         ("i", "e", "glif_i2e.json", -1), ("i", "i", "glif_i2i.json", -1)):
+        edges = net.add_edges(source={"ei": source}, target={"ei": target}, connection_rule=rule,
+                              dynamics_params=params, model_template="static_synapse")
+        edges.add_properties(names=["syn_weight", "delay"],
+                             rule=lambda *_, sign=sign: (sign * rng.uniform(2.0, 12.0), float(rng.integers(1, 5))),
+                             dtypes=[float, float])
+    net.build()
+    net.save(str(directory))
+    virts = NetworkBuilder("virts")
+    virts.add_nodes(N=40, ei="e", model_type="virtual")
+    for target, params in (("e", "virt_e2e.json"), ("i", "virt_e2i.json")):
+        edges = virts.add_edges(target=net.nodes(ei=target), connection_rule=lambda *_: int(rng.random() < 0.5),
+                                dynamics_params=params, model_template="static_synapse", delay=2.0)
+        edges.add_properties(names="syn_weight", rule=lambda *_: rng.uniform(10.0, 40.0), dtypes=float)
+    virts.build()
+    virts.save(str(directory))
+
+
 def _partition_config(tmp_path, variant):
     import json
 
@@ -310,6 +348,11 @@ def _partition_config(tmp_path, variant):
         config["manifest"]["$NETWORK_DIR"] = str(network)
         config["rnn_cell_params"]["max_delay"] = 2.5  # clips the 3-4 ms edges, local and remote
         config["run"]["distribution"] = {"strategy": "neurons", "group_by": "ei"}
+    elif variant == "spatial":
+        network = tmp_path / "network"
+        _spatial_network(network)
+        config["manifest"]["$NETWORK_DIR"] = str(network)
+        config["run"]["distribution"] = {"strategy": "neurons", "spatial": ["x", "z"], "report_cut": True}
     path = tmp_path / f"config.{variant}.json"
     path.write_text(json.dumps(config))
     return path
@@ -319,7 +362,7 @@ def _partition_config(tmp_path, variant):
     os.environ.get("BMTK_RUN_MPI_TESTS") != "1",
     reason="Real MPI subprocess tests require explicit BMTK_RUN_MPI_TESTS=1.",
 )
-@pytest.mark.parametrize("variant", ["example", "feedforward"])
+@pytest.mark.parametrize("variant", ["example", "feedforward", "spatial"])
 def test_partitioned_training_matches_single_process_on_gpu(tmp_path, variant):
     """Training under mpiexec -n 2 equals one process: losses and exported SONATA weights.
 
@@ -501,3 +544,77 @@ def test_partitioned_frozen_inference_matches_single_process_on_gpu(tmp_path):
     assert spikes[1][0].size > 0
     for serial, split in zip(spikes[1], spikes[2]):
         np.testing.assert_array_equal(serial, split)
+
+
+
+def _disk(count, seed=0):
+    rng = np.random.default_rng(seed)
+    radius, angle = np.sqrt(rng.uniform(size=count)), rng.uniform(0, 2 * np.pi, count)
+    return np.stack([radius * np.cos(angle), radius * np.sin(angle)], axis=1)
+
+
+@pytest.mark.parametrize("size", [2, 3, 4, 8])
+def test_spatial_owner_gives_balanced_compact_regions(size):
+    points = _disk(4000)
+    load = np.random.default_rng(1).uniform(1, 3, len(points))
+    owner = spatial_owner(points, load, size)
+    assert set(owner) == set(range(size))
+    rank_load = np.bincount(owner, weights=load, minlength=size)
+    np.testing.assert_allclose(rank_load, load.sum() / size, rtol=0.01)
+    # Compact: each rank's points are closer to their own centroid than a random split's.
+    centroids = np.stack([points[owner == r].mean(axis=0) for r in range(size)])
+    spread = np.mean(np.linalg.norm(points - centroids[owner], axis=1))
+    shuffled = np.random.default_rng(2).permutation(owner)
+    random_centroids = np.stack([points[shuffled == r].mean(axis=0) for r in range(size)])
+    assert spread < 0.8 * np.mean(np.linalg.norm(points - random_centroids[shuffled], axis=1))
+    np.testing.assert_array_equal(owner, spatial_owner(points, load, size))
+
+
+def test_spatial_owner_bisects_along_the_widest_axis():
+    points = np.stack([np.linspace(0, 10, 100), np.linspace(0, 1, 100)], axis=1)
+    owner = spatial_owner(points, np.ones(100), 2)
+    assert points[owner == 0, 0].max() < points[owner == 1, 0].min()
+    np.testing.assert_array_equal(np.bincount(owner), [50, 50])
+
+
+def test_spatial_plan_cuts_fewer_distance_dependent_edges_than_node_order():
+    rng = np.random.default_rng(3)
+    points = _disk(3000, seed=4)
+    # Node order interleaves "types" across space, as V1 node files do.
+    sources = rng.integers(0, len(points), 400000)
+    targets = rng.integers(0, len(points), 400000)
+    keep = rng.random(len(sources)) < np.exp(-(np.linalg.norm(points[sources] - points[targets], axis=1) / 0.3) ** 2)
+    sources, targets = sources[keep], targets[keep]
+    in_degree = np.bincount(targets, minlength=len(points))
+    contiguous = plan_partition(len(points), 4, in_degree=in_degree)
+    spatial = plan_partition(len(points), 4, in_degree=in_degree, coordinates=points)
+
+    def cut(owner):
+        return np.mean(owner[sources] != owner[targets])
+
+    assert cut(spatial) < 0.5 * cut(contiguous)
+    load = np.bincount(spatial, weights=in_degree, minlength=4)
+    assert load.max() / load.mean() < 1.01
+
+
+def test_spatial_plan_rejects_invalid_requests():
+    with pytest.raises(ValueError, match="either spatial coordinates or groups"):
+        plan_partition(4, 2, in_degree=np.ones(4), groups=np.arange(4), coordinates=np.zeros((4, 2)))
+    with pytest.raises(ValueError, match="one row per neuron"):
+        plan_partition(4, 2, in_degree=np.ones(4), coordinates=np.zeros((3, 2)))
+    with pytest.raises(ValueError, match="finite"):
+        plan_partition(2, 2, in_degree=np.ones(2), coordinates=np.array([[0.0], [np.nan]]))
+
+
+@pytest.mark.parametrize("options, message", [
+    ({"spatial": ["x"], "group_by": "area"}, "either group_by or spatial"),
+    ({"spatial": []}, "coordinate columns"),
+    ({"spatial": [1]}, "coordinate columns"),
+])
+def test_partition_context_validates_spatial_options(options, message, monkeypatch):
+    import bmtk.simulator.dpointnet.neuron_partition as module
+
+    monkeypatch.setattr(module, "_abort_on_uncaught_exception", lambda comm: None)
+    monkeypatch.setattr(module, "select_rank_gpu", lambda comm: {})
+    with pytest.raises(ValueError, match=message):
+        PartitionContext(SimpleNamespace(rank=0, size=2), {"strategy": "neurons", **options})
