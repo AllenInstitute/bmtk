@@ -45,6 +45,16 @@ def sort_indices_tf(indices, *arrays):
     return tuple(sorted_arrays)
 
 
+def compact_delays(delays):
+    """Delays stored as uint8 or float16 when that is exact, else float32."""
+    delays = np.asarray(delays, dtype=np.float32)
+    for dtype in (np.uint8, np.float16):
+        compact = delays.astype(dtype)
+        if np.array_equal(compact.astype(np.float32), delays):
+            return compact
+    return delays
+
+
 class NetworkAdaptor:
     def __init__(self, name, network_type, **options):
         self.name = name
@@ -517,6 +527,34 @@ class SONATANetwork(NetworkAdaptor):
                 for _, r in basis_weights_df.iterrows()
             }
 
+    def node_attribute_values(self, columns):
+        """Per-neuron values of node attributes, in TF order (the node file order).
+
+        Columns of the node-types table are resolved per node type, so whole-brain
+        populations need no per-node dataframe; other columns are read from a
+        single-group population's node group.
+        """
+        pop = self._sonata_node_pop
+        types = pop.types_table.to_dataframe()
+        type_ids = pop.type_ids
+        values, group = {}, None
+        for column in columns:
+            if column in types.columns:
+                values[column] = types[column].reindex(type_ids).to_numpy()
+                continue
+            if len(pop.group_ids) != 1:
+                raise ValueError(
+                    f'Node attribute {column!r} is not a node-types column and population '
+                    f'{pop.name!r} has several node groups.'
+                )
+            if group is None:
+                group = pop.get_group(pop.group_ids[0]).to_dataframe()
+            if column not in group.columns:
+                raise ValueError(f'Node attribute {column!r} not found in population {pop.name!r}.')
+            # to_dataframe() already resolves node_group_index into population row order.
+            values[column] = group[column].to_numpy()
+        return values
+
     def get_bmtk_ids(self, **filter):
         node_ids = {self._sonata_node_pop.name: []}
         for n in self._sonata_node_pop.filter(**filter):
@@ -807,14 +845,15 @@ class SONATANetwork(NetworkAdaptor):
             'partition_placeholder': placeholder,
         }
         canonical_ids = {'<recurrent>': canonical[local_source], PARTITION_INPUT: canonical[remote]}
-        # Global (target, source) of every master edge in its canonical order.
-        self._partition_endpoints = {
-            '<recurrent>': (target[local_source], source[local_source]),
-            PARTITION_INPUT: (target[remote], source[remote]),
-        }
-        self._partition_edge_types = {
-            '<recurrent>': edges["edge_type_ids"][local_source], PARTITION_INPUT: edges["edge_type_ids"][remote],
-        }
+        # Global (target, source), edge type and file delay of every master edge in its
+        # canonical order, kept compact for weight-group keys and per-rank export.
+        index_dtype = np.int32 if self.n_nodes < np.iinfo(np.int32).max else np.int64
+        type_dtype = np.uint16 if edges["edge_type_ids"].max(initial=0) <= np.iinfo(np.uint16).max else np.uint32
+        self._partition_endpoints, self._partition_edge_types, self._partition_delays = {}, {}, {}
+        for name, mask in (('<recurrent>', local_source), (PARTITION_INPUT, remote)):
+            self._partition_endpoints[name] = (target[mask].astype(index_dtype), source[mask].astype(index_dtype))
+            self._partition_edge_types[name] = edges["edge_type_ids"][mask].astype(type_dtype)
+            self._partition_delays[name] = compact_delays(edges["delays"][mask])
         return rec_dict, input_dict, canonical_ids
 
     def prepare_export_tables(self):
@@ -913,13 +952,33 @@ class SONATANetwork(NetworkAdaptor):
 
     def target_in_degree(self, row_slice=None):
         """Edges per target TF id (int64), optionally over a row share only."""
+        return self.partition_edge_statistics(row_slice)[0]
+
+    def partition_edge_statistics(self, row_slice=None, group_codes=None, n_groups=0):
+        """``(in_degree, group_edges)`` from one scan, optionally over a row share only.
+
+        ``in_degree`` counts edges per target TF id (int64). With ``group_codes``
+        (one integer in ``[0, n_groups)`` per TF id) ``group_edges[s, t]`` counts
+        edges from group ``s`` to group ``t``; otherwise it is ``None``.
+        """
         counts = np.zeros(self.n_nodes, dtype=np.int64)
+        matrix = None
+        if group_codes is not None:
+            group_codes = np.asarray(group_codes, dtype=np.int64)
+            n_groups = int(n_groups)
+            matrix = np.zeros(n_groups * n_groups, dtype=np.int64)
         for edge_pop, _, start, stop in self._iter_edge_chunks(row_slice):
-            targets = self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[
+            targets = np.asarray(self.id_maps.bmtk2tf_id_map(edge_pop.target_population)[
                 edge_pop._target_node_id_ds[start:stop]
-            ]
-            counts += np.bincount(np.asarray(targets, dtype=np.int64), minlength=self.n_nodes)
-        return counts
+            ], dtype=np.int64)
+            counts += np.bincount(targets, minlength=self.n_nodes)
+            if matrix is not None:
+                sources = np.asarray(self.id_maps.bmtk2tf_id_map(edge_pop.source_population)[
+                    edge_pop._source_node_id_ds[start:stop]
+                ], dtype=np.int64)
+                matrix += np.bincount(group_codes[sources] * n_groups + group_codes[targets],
+                                      minlength=n_groups * n_groups)
+        return counts, (None if matrix is None else matrix.reshape(n_groups, n_groups))
 
     def read_edges(self, keep_target=None):
         """Edges whose target TF id satisfies ``keep_target`` (boolean array by TF id; ``None``: all).

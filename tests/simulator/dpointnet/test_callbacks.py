@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import SimpleNamespace
 import io
 import logging
@@ -39,11 +40,31 @@ def test_training_exports_selected_compression(monkeypatch, compression, all_epo
     callback.train_start_time = 0
     calls = []
     weights = SimpleNamespace(to_sonata=lambda **kwargs: calls.append(kwargs))
-    callback._saved_weights = [(1, weights), (2, weights)] if all_epochs else [weights]
+    callback._saved_weights = [(1, weights), (2, weights)] if all_epochs else [(1, weights)]
     callback.on_train_end()
     expected = "gzip" if compression == "default" else None if compression == "none" else compression
     assert len(calls) == (2 if all_epochs else 1)
     assert all(call["compression"] == expected and call["overwrite"] for call in calls)
+
+
+@pytest.mark.parametrize("policy, expected_dirs", [
+    ("all", ["trained_weights.epoch_1", "trained_weights.epoch_2"]),
+    ("latest", ["trained_weights"]),
+    ("best", ["trained_weights"]),
+])
+def test_stored_snapshots_export_per_policy(monkeypatch, policy, expected_dirs):
+    callback = make_callback(monkeypatch)
+    callback.epoch_store_weights = policy
+    callback.train_start_time = 0
+    calls = []
+    for epoch, loss in ((1, 2.0), (2, 1.0)):
+        callback.epoch_num = epoch
+        callback.prepared_weights = SimpleNamespace(
+            to_sonata=lambda epoch=epoch, **kwargs: calls.append((epoch, Path(kwargs["output_dir"]).name)))
+        callback._store_weights(loss)
+    callback.on_train_end()
+    assert [name for _, name in calls] == expected_dirs
+    assert [epoch for epoch, _ in calls] == ([1, 2] if policy == "all" else [2])
 
 
 def test_training_rejects_invalid_compression_at_initialization(monkeypatch):

@@ -522,7 +522,16 @@ neurons; ``run.distribution.strategy="mpi"`` still selects sample
 parallelism. ``{"strategy": "neurons"}`` selects partitioning explicitly and
 accepts ``"balance": "edges"`` (default: contiguous neuron blocks with equal
 incoming edges) or ``"neurons"``, and ``"group_by": "<node attribute>"`` to
-keep, for example, each area on one rank. Each rank selects one GPU on its
+keep, for example, each area on one rank. With ``group_by``, groups are first
+placed largest first on the least-loaded rank and then, by default
+(``"placement": "communication"``), refined by moving or swapping groups to cut
+the fewest edges between ranks, keeping every rank within 5% of the mean load
+and 10% of the mean neuron count (or the first placement's maxima, if larger).
+The edges between groups are counted in the same pass that counts in-degrees.
+Every cut edge is exchanged at every step, so this matters: on a 9.3M-neuron
+mouse cortex split by area over 4 ranks it cuts 27% of the edges instead of
+54%. ``"placement": "greedy"`` keeps the first placement; refinement supports
+up to 4096 groups. Each rank selects one GPU on its
 node (local rank modulo the node's GPUs); more ranks than GPUs share GPUs.
 The source checkout's ``examples/dpointnet_mpi/config.partition.json`` runs
 with ``mpirun -n 2 python examples/dpointnet_mpi/run_training.py
@@ -536,8 +545,9 @@ The result is the same training as one process, up to FP32 summation order:
 * the grouped EMD weight regularizer compares each connection group's whole
   sorted weight distribution on one owner rank;
 * weight updates are local to the rank that owns each edge;
-* trained weights are gathered on rank 0 and exported to SONATA as usual, and
-  only rank 0 writes logs and callback output.
+* trained weights are gathered on rank 0 and exported to SONATA as usual (or
+  written by every rank, see below), and only rank 0 writes logs and callback
+  output.
 
 On the ``examples/dpointnet_mpi`` network, 2- and 3-rank runs reproduce the
 single-process loss values exactly and its weight updates to about 1e-7
@@ -550,7 +560,65 @@ Requirements and current limits:
   ``training_approach="single"`` in float32 precision; other routes raise;
 * supported losses are ``SpikeRateDistributionTarget``,
   ``TargetFiringRate``, ``LowRateFloor``, uncore-masked
-  ``VoltageRegularization`` and ``EMDWeightRegularization``; others raise;
-* one recurrent population; inference-only runs are not partitioned;
+  ``VoltageRegularization`` (with ``"online": true`` on the streamed route, so
+  the per-step voltage penalty is averaged rather than re-penalized),
+  ``GroupedRateCDFTarget`` and ``EMDWeightRegularization``; others raise;
+* one recurrent population;
 * communication uses host buffers through ``mpi4py``, so ranks may share a GPU
   or span nodes; multi-node runs have not been qualified yet.
+
+Large networks
+^^^^^^^^^^^^^^
+
+These options keep per-rank memory bounded for networks with billions of
+edges (for example a whole mouse cortex):
+
+* ``"optimizer": {"name": "chunked_adam", "update_chunk_size": 8388608}`` is
+  Keras Adam with the same arithmetic, slots and checkpoints, applied to large
+  one-dimensional weights in chunks (sign constraints included), so it does not
+  allocate several full-size temporaries per weight vector (Keras 3 only).
+* ``EMDWeightRegularization`` accepts ``"group_by": {"target": [...],
+  "source": [...], "edge": [...]}``: connection groups from target and source
+  node attributes (node-types or node columns) and edge-types columns, for
+  example ``{"target": ["area", "cell_class"], "source": ["cell_class"],
+  "edge": ["receptor"]}``. Without it, groups are the V1 cell-type pairs. When
+  every group lies on one rank (e.g. partitioning with ``"group_by": "area"``
+  and a target-area key), each rank evaluates its own groups one at a time on
+  the device with no exchange; otherwise groups are exchanged to owner ranks.
+* ``GroupedRateCDFTarget`` matches smoothed CDFs of ``log(1 + rate)`` for
+  neuron groups defined by node attributes, with targets from a JSON file
+  (see its module documentation); its value and gradient are evaluated in
+  chunks of neurons.
+* ``"run": {"distribution": {..., "weights_export": "per_rank"}}`` makes each
+  rank keep and write its own edges: ``<source>_<target>_edges.rank<r>.h5``
+  per network (population ``<source>_to_<target>_rank<r>``, with
+  ``syn_weight``, ``edge_type_id`` and the source files' ``delay``) plus
+  ``weights_parts.json``. The default ``"gather"`` assembles the whole network
+  on rank 0. The part files can be listed as ``edges`` of a configuration with
+  the original edge-types tables.
+* SONATA edge files sorted by target node ID let each rank read and
+  decompress mainly its own neurons' rows.
+
+Neuron-partitioned inference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An ``inference`` block (alone or after training) also runs partitioned under
+``mpirun``: rank 0 draws the input batch and broadcasts it, every rank runs
+its neurons with the training spike exchange, and rank 0 writes the whole
+network's spikes to ``spikes_file`` (or the CSV/pickle outputs). Only spikes
+are recorded; voltage and model-state outputs raise. Inference runs forward only:
+it keeps the packed per-step spike words but no voltage history or reverse
+checkpoints, and works with frozen recurrent weights (``train_recurrent: false``).
+Without an ``initial_state`` block it starts from the zero state. Partitioned
+runs request CSR-ordered masters and the joint current sweep unless the
+configuration sets them. On a 12-area cortex
+network (458,177 neurons, 156M edges), 2- and 4-rank inference reproduce the
+single-process spike trains exactly.
+
+Spike-file inputs
+^^^^^^^^^^^^^^^^^
+
+``spikes_files`` inputs keep one spike per node and step by default; set
+``"count_spikes": true`` to keep the number of spikes per step (for example a
+stored Poisson background whose events can share a 1-ms step). Under neuron
+partitioning only rank 0 reads input files.

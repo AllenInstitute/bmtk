@@ -764,3 +764,42 @@ def test_direct_projected_traces_match_streaming_reference(batch):
         assert cell.acceleration_report["rollout_selected"]["temporal_path"] == "direct_recorded_vjp"
     finally:
         cell.close_fused_cuda()
+
+
+@pytest.mark.parametrize("frozen", [False, True])
+def test_forward_only_spike_events_match_rollout_counts_without_reverse_records(frozen):
+    """spike_events() decodes the same spikes as the training rollout's counts while
+    holding no length-sized voltage or per-chunk ASC records; frozen recurrent weights
+    need only the forward requirements."""
+    if not fused_cuda_available():
+        pytest.skip("Authorized GPU and rebuilt CUDA operators required.")
+    batch, length = 4, 7
+    options = dict(DIRECT_OPTIONS)
+    if frozen:
+        options.update(train_recurrent=False, use_fused_recurrent_accumulation=False,
+                       use_direct_csr_recurrent_gradient=False, use_pair_projection=False)
+    cell = make_cell("nest", selective=False, batch_size=batch, **options)
+    try:
+        initial = _initial_state(cell, batch)
+        inputs = tf.zeros((batch, length, 0), cell.compute_dtype)
+        if frozen:
+            assert "native recurrent accumulation" in direct_records_supported(cell)
+            assert direct_records_supported(cell, forward_only=True) == ()
+            with pytest.raises(ValueError, match="native recurrent accumulation"):
+                DirectRecordedAdjointRunner(None, cell, length, 3)
+        reference = DirectRecordedAdjointRunner(None, cell, length, 3, forward_only=True)
+        with pytest.raises(ValueError, match="forward-only"):
+            reference(inputs, initial)
+        times, samples, neurons = reference.spike_events(inputs, initial, decode_steps=2)
+        counts = np.zeros((batch, cell._n_neurons))
+        np.add.at(counts, (samples, neurons), 1)
+        assert np.all((times >= 0) & (times < length))
+        if not frozen:
+            full = DirectRecordedAdjointRunner(_model(cell, initial), cell, length, 3)
+            np.testing.assert_array_equal(counts, full(inputs, initial).counts[0].numpy())
+        shapes = {name: shape for name, shape, _ in reference._scratch_buffers}
+        assert "direct_recorded_voltage_scratch" not in shapes
+        assert shapes["direct_recorded_voltage_forward_only"][0] == 1
+        assert shapes["direct_recorded_asc_snapshot_scratch"][0] == 1
+    finally:
+        cell.close_fused_cuda()

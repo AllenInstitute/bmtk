@@ -1233,10 +1233,13 @@ def fused_recurrent_weight_carry(
 
         return (currents, tf.identity(carrier)), grad
 
+    # Pass the weights as a value: a variable read inside the custom gradient would make
+    # TensorFlow require a ``variables`` gradient, while weight credit flows through the
+    # carrier (the weights' own cotangent is None).
     return project(
         spikes,
         weight_carrier,
-        csr_weights,
+        tf.convert_to_tensor(csr_weights),
         basis,
         tf.cast(spike_gradient_scale, spikes.dtype),
     )

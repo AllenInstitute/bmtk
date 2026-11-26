@@ -329,3 +329,57 @@ class RNNExtractorResults:
             return file_path
         else:
             return Path(output_dir) / file_path
+
+
+class _SparseSpikesResults(_SpikesResults):
+    """Spikes given as ``(batch, step, tf_id)`` events rather than a dense table."""
+
+    def __init__(self, parent, batch_num, steps, tf_ids, n_neurons):
+        super().__init__(parent, None)
+        self._events = (np.asarray(batch_num), np.asarray(steps), np.asarray(tf_ids))
+        self._n_neurons = int(n_neurons)
+
+    def mean_firing_rate(self):
+        seconds = self.parent.dt * self.parent.seq_len / 1000.0
+        return len(self._events[0]) / self.parent.batch_size / self._n_neurons / seconds
+
+    def to_dataframe(self):
+        batch_num, steps, tf_ids = self._events
+        order = np.lexsort((tf_ids, steps, batch_num))
+        batch_num, steps, tf_ids = batch_num[order], steps[order], tf_ids[order]
+        tf2bmtk_id_map = TFIDMap().tf2bmtk_id_map()
+        return pd.DataFrame({
+            'batch_num': batch_num,
+            'node_ids': tf2bmtk_id_map.loc[tf_ids, 'node_id'].values,
+            'timestamps': (steps + self.parent.time_offset_steps) * self.parent.dt,
+            'population': tf2bmtk_id_map.loc[tf_ids, 'population'].values,
+        })
+
+    def to_spikes_table(self):
+        raise NotImplementedError('Neuron-partitioned inference keeps spikes as events; use to_dataframe().')
+
+
+class PartitionedInferenceResults(RNNExtractorResults):
+    """Rank 0's whole-network spikes from a neuron-partitioned inference."""
+
+    _UNSUPPORTED_OUTPUTS = ('voltages_file', 'voltages_file_pkl', 'model_states', 'model_states_pkl')
+
+    def __init__(self, seq_len, dt, batch_size, batch_num, steps, tf_ids, n_neurons, time_offset_steps=0):
+        super().__init__(seq_len, dt, batch_size, None, time_offset_steps=time_offset_steps)
+        self._spikes = _SparseSpikesResults(self, batch_num, steps, tf_ids, n_neurons)
+
+    @property
+    def voltages(self):
+        raise ValueError('Neuron-partitioned inference records spikes only.')
+
+    @property
+    def model_state(self):
+        raise ValueError('Neuron-partitioned inference records spikes only.')
+
+    def save_results(self, **save_opts):
+        requested = [name for name in self._UNSUPPORTED_OUTPUTS if save_opts.get(name)]
+        if requested:
+            raise ValueError(
+                'Neuron-partitioned inference records spikes only; remove ' + ', '.join(requested) + '.'
+            )
+        super().save_results(**save_opts)

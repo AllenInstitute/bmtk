@@ -8,6 +8,7 @@ from .delayed_association import DelayedAssociationLoss
 from .low_rate_floor import LowRateFloor
 from .voltage_rate_floor import VoltageRateFloor
 from .streaming import StreamingSpikeLoss, StreamingContext
+from .grouped_rate_cdf import GroupedRateCDFTarget
 
 
 class LossModules:
@@ -91,3 +92,4 @@ LossModules().add_module(EMDWeightRegularization, overwrite=False)
 LossModules().add_module(DelayedAssociationLoss, overwrite=False)
 LossModules().add_module(LowRateFloor, overwrite=False)
 LossModules().add_module(VoltageRateFloor, overwrite=False)
+LossModules().add_module(GroupedRateCDFTarget, overwrite=False)
