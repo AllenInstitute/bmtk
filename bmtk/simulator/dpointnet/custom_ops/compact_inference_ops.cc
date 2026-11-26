@@ -49,14 +49,12 @@ class CompactInferenceCPU : public OpKernel {
                   edges = weights.NumElements(), out_size = neurons_ * bases;
     auto offsets = ptr.flat<int64_t>();
     auto packed = targets.flat<uint32>();
+    // Connectivity is validated once when the cell is built; per call, only the rows
+    // and edges an active source visits are checked, so frozen inference never scans
+    // every edge at every step.
     OP_REQUIRES(c, offsets(0) == 0 && offsets(rows) == edges,
                 errors::InvalidArgument("Invalid compact row endpoints"));
-    for (int64_t row = 0; row < rows; ++row)
-      OP_REQUIRES(c, offsets(row) >= 0 && offsets(row) <= offsets(row + 1) &&
-          offsets(row + 1) <= edges, errors::InvalidArgument("Invalid compact row offsets"));
-    for (int64_t edge = 0; edge < edges; ++edge)
-      OP_REQUIRES(c, packed(edge) < static_cast<uint64_t>(neurons_) * types,
-                  errors::InvalidArgument("Invalid compact target/type"));
+    const uint64_t packed_limit = static_cast<uint64_t>(neurons_) * types;
     Tensor* out;
     OP_REQUIRES_OK(c, c->allocate_output(0, {batch * neurons_, bases}, &out));
     std::vector<float> accumulated(batch * out_size, 0.0f);
@@ -67,7 +65,12 @@ class CompactInferenceCPU : public OpKernel {
       for (int64_t row = 0; row < rows; ++row) {
         const float spike = static_cast<float>(input(slot * rows + row));
         if (spike == 0.0f) continue;
-        for (int64_t edge = offsets(row); edge < offsets(row + 1); ++edge) {
+        const int64_t begin = offsets(row), end = offsets(row + 1);
+        OP_REQUIRES(c, begin >= 0 && begin <= end && end <= edges,
+                    errors::InvalidArgument("Invalid compact row offsets"));
+        for (int64_t edge = begin; edge < end; ++edge) {
+          OP_REQUIRES(c, packed(edge) < packed_limit,
+                      errors::InvalidArgument("Invalid compact target/type"));
           const int64_t target = packed(edge) / types, type = packed(edge) % types;
           for (int64_t receptor = 0; receptor < bases; ++receptor)
             accumulated[slot * out_size + target * bases + receptor] +=

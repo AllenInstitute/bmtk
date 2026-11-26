@@ -2710,6 +2710,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def _initialize_compact_recurrent(self, host):
         if host.neurons != self._n_neurons or host.delay_steps != self.max_delay:
             raise ValueError("Compact connectivity differs from the cell's neuron/delay layout.")
+        from ..compact_inference import validate_connectivity
+
+        validate_connectivity(
+            host.row_ptr, host.targets, host.neurons, len(host.basis), host.neurons * host.delay_steps,
+        )
         self.recurrent_weight_values = host.master
         self._recurrent_export_factor = host.export_factor
         self.recurrent_dense_shape = self._n_neurons, self._n_neurons * self.max_delay
@@ -2742,18 +2747,19 @@ class GLIF3Cell(tf.keras.layers.Layer):
         forward keeps using stale weights and recurrent-weight training has no effect.
         Matches the reference V1_GLIF_model.
         """
-        if getattr(self, "_compact_recurrent", None) is not None:
+        compact = getattr(self, "_compact_recurrent", None) is not None
+        if compact:
             with tf.device("/CPU:0"):
                 values = tf.cast(tf.gather(
                     self.recurrent_weight_values, self._compact_recurrent.order,
                 ), self.compute_dtype)
                 values = tf.debugging.check_numerics(values, "Nonfinite compact inference weights")
             self.recurrent_weight_values_compute.assign(values)
-            return
-        if getattr(self, "_csr_master_weights", False):
+        elif getattr(self, "_csr_master_weights", False):
             return
         if (
-            self.recurrent_weight_values_compute is not self.recurrent_weight_values
+            not compact
+            and self.recurrent_weight_values_compute is not self.recurrent_weight_values
             and self.recurrent_weight_values.trainable
         ):
             self.recurrent_weight_values_compute.assign(
@@ -2762,7 +2768,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         recurrent_csr_shadow = getattr(
             self, "recurrent_csr_weight_values_compute", None
         )
-        if recurrent_csr_shadow is not None and self.recurrent_weight_values.trainable:
+        if not compact and recurrent_csr_shadow is not None and self.recurrent_weight_values.trainable:
             recurrent_csr_shadow.assign(
                 reorder_csr_values(
                     tf.cast(self.recurrent_weight_values, self.compute_dtype),

@@ -8,13 +8,20 @@ using GPUDevice = Eigen::GpuDevice;
 template <typename T>
 __global__ void CompactProject(const T* spikes, const int64_t* ptr,
     const uint32_t* targets, const T* weights, const T* basis,
-    int64_t rows, int64_t batch, int64_t neurons, int64_t types, int64_t bases, float* out) {
+    int64_t rows, int64_t batch, int64_t neurons, int64_t types, int64_t bases, int64_t edges,
+    float* out) {
+  // Connectivity is validated on the host when the cell is built. Out-of-range rows or
+  // targets in directly supplied tensors are skipped so no access leaves the buffers.
+  const uint64_t packed_limit = static_cast<uint64_t>(neurons) * types;
   for (int64_t index = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
        index < rows * batch; index += static_cast<int64_t>(blockDim.x) * gridDim.x) {
     const float spike = static_cast<float>(spikes[index]);
     if (spike == 0.0f) continue;
     const int64_t row = index % rows, slot = index / rows;
-    for (int64_t edge = ptr[row]; edge < ptr[row + 1]; ++edge) {
+    const int64_t begin = ptr[row], end = ptr[row + 1];
+    if (begin < 0 || begin > end || end > edges) continue;
+    for (int64_t edge = begin; edge < end; ++edge) {
+      if (targets[edge] >= packed_limit) continue;
       const int64_t target = targets[edge] / types, type = targets[edge] % types;
       for (int64_t receptor = 0; receptor < bases; ++receptor) {
         const float factor = static_cast<float>(basis[type * bases + receptor]);
@@ -56,7 +63,7 @@ class CompactInferenceGPU : public OpKernel {
           spikes.flat<T>().data(), ptr.flat<int64_t>().data(), targets.flat<uint32>().data(),
           weights.flat<T>().data(), basis.flat<T>().data(), spikes.dim_size(1),
           spikes.dim_size(0), neurons_, basis.dim_size(0), basis.dim_size(1),
-          accumulator.flat<float>().data()));
+          weights.NumElements(), accumulator.flat<float>().data()));
     }
     out->flat<T>().device(device) = accumulator.flat<float>().cast<T>();
   }

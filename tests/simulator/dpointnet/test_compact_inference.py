@@ -395,3 +395,39 @@ def test_invalid_compact_inputs_raise_before_device_upload(mutation):
         network["synapses"]["weights"][0] = np.inf
     with pytest.raises(ValueError):
         prepare_recurrent(network, params, 1., tf.float32, tf.float32)
+
+
+def test_compact_refresh_keeps_trainable_input_shadows_in_sync():
+    compact, _ = compact_cell(selective=True)
+    net = compact.inputs["drive"]
+    master, shadow = net["input_weight_values"], net["input_weight_values_compute"]
+    assert shadow is not master and master.trainable
+    values = np.linspace(0.5, 1.5, int(master.shape[0])).astype(np.float32)
+    master.assign(values)
+    compact.refresh_recurrent_weight_shadow()
+    np.testing.assert_array_equal(shadow.numpy(), values.astype(shadow.dtype.as_numpy_dtype))
+
+
+@pytest.mark.parametrize("row_ptr, targets, message", [
+    ([0, 2, 1], [0, 1], "row offsets"),
+    ([1, 2, 2], [0, 1], "row offsets"),
+    ([0, 1, 3], [0, 1], "row offsets"),
+    ([0, 1, 2], [0, 4], "outside the neuron population"),
+])
+def test_connectivity_validation_rejects_invalid_offsets_and_targets(row_ptr, targets, message):
+    from bmtk.simulator.dpointnet.compact_inference import validate_connectivity
+
+    validate_connectivity([0, 1, 2], [0, 3], neurons=2, n_types=2, rows=2)
+    with pytest.raises(ValueError, match=message):
+        validate_connectivity(row_ptr, targets, neurons=2, n_types=2, rows=2)
+
+
+@native
+@pytest.mark.parametrize("row_ptr, targets", [([0, 1], [5]), ([0, 2], [0])])
+def test_cpu_projection_reports_invalid_visited_connectivity(row_ptr, targets):
+    with tf.device("/CPU:0"):
+        with pytest.raises((tf.errors.InvalidArgumentError, ValueError)):
+            compact_inference_ops.currents(
+                tf.ones([1, 1]), tf.constant(row_ptr, tf.int64), tf.constant(targets, tf.uint32),
+                tf.ones([len(targets)]), tf.ones([1, 4]), 1,
+            ).numpy()

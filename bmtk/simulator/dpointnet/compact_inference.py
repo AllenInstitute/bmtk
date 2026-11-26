@@ -67,6 +67,16 @@ def resolve_connectivity(requested, *, inference_only, cell_cls, params, strateg
             "reason": reason or "frozen inference with a compatible compact operator"}
 
 
+def validate_connectivity(row_ptr, targets, neurons, n_types, rows):
+    """Check host compact connectivity once, before it reaches a projection kernel."""
+    row_ptr, targets = np.asarray(row_ptr), np.asarray(targets)
+    if (row_ptr.shape != (int(rows) + 1,) or targets.ndim != 1 or row_ptr[0] != 0
+            or row_ptr[-1] != targets.size or np.any(np.diff(row_ptr) < 0)):
+        raise ValueError("Invalid compact row offsets.")
+    if targets.size and int(targets.max()) >= int(neurons) * int(n_types):
+        raise ValueError("Compact target/type outside the neuron population.")
+
+
 def prepare_recurrent(network, params, dt, compute_dtype, variable_dtype):
     """Construct canonical CPU masters before entering a device strategy scope."""
     if tf.distribute.has_strategy():
