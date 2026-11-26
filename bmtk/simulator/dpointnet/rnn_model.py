@@ -981,8 +981,12 @@ class RNN:
             if inference_obj is not None:
                 initial_state = inference_obj.get_initial_state()
         if initial_state is None:
-            # No configured initializer: the zero state of the inference batch.
-            batch = inference_obj.effective_batch_size if inference_obj is not None else self.batch_size
+            # No configured initializer: the zero state of the spikes' batch.
+            shape = getattr(spikes, "shape", None)
+            if shape is not None and shape.rank and shape[0] is not None:
+                batch = int(shape[0])
+            else:
+                batch = inference_obj.effective_batch_size if inference_obj is not None else self.batch_size
             initial_state = self.cell.zero_state(batch, self.dtype)
 
         # Get version of model for pass-through only and reutrns spikes, voltages, and model states

@@ -182,3 +182,26 @@ def test_cached_init_state_requires_rnn(tmp_path):
 
     with pytest.raises(ValueError, match='requires an RNN instance'):
         init_state.get_state()
+
+
+def test_run_inference_zero_state_follows_supplied_spike_batch():
+    import tensorflow as tf
+
+    class _Stop(Exception):
+        pass
+
+    seen = {}
+
+    def run_extractor(spikes, initial_state):
+        seen["batch"] = int(initial_state[0].shape[0])
+        raise _Stop
+
+    inference = SimpleNamespace(get_initial_state=lambda: None, effective_batch_size=1, effective_seq_len=5)
+    fake = SimpleNamespace(
+        _model_built=True, batch_size=1, dtype=tf.float32, run_extractor=run_extractor,
+        _select_inference=lambda inference_name: inference,
+        cell=SimpleNamespace(zero_state=lambda batch, dtype: (tf.zeros([batch, 4], dtype),)),
+    )
+    with pytest.raises(_Stop):
+        RNN.run_inference(fake, spikes=tf.zeros([3, 5, 2]))
+    assert seen["batch"] == 3
