@@ -165,8 +165,17 @@ def direct_extension_declared(cell):
     return isinstance(cell, GLIF3Cell) and callable(getattr(type(cell), "direct_extension", None))
 
 
-def direct_records_supported(cell):
-    """Names of the conditions the cell fails for the direct recorded adjoint."""
+# Conditions that only the reverse (training) pass needs.
+_BACKWARD_ONLY_CONDITIONS = (
+    "compute temporal gradients", "native recurrent accumulation", "native event VJP",
+)
+
+
+def direct_records_supported(cell, forward_only=False):
+    """Names of the conditions the cell fails for the direct recorded adjoint.
+
+    ``forward_only`` checks only what the forward rollout needs (frozen inference).
+    """
     if type(cell) is not GLIF3Cell and not direct_extension_declared(cell):
         return ("unmodified GLIF3Cell or a subclass declaring direct_extension",)
     conditions = {
@@ -179,7 +188,9 @@ def direct_records_supported(cell):
         "native event VJP": bool(cell.use_fused_nest_event_vjp),
         "prepacked NEST coefficients": bool(cell._use_prepacked_nest_coefficients),
         "native voltage penalty": bool(cell._use_native_voltage_penalty),
-        "native step records": step_record_ops_available() and direct_reverse_ops_available(),
+        "native step records": step_record_ops_available() and (
+            forward_only or direct_reverse_ops_available()
+        ),
         "direct state loop": cell._use_direct_state_rnn_loop,
         "compact full-neuron output": not cell._return_voltage_sequences,
         "no online voltage losses": not cell._online_voltage_losses,
@@ -191,7 +202,10 @@ def direct_records_supported(cell):
         ),
         "positive recurrent delay": cell.max_delay >= 1,
     }
-    return tuple(name for name, met in conditions.items() if not met)
+    return tuple(
+        name for name, met in conditions.items()
+        if not met and not (forward_only and name in _BACKWARD_ONLY_CONDITIONS)
+    )
 
 
 # Automatic admission keeps the per-step record payload (pre-reset membrane,
@@ -293,8 +307,8 @@ class DirectRecordedStep:
     returns per-population tuples in that order.
     """
 
-    def __init__(self, cell, batch, initial_state, exchanged=(), graded=()):
-        unsupported = direct_records_supported(cell)
+    def __init__(self, cell, batch, initial_state, exchanged=(), graded=(), forward_only=False):
+        unsupported = direct_records_supported(cell, forward_only=forward_only)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
         self.cell = cell
@@ -600,8 +614,10 @@ class DirectRecordedAdjointRunner:
     """
 
     def __init__(self, core_model, cell, sequence_length, chunk_size, count_windows=None,
-                 differentiate_inputs=False, spike_exchanges=None, **kwargs):
-        unsupported = direct_records_supported(cell)
+                 differentiate_inputs=False, spike_exchanges=None, forward_only=False, **kwargs):
+        # A forward-only runner serves spike_events() (frozen inference) and has no reverse.
+        self.forward_only = bool(forward_only)
+        unsupported = direct_records_supported(cell, forward_only=self.forward_only)
         if unsupported:
             raise ValueError("Direct recorded adjoint requires: " + ", ".join(unsupported))
         if differentiate_inputs:
@@ -919,13 +935,15 @@ class DirectRecordedAdjointRunner:
 
     # -- forward driver ------------------------------------------------------------------
 
-    def _forward(self, inputs, initial_state, sampled_traces, time_check, extra_states=()):
+    def _forward(self, inputs, initial_state, sampled_traces, time_check, extra_states=(), forward_only=False):
+        """Forward rollout; ``forward_only`` keeps the packed spike words but no reverse-only records."""
         cell = self.cell
         batch, length = int(inputs.shape[0]), self.sequence_length
         with _rollout_context(cell):
             step = DirectRecordedStep(
                 cell, batch, initial_state, exchanged=tuple(self.spike_exchanges),
                 graded=tuple(name for name in self.spike_exchanges if self._graded(name)),
+                forward_only=forward_only,
             )
             neurons = step.neurons
             tables = self._prepare_noise(step, inputs, initial_state)
@@ -937,8 +955,8 @@ class DirectRecordedAdjointRunner:
                 **({"spike_exchanges": tuple(self.spike_exchanges)} if self.spike_exchanges else {}),
             })
             noise_steps = initial_state[6]
-            offload_voltage = "voltage" in self.record_offload
-            offload_history = "history" in self.record_offload
+            offload_voltage = "voltage" in self.record_offload and not forward_only
+            offload_history = "history" in self.record_offload and not forward_only
             if offload_history and any(isinstance(spec, ProjectedSpikeTraces) for spec in sampled_traces):
                 # Streamed per-chunk statistics reduce each staged word frame; the
                 # projected trace needs the unpacked spike matrix, computed after the
@@ -956,7 +974,13 @@ class DirectRecordedAdjointRunner:
             # voltage offload the variable is a small staging ring instead: the
             # kernel writes row ``time % slots`` and the store copies it to pinned
             # host memory on its own stream before the row is reused.
-            if offload_voltage:
+            if forward_only:
+                # The state kernel writes each pre-reset row; nothing reads them back.
+                voltage_store = None
+                scratch = self._scratch(
+                    step, "direct_recorded_voltage_forward_only", [1, batch, neurons], step.state_dtype,
+                )
+            elif offload_voltage:
                 voltage_store = self._voltage_store(step, length)
                 scratch = self._scratch(
                     step, "direct_recorded_voltage_staging",
@@ -1061,8 +1085,8 @@ class DirectRecordedAdjointRunner:
             else:
                 asc_store = None
                 asc_snapshots = self._scratch(
-                    step, "direct_recorded_asc_snapshot_scratch", [self.n_chunks, batch, 2 * neurons],
-                    step.state_dtype,
+                    step, "direct_recorded_asc_snapshot_scratch",
+                    [1 if forward_only else self.n_chunks, batch, 2 * neurons], step.state_dtype,
                 )
             penalties = tf.TensorArray(tf.float32, size=length, element_shape=(batch,))
             # Exchanged frames are recorded bit-packed, indexed by time + history:
@@ -1106,7 +1130,7 @@ class DirectRecordedAdjointRunner:
                             self.spike_exchanges[population["name"]].forward(time, previous_spikes),
                             step.spike_dtype,
                         ), (batch, population["width"]))
-                        if not self._graded(population["name"]):
+                        if not self._graded(population["name"]) and not forward_only:
                             new_frames[index] = tf.raw_ops.TensorListPushBack(
                                 input_handle=frames[index], tensor=pack_step_record(
                                     source, tf.zeros([batch, population["width"]], step.refractory_dtype),
@@ -1123,7 +1147,8 @@ class DirectRecordedAdjointRunner:
                     sources.append(source)
                 # With the record forward the state kernel writes the pre-reset row
                 # itself (host loop counter as the row; no device index upload).
-                row = time % VOLTAGE_STAGING_SLOTS if offload_voltage else time
+                row = (time * 0 if forward_only
+                       else time % VOLTAGE_STAGING_SLOTS if offload_voltage else time)
                 spikes, new_state, (pre_reset, record), penalty = step.forward(
                     sources, state, record_row=(scratch.handle, row) if in_place else None,
                 )
@@ -1133,7 +1158,8 @@ class DirectRecordedAdjointRunner:
                 if buffered and not in_place:
                     written = tf.raw_ops.ResourceScatterUpdate(
                         resource=scratch.handle,
-                        indices=(clock % VOLTAGE_STAGING_SLOTS if offload_voltage else clock)[None],
+                        indices=(clock * 0 if forward_only
+                                 else clock % VOLTAGE_STAGING_SLOTS if offload_voltage else clock)[None],
                         updates=pre_reset[None],
                     )
                 elif not buffered:
@@ -1171,7 +1197,8 @@ class DirectRecordedAdjointRunner:
                 chunk_index = clock // self.chunk_size
                 written = tf.raw_ops.ResourceScatterUpdate(
                     resource=asc_snapshots.handle,
-                    indices=(chunk_index % ASC_STAGING_SLOTS if offload_history else chunk_index)[None],
+                    indices=(chunk_index * 0 if forward_only
+                             else chunk_index % ASC_STAGING_SLOTS if offload_history else chunk_index)[None],
                     updates=state[3][None],
                 )
                 if offload_history:
@@ -1321,11 +1348,17 @@ class DirectRecordedAdjointRunner:
                 "'history' for inference spike output."
             )
         initial_state = tuple(initial_state)
+        # As in __call__: the cell's direct extension owns the trailing states.
+        n_extra = self._ensure_extension(inputs.shape[0])
+        n_base = len(initial_state) - n_extra
 
         @tf.function
         def rollout(inputs, initial_state):
             with record.stop_recording():
-                self._forward(inputs, initial_state, (), tf.constant(True))
+                self._forward(
+                    inputs, initial_state[:n_base], (), tf.constant(True), initial_state[n_base:],
+                    forward_only=True,
+                )
             stacked, delay, _ = self._last_record_layout
             return stacked, tf.constant(delay)
 
@@ -1701,6 +1734,8 @@ class DirectRecordedAdjointRunner:
     # -- public ----------------------------------------------------------------------
 
     def __call__(self, inputs, initial_state, sampled_traces=()):
+        if self.forward_only:
+            raise ValueError("A forward-only runner has no reverse; use spike_events().")
         sampled_traces = tuple(sampled_traces)
         for spec in sampled_traces:
             _window(spec.window, self.sequence_length)

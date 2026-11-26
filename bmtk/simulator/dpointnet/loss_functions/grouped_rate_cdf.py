@@ -64,8 +64,9 @@ def load_rate_cdf_targets(path):
         cdf = np.asarray(group["target_cdf"], dtype=np.float64)
         if len(values) != len(group_by):
             raise ValueError(f"Rate target group {values!r} must give one value per group_by column.")
-        if cdf.shape != grid.shape or np.any(cdf < 0) or np.any(cdf > 1) or np.any(np.diff(cdf) < 0):
-            raise ValueError(f"Target CDF of group {values!r} must be nondecreasing in [0, 1] on the grid.")
+        if (cdf.shape != grid.shape or not np.all(np.isfinite(cdf)) or np.any(cdf < 0) or np.any(cdf > 1)
+                or np.any(np.diff(cdf) < 0)):
+            raise ValueError(f"Target CDF of group {values!r} must be finite and nondecreasing in [0, 1] on the grid.")
         keys.append(values)
         cdfs.append(cdf)
         weights.append(float(group["weight"]))

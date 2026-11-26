@@ -551,7 +551,8 @@ class SONATANetwork(NetworkAdaptor):
                 group = pop.get_group(pop.group_ids[0]).to_dataframe()
             if column not in group.columns:
                 raise ValueError(f'Node attribute {column!r} not found in population {pop.name!r}.')
-            values[column] = group[column].to_numpy()[np.asarray(pop.group_index_ds)]
+            # to_dataframe() already resolves node_group_index into population row order.
+            values[column] = group[column].to_numpy()
         return values
 
     def get_bmtk_ids(self, **filter):

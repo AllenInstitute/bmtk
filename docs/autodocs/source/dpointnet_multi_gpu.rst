@@ -606,7 +606,12 @@ An ``inference`` block (alone or after training) also runs partitioned under
 ``mpirun``: rank 0 draws the input batch and broadcasts it, every rank runs
 its neurons with the training spike exchange, and rank 0 writes the whole
 network's spikes to ``spikes_file`` (or the CSV/pickle outputs). Only spikes
-are recorded; voltage and model-state outputs raise. On a 12-area cortex
+are recorded; voltage and model-state outputs raise. Inference runs forward only:
+it keeps the packed per-step spike words but no voltage history or reverse
+checkpoints, and works with frozen recurrent weights (``train_recurrent: false``).
+Without an ``initial_state`` block it starts from the zero state. Partitioned
+runs request CSR-ordered masters and the joint current sweep unless the
+configuration sets them. On a 12-area cortex
 network (458,177 neurons, 156M edges), 2- and 4-rank inference reproduce the
 single-process spike trains exactly.
 

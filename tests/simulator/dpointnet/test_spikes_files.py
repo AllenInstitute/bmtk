@@ -65,3 +65,20 @@ def test_spikes_files_load_without_world_barrier(spikes_path, monkeypatch):
     expected = np.zeros((4, 3), np.float32)
     expected[0, 0] = expected[2, 1] = expected[3, 2] = 1.0
     np.testing.assert_array_equal(_first_table(_module(spikes_path)), expected)
+
+
+def test_legacy_gids_file_loads_without_world_barrier(tmp_path, monkeypatch):
+    import bmtk.utils.reports.spike_trains.spike_train_readers as readers
+
+    path = tmp_path / "legacy.h5"
+    with h5py.File(path, "w") as handle:
+        handle.create_dataset("spikes/gids", data=np.asarray([0, 1, 2], np.uint64))
+        handle.create_dataset("spikes/timestamps", data=np.asarray([0.2, 2.1, 3.0]))
+
+    def barrier():
+        raise AssertionError("spike input loading must not enter a world barrier")
+
+    monkeypatch.setattr(readers, "comm_barrier", barrier)
+    expected = np.zeros((4, 3), np.float32)
+    expected[0, 0] = expected[2, 1] = expected[3, 2] = 1.0
+    np.testing.assert_array_equal(_first_table(_module(str(path))), expected)

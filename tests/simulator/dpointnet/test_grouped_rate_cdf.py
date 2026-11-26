@@ -59,6 +59,7 @@ def _cdf(seed):
     ([{"values": ["A"], "target_cdf": _cdf(1), "weight": 0.5}], "sum to 1"),
     ([{"values": ["A"], "target_cdf": _cdf(1)[::-1], "weight": 1.0}], "nondecreasing"),
     ([{"values": ["A", "E"], "target_cdf": _cdf(1), "weight": 1.0}], "one value per group_by"),
+    ([{"values": ["A"], "target_cdf": _cdf(1)[:-1] + [float("nan")], "weight": 1.0}], "finite"),
 ])
 def test_target_file_validation(tmp_path, groups, message):
     with pytest.raises(ValueError, match=message):

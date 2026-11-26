@@ -550,6 +550,12 @@ class RNN:
             )
             self.partition_network = network
             self._built_recurrent_net = None
+            # The partitioned runner projects through CSR masters and the joint sweep in
+            # training and inference alike; automatic selection declines them for frozen
+            # weights, so request them unless the configuration decides explicitly.
+            for name in ("use_csr_master_weights", "use_combined_current_sweep"):
+                if cell_params.get(name, "auto") == "auto":
+                    cell_params[name] = True
             io.log_info(f"DPointNet neuron partition: {self.neuron_partition.describe()}")
             # The partition input's columns exist only in the symbolic model; the direct runner
             # takes the remaining replay columns and fills the partition input by exchange.
@@ -974,6 +980,10 @@ class RNN:
         if initial_state is None:
             if inference_obj is not None:
                 initial_state = inference_obj.get_initial_state()
+        if initial_state is None:
+            # No configured initializer: the zero state of the inference batch.
+            batch = inference_obj.effective_batch_size if inference_obj is not None else self.batch_size
+            initial_state = self.cell.zero_state(batch, self.dtype)
 
         # Get version of model for pass-through only and reutrns spikes, voltages, and model states
         # Run inputs through the model; fetch, package and return results
@@ -1010,10 +1020,17 @@ class RNN:
             spikes = tf.cast(spikes, self.dtype)
         batch, seq_len = int(spikes.shape[0]), int(spikes.shape[1])
         initial_state = inference_obj.get_initial_state()
+        if initial_state is None:
+            # No configured initializer: a rank-local zero state for the inference batch.
+            initial_state = self.cell.zero_state(batch, self.dtype)
         initial_state = self.cell.reset_voltage_penalty_state(initial_state)
+        # Same per-inference noise stream as run_extractor(); every rank advances identically.
+        advance_noise_seed = getattr(self.cell, "advance_noise_seed", None)
+        if advance_noise_seed is not None:
+            advance_noise_seed()
         runner = DirectRecordedAdjointRunner(
             None, self.cell, seq_len, min(seq_len, int(decode_steps)), count_windows=((0, seq_len),),
-            spike_exchanges=partition.spike_exchanges(batch),
+            spike_exchanges=partition.spike_exchanges(batch), forward_only=True,
         )
         steps, batch_num, local = runner.spike_events(spikes, initial_state, decode_steps=decode_steps)
         tf_ids = np.asarray(partition.partition.local_nodes)[local]

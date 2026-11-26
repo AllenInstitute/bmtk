@@ -227,6 +227,11 @@ class ChunkedAdam(tf.keras.optimizers.Adam):
             raise ValueError('chunked_adam does not support amsgrad.')
         self.update_chunk_size = int(update_chunk_size)
 
+    def get_config(self):
+        config = super().get_config()
+        config['update_chunk_size'] = self.update_chunk_size
+        return config
+
     def _chunks(self, gradient, variable):
         if isinstance(gradient, tf.IndexedSlices) or len(variable.shape) != 1:
             return False

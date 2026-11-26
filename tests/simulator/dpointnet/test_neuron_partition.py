@@ -445,3 +445,59 @@ def test_partition_setup_rejects_rank_local_state_and_norm_clipping(state, clip,
     else:
         with pytest.raises(ValueError, match=error):
             TrainingEngine._validate_neuron_partition_setup(engine)
+
+
+_INFERENCE_SCRIPT = """
+import os, sys
+os.environ.pop("TF_GPU_ALLOCATOR", None)
+from bmtk.simulator import dpointnet
+config = dpointnet.Config.from_json(sys.argv[1], output_dir=sys.argv[2])
+config.build_env()
+dpointnet.RNN.from_config(config).run()
+"""
+
+
+@pytest.mark.skipif(
+    os.environ.get("BMTK_RUN_MPI_TESTS") != "1",
+    reason="Real MPI subprocess tests require explicit BMTK_RUN_MPI_TESTS=1.",
+)
+def test_partitioned_frozen_inference_matches_single_process_on_gpu(tmp_path):
+    """Inference-only config, frozen recurrent weights and no initial_state block:
+    ``mpiexec -n 2`` writes the same spike trains as one ordinary process."""
+    pytest.importorskip("mpi4py")
+    import json
+    import h5py
+    from bmtk.simulator.dpointnet.custom_ops import fused_cuda_available
+
+    if not fused_cuda_available():
+        pytest.skip("Neuron-partitioned inference uses the GPU direct recorded forward.")
+    launcher = shutil.which("mpiexec")
+    assert launcher, "MPI tests require mpiexec."
+    example = Path(__file__).resolve().parents[3] / "examples"
+    config = json.loads((example / "dpointnet_mpi" / "config.partition.json").read_text())
+    config["manifest"]["$ASSET_DIR"] = str(example / "dpointnet_all2all")
+    config.pop("training")
+    config["rnn_cell_params"]["train_recurrent"] = False
+    config["output"].update(spikes_file="spikes.h5", overwrite_output_dir=True)
+    config["inference"] = {"inputs": ["poisson_inputs"]}
+    path = tmp_path / "config.inference.json"
+    path.write_text(json.dumps(config))
+    script = tmp_path / "run_inference.py"
+    script.write_text(_INFERENCE_SCRIPT)
+    spikes = {}
+    for ranks in (1, 2):
+        output = tmp_path / f"ranks{ranks}"
+        command = [sys.executable, str(script), str(path), str(output)]
+        if ranks > 1:
+            command = [launcher, "-n", str(ranks)] + command
+        result = subprocess.run(command, capture_output=True, text=True, timeout=900, cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+        with h5py.File(output / "spikes.h5") as f:
+            group = f["spikes"]
+            group = group[next(iter(group))] if "timestamps" not in group else group
+            times, ids = group["timestamps"][()], group["node_ids"][()]
+        order = np.lexsort((ids, times))
+        spikes[ranks] = (times[order], ids[order])
+    assert spikes[1][0].size > 0
+    for serial, split in zip(spikes[1], spikes[2]):
+        np.testing.assert_array_equal(serial, split)

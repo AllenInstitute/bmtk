@@ -45,3 +45,28 @@ def test_attribute_group_keys_match_tuple_grouping():
 def test_group_by_validation(group_by):
     with pytest.raises(ValueError, match="group_by"):
         _normalize_group_by(group_by)
+
+
+def test_node_group_columns_follow_permuted_node_group_index(tmp_path):
+    h5py = pytest.importorskip("h5py")
+    from bmtk.utils.sonata import File
+    from bmtk.simulator.dpointnet.network_adaptor import SONATANetwork
+
+    nodes, types = tmp_path / "nodes.h5", tmp_path / "node_types.csv"
+    with h5py.File(nodes, "w") as f:
+        f.attrs["magic"] = np.uint32(0x0A7A)
+        f.attrs["version"] = np.array([0, 1], np.uint32)
+        pop = f.create_group("nodes/cortex")
+        pop["node_id"] = np.arange(4)
+        pop["node_type_id"] = np.full(4, 100)
+        pop["node_group_id"] = np.zeros(4, np.int64)
+        pop["node_group_index"] = np.array([2, 0, 3, 1])
+        pop["0/area"] = np.array([b"V1", b"LM", b"AL", b"RL"])
+    types.write_text("node_type_id cell_class\n100 E\n")
+    population = File(data_files=str(nodes), data_type_files=str(types)).nodes["cortex"]
+    adaptor = object.__new__(SONATANetwork)
+    adaptor._sonata_node_pop = population
+    values = adaptor.node_attribute_values(["area", "cell_class"])
+    area = [v.decode() if isinstance(v, bytes) else v for v in values["area"]]
+    assert area == ["AL", "V1", "RL", "LM"]
+    assert list(values["cell_class"]) == ["E"] * 4

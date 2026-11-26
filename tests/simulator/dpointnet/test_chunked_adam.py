@@ -102,3 +102,9 @@ def test_create_optimizer_builds_chunked_adam():
         ChunkedAdam(update_chunk_size=0)
     with pytest.raises(ValueError, match="amsgrad"):
         ChunkedAdam(amsgrad=True)
+
+
+def test_chunked_adam_config_round_trip_keeps_chunk_size():
+    optimizer = ChunkedAdam(learning_rate=0.05, update_chunk_size=96)
+    restored = ChunkedAdam.from_config(optimizer.get_config())
+    assert restored.update_chunk_size == 96

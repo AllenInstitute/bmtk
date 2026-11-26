@@ -14,8 +14,9 @@ def _read_sonata_h5_spikes(path, population):
 
     Read without the collective, rank-staggered open of ``SpikeTrains.load``: DPointNet
     draws input batches per process (only rank 0 under neuron partitioning), so a
-    world barrier there would deadlock. Returns ``None`` when the file has no
-    population subgroup (older single-population layouts).
+    world barrier there would deadlock. Older single-population files with
+    ``/spikes/gids`` and ``/spikes/timestamps`` are read the same way. Returns ``None``
+    for other layouts.
     """
     with h5py.File(path, 'r') as handle:
         root = handle.get('spikes')
@@ -23,6 +24,8 @@ def _read_sonata_h5_spikes(path, population):
             return None
         groups = {name: group for name, group in root.items() if isinstance(group, h5py.Group)}
         if not groups:
+            if 'gids' in root and 'timestamps' in root:
+                return np.asarray(root['gids'][()]), np.asarray(root['timestamps'][()])
             return None
         if population in groups:
             group = groups[population]
