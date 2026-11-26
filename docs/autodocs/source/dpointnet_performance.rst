@@ -13,6 +13,9 @@ workload; the manual also documents single-process MirroredStrategy as an
 opt-in alternative. This is a workload-specific recommendation, not a
 runtime-default change or universal transport-performance ranking.
 
+For automatic memory-efficient execution of frozen inference-only configurations,
+see :doc:`dpointnet_compact_inference`. Training retains its standard layout.
+
 Use automatic acceleration
 --------------------------
 
@@ -43,6 +46,7 @@ After building a model, inspect its choices:
    print(rnn.acceleration_report)
    print(rnn.acceleration_report["effective"])
    print(rnn.acceleration_report["optimization_audit"])
+   print(rnn.connectivity_report)
 
 These reports explain requested/resolved settings; they do not prove that
 every topology-specific kernel executed. Without compatible custom operators,

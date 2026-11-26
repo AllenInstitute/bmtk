@@ -1198,6 +1198,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         combined_current_target_tile_size=UNSET,
         _host_index_variables=None,
         _performance_auto_context=None,
+        _compact_recurrent=None,
     ):
         execution = {
             name: value for name, value in locals().items()
@@ -1210,6 +1211,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             int(batch_size) if isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
             and batch_size > 0 else None
         )
+        self._compact_recurrent = _compact_recurrent
         validate_bool_option(_canonical_gradient_boundary, "_canonical_gradient_boundary")
         from .nest_dynamics import resolve_hard_reset_options
 
@@ -1287,6 +1289,21 @@ class GLIF3Cell(tf.keras.layers.Layer):
             performance_context=_performance_auto_context,
             synapse_type_range=_synapse_type_range(glif_network, inputs),
         )
+        if _compact_recurrent is not None:
+            if train_recurrent or train_recurrent_per_type or _canonical_gradient_boundary:
+                raise ValueError("Compact recurrent connectivity is frozen inference-only.")
+            from ..compact_inference import RECURRENT_OPTIONS
+            # After the automatic resolver: explicit requests still raise, automatic
+            # selections that need standard recurrent connectivity are switched off.
+            for name in RECURRENT_OPTIONS:
+                if requested_execution.get(name) not in (None, False, "auto"):
+                    raise ValueError(
+                        f"{name}={requested_execution[name]!r} is incompatible with compact inference.")
+                execution[name] = False
+                if self.acceleration_report is not None:
+                    self.acceleration_report["selected"][name] = False
+                    self.acceleration_report["reasons"][name] = (
+                        "compact frozen inference connectivity replaces the standard recurrent route")
         for name in ("use_csr_master_weights", "use_uint8_synapse_types", "use_adaptive_routing"):
             validate_bool_option(execution.get(name, False), name)
         self._csr_master_weights = execution.get("use_csr_master_weights", False)
@@ -2038,204 +2055,207 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         # TODO: Allow option to not have recurrent connectivity (eg. in case only want to train feedforward network)
         ### Network recurrent connectivity ###
-        indices = np.array(
-            glif_network["synapses"]["indices"]
-        )  # NOTE: These are the tf indices, not SONATA, and in the form [trg, src]
-        weights = np.array(glif_network["synapses"]["weights"])
-        dense_shape = np.array(glif_network["synapses"]["dense_shape"])
-        syn_ids = np.array(glif_network["synapses"]["syn_ids"])
-        delays = np.array(glif_network["synapses"]["delays"])
-        weights = (
-            weights / voltage_scale[self._node_type_ids[indices[:, 0]]]
-        )  # Scale down the recurrent weights
-        # Per-edge factor to invert the load-time scaling on export (recover physical syn_weight):
-        # physical = internal * voltage_scale[target] * lr_scale / recurrent_weight_scale.
-        self._recurrent_export_factor = (
-            voltage_scale[self._node_type_ids[indices[:, 0]]]
-            * lr_scale
-            / recurrent_weight_scale
-        ).astype(np.float32)
-        delays = np.round(np.clip(delays, dt, self._delay_limit_ms) / dt).astype(
-            np.int32
-        )  # Use the maximum delay to clip the synaptic delays
-        if dynamics_mode == "nest":
-            delays = time_steps(
-                np.clip(glif_network["synapses"]["delays"], dt, self._delay_limit_ms),
-                dt,
-            )
-        indices[:, 1] = indices[:, 1] + self._n_neurons * (
-            delays - 1
-        )  # Introduce the delays in the presynaptic neuron indices
-
-        # the first column (presynaptic neuron) has size n_neurons and the second column (postsynaptic neuron) has size max_delay*n_neurons
-        self.recurrent_dense_shape = dense_shape[0], self.max_delay * dense_shape[1]
-
-        # Define the Tensorflow variables
-        if _host_index_variables is not None and not self._use_combined_current_sweep:
-            raise ValueError("Prepared host index variables require the explicit combined sweep.")
-        if not self._csr_host_lifecycle:
-            self.recurrent_indices = _canonical_index_variable(
-                indices,
-                None if _host_index_variables is None else _host_index_variables["recurrent"],
-            )
-        self._recurrent_projection_basis_reference = self.synaptic_basis_weights
-        self._unshared_recurrent_fused_connectivity = None
-        if self._use_fused_cuda:
-            self.recurrent_fused_connectivity = build_csr_connectivity(
-                indices,
-                syn_ids,
-                self.recurrent_dense_shape[1],
-                self._n_neurons,
-                self.synaptic_basis_weights.shape[0],
-                build_compact_pairs=self._use_pair_projection,
-                sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
-                projection_basis=(
-                    np.asarray(
-                        _synaptic_basis_weights,
-                        dtype=tf.as_dtype(self.compute_dtype).as_numpy_dtype,
-                    )
-                    if self._use_pair_projection
-                    and self.temporal_gradient_precision != "float32"
-                    else None
-                ),
-                host_lifecycle=self._csr_host_lifecycle,
-                uint8_types=self._uint8_synapse_types,
-            )
-            self.pre_ind_table = None
-            self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
+        if _compact_recurrent is not None:
+            self._initialize_compact_recurrent(_compact_recurrent)
         else:
-            self.recurrent_fused_connectivity = None
-            self.pre_ind_table = make_pre_ind_table(
-                indices, n_source_neurons=self.recurrent_dense_shape[1]
-            )
-        if self._use_locality_row_schedule == "auto":
-            self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
+            indices = np.array(
+                glif_network["synapses"]["indices"]
+            )  # NOTE: These are the tf indices, not SONATA, and in the form [trg, src]
+            weights = np.array(glif_network["synapses"]["weights"])
+            dense_shape = np.array(glif_network["synapses"]["dense_shape"])
+            syn_ids = np.array(glif_network["synapses"]["syn_ids"])
+            delays = np.array(glif_network["synapses"]["delays"])
+            weights = (
+                weights / voltage_scale[self._node_type_ids[indices[:, 0]]]
+            )  # Scale down the recurrent weights
+            # Per-edge factor to invert the load-time scaling on export (recover physical syn_weight):
+            # physical = internal * voltage_scale[target] * lr_scale / recurrent_weight_scale.
+            self._recurrent_export_factor = (
+                voltage_scale[self._node_type_ids[indices[:, 0]]]
+                * lr_scale
+                / recurrent_weight_scale
+            ).astype(np.float32)
+            delays = np.round(np.clip(delays, dt, self._delay_limit_ms) / dt).astype(
+                np.int32
+            )  # Use the maximum delay to clip the synaptic delays
+            if dynamics_mode == "nest":
+                delays = time_steps(
+                    np.clip(glif_network["synapses"]["delays"], dt, self._delay_limit_ms),
+                    dt,
+                )
+            indices[:, 1] = indices[:, 1] + self._n_neurons * (
+                delays - 1
+            )  # Introduce the delays in the presynaptic neuron indices
 
-        if self._csr_master_weights:
-            from ..csr_master import CsrMasterLayout, canonical_checkpoint
-            from ..custom_ops.master_projection import cpu_connectivity
-            self._master_recurrent_connectivity = (
-                self.recurrent_fused_connectivity if self._use_fused_cuda
-                else cpu_connectivity(
-                    indices, syn_ids, self.recurrent_dense_shape[1], self._n_neurons,
+            # the first column (presynaptic neuron) has size n_neurons and the second column (postsynaptic neuron) has size max_delay*n_neurons
+            self.recurrent_dense_shape = dense_shape[0], self.max_delay * dense_shape[1]
+
+            # Define the Tensorflow variables
+            if _host_index_variables is not None and not self._use_combined_current_sweep:
+                raise ValueError("Prepared host index variables require the explicit combined sweep.")
+            if not self._csr_host_lifecycle:
+                self.recurrent_indices = _canonical_index_variable(
+                    indices,
+                    None if _host_index_variables is None else _host_index_variables["recurrent"],
+                )
+            self._recurrent_projection_basis_reference = self.synaptic_basis_weights
+            self._unshared_recurrent_fused_connectivity = None
+            if self._use_fused_cuda:
+                self.recurrent_fused_connectivity = build_csr_connectivity(
+                    indices,
+                    syn_ids,
+                    self.recurrent_dense_shape[1],
+                    self._n_neurons,
+                    self.synaptic_basis_weights.shape[0],
+                    build_compact_pairs=self._use_pair_projection,
+                    sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
+                    projection_basis=(
+                        np.asarray(
+                            _synaptic_basis_weights,
+                            dtype=tf.as_dtype(self.compute_dtype).as_numpy_dtype,
+                        )
+                        if self._use_pair_projection
+                        and self.temporal_gradient_precision != "float32"
+                        else None
+                    ),
+                    host_lifecycle=self._csr_host_lifecycle,
+                    uint8_types=self._uint8_synapse_types,
+                )
+                self.pre_ind_table = None
+                self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
+            else:
+                self.recurrent_fused_connectivity = None
+                self.pre_ind_table = make_pre_ind_table(
+                    indices, n_source_neurons=self.recurrent_dense_shape[1]
+                )
+            if self._use_locality_row_schedule == "auto":
+                self._settle_locality_row_schedule(glif_network, indices, syn_ids, batch_size)
+
+            if self._csr_master_weights:
+                from ..csr_master import CsrMasterLayout, canonical_checkpoint
+                from ..custom_ops.master_projection import cpu_connectivity
+                self._master_recurrent_connectivity = (
+                    self.recurrent_fused_connectivity if self._use_fused_cuda
+                    else cpu_connectivity(
+                        indices, syn_ids, self.recurrent_dense_shape[1], self._n_neurons,
+                        host_lifecycle=self._csr_host_lifecycle,
+                    )
+                )
+                self.recurrent_master_layout = CsrMasterLayout(
+                    self._master_recurrent_connectivity,
                     host_lifecycle=self._csr_host_lifecycle,
                 )
-            )
-            self.recurrent_master_layout = CsrMasterLayout(
-                self._master_recurrent_connectivity,
-                host_lifecycle=self._csr_host_lifecycle,
-            )
-            weights = self.recurrent_master_layout.to_live(weights).numpy()
-            if self._csr_host_lifecycle:
-                layout = self.recurrent_master_layout
-                indices = layout.host_to_live(indices)
-                syn_ids = layout.host_to_live(syn_ids)
-                self._recurrent_export_factor = layout.host_to_live(self._recurrent_export_factor)
-                with tf.device("/CPU:0"):
-                    self.recurrent_indices = _canonical_index_variable(
-                        indices,
-                        None if _host_index_variables is None else _host_index_variables["recurrent"],
-                    )
-                canonical_checkpoint(self.recurrent_indices, layout, verify_unchanged=True)
-        recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
-        if use_fused_recurrent_accumulation and (
-            not self._use_fused_cuda
-            or self._n_syn_basis != 4
-            or self.recurrent_fused_connectivity["index_dtype"] != "uint32"
-            or not self.recurrent_fused_connectivity["n_pairs"]
-            or not fused_recurrent_accumulation_available()
-        ):
-            reason = (
-                "Fused recurrent accumulation requires compatible CUDA operators "
-                "and nonempty four-basis uint32 compact-pair connectivity."
-            )
-            names = ("use_fused_recurrent_accumulation", "use_javier_recurrent_vjp")
-            if self.acceleration_report is None or any(
-                self.acceleration_report["requested"].get(name) is True for name in names
+                weights = self.recurrent_master_layout.to_live(weights).numpy()
+                if self._csr_host_lifecycle:
+                    layout = self.recurrent_master_layout
+                    indices = layout.host_to_live(indices)
+                    syn_ids = layout.host_to_live(syn_ids)
+                    self._recurrent_export_factor = layout.host_to_live(self._recurrent_export_factor)
+                    with tf.device("/CPU:0"):
+                        self.recurrent_indices = _canonical_index_variable(
+                            indices,
+                            None if _host_index_variables is None else _host_index_variables["recurrent"],
+                        )
+                    canonical_checkpoint(self.recurrent_indices, layout, verify_unchanged=True)
+            recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
+            if use_fused_recurrent_accumulation and (
+                not self._use_fused_cuda
+                or self._n_syn_basis != 4
+                or self.recurrent_fused_connectivity["index_dtype"] != "uint32"
+                or not self.recurrent_fused_connectivity["n_pairs"]
+                or not fused_recurrent_accumulation_available()
             ):
-                raise ValueError(reason)
-            use_fused_recurrent_accumulation = False
-            use_javier_recurrent_vjp = False
-            self.use_fused_recurrent_accumulation = False
-            self.use_javier_recurrent_vjp = False
-            for name in names:
-                self.acceleration_report["selected"][name] = False
-                self.acceleration_report["reasons"][name] = reason
-            io.log_warning(reason + " Automatic selection retains the generic gradient route.")
+                reason = (
+                    "Fused recurrent accumulation requires compatible CUDA operators "
+                    "and nonempty four-basis uint32 compact-pair connectivity."
+                )
+                names = ("use_fused_recurrent_accumulation", "use_javier_recurrent_vjp")
+                if self.acceleration_report is None or any(
+                    self.acceleration_report["requested"].get(name) is True for name in names
+                ):
+                    raise ValueError(reason)
+                use_fused_recurrent_accumulation = False
+                use_javier_recurrent_vjp = False
+                self.use_fused_recurrent_accumulation = False
+                self.use_javier_recurrent_vjp = False
+                for name in names:
+                    self.acceleration_report["selected"][name] = False
+                    self.acceleration_report["reasons"][name] = reason
+                io.log_warning(reason + " Automatic selection retains the generic gradient route.")
 
-        if train_recurrent:
-            if train_recurrent_per_type:
-                individual_training = False
-                per_type_training = True
+            if train_recurrent:
+                if train_recurrent_per_type:
+                    individual_training = False
+                    per_type_training = True
+                else:
+                    individual_training = True
+                    per_type_training = False
             else:
-                individual_training = True
+                individual_training = False
                 per_type_training = False
-        else:
-            individual_training = False
-            per_type_training = False
 
-        if self._use_direct_csr_recurrent_gradient and not individual_training:
-            raise ValueError(
-                "use_direct_csr_recurrent_gradient=True requires individually "
-                "trainable recurrent edge weights."
-            )
+            if self._use_direct_csr_recurrent_gradient and not individual_training:
+                raise ValueError(
+                    "use_direct_csr_recurrent_gradient=True requires individually "
+                    "trainable recurrent edge weights."
+                )
 
-        self.recurrent_weight_values = self._tracked_weight(
-            weights * recurrent_weight_scale / lr_scale,
-            name="sparse_recurrent_weights",
-            constraint=SignedConstraint(recurrent_weight_positive),
-            trainable=individual_training,
-            dtype=self.variable_dtype,
-        )  # shape = (n_synapses,)
+            self.recurrent_weight_values = self._tracked_weight(
+                weights * recurrent_weight_scale / lr_scale,
+                name="sparse_recurrent_weights",
+                constraint=SignedConstraint(recurrent_weight_positive),
+                trainable=individual_training,
+                dtype=self.variable_dtype,
+            )  # shape = (n_synapses,)
 
-        if self._csr_master_weights:
-            canonical_checkpoint(self.recurrent_weight_values, self.recurrent_master_layout)
-            if tf.as_dtype(self.variable_dtype) != tf.float32:
-                raise ValueError("use_csr_master_weights=True requires FP32 master variables.")
-            self.recurrent_weight_values_compute = self.recurrent_weight_values
-            self._register_canonical_shadow_checkpoints(individual_training)
-        elif self.variable_dtype != self.compute_dtype or individual_training:
-            # Keep a non-trainable compute-lane shadow. Two reasons:
-            #  (1) mixed precision: avoids casting the full weight table every timestep;
-            #  (2) the recurrent @tf.custom_gradient reads these weights inside the RNN
-            #      while_loop. If that read is the *trainable* variable (esp. a MirroredVariable
-            #      under MirroredStrategy), TF requires the grad to take a `variables` kwarg and
-            #      otherwise errors. Reading a non-trainable shadow avoids that. The shadow is
-            #      kept in sync via refresh_recurrent_weight_shadow() after each optimizer step.
-            recurrent_weight_values_compute = tf.Variable(
-                tf.cast(self.recurrent_weight_values, self.compute_dtype),
-                name="sparse_recurrent_weights_compute",
-                trainable=False,
-                dtype=self.compute_dtype,
+            if self._csr_master_weights:
+                canonical_checkpoint(self.recurrent_weight_values, self.recurrent_master_layout)
+                if tf.as_dtype(self.variable_dtype) != tf.float32:
+                    raise ValueError("use_csr_master_weights=True requires FP32 master variables.")
+                self.recurrent_weight_values_compute = self.recurrent_weight_values
+                self._register_canonical_shadow_checkpoints(individual_training)
+            elif self.variable_dtype != self.compute_dtype or individual_training:
+                # Keep a non-trainable compute-lane shadow. Two reasons:
+                #  (1) mixed precision: avoids casting the full weight table every timestep;
+                #  (2) the recurrent @tf.custom_gradient reads these weights inside the RNN
+                #      while_loop. If that read is the *trainable* variable (esp. a MirroredVariable
+                #      under MirroredStrategy), TF requires the grad to take a `variables` kwarg and
+                #      otherwise errors. Reading a non-trainable shadow avoids that. The shadow is
+                #      kept in sync via refresh_recurrent_weight_shadow() after each optimizer step.
+                recurrent_weight_values_compute = tf.Variable(
+                    tf.cast(self.recurrent_weight_values, self.compute_dtype),
+                    name="sparse_recurrent_weights_compute",
+                    trainable=False,
+                    dtype=self.compute_dtype,
+                )
+                # Keep untracked so older checkpoints remain loadable with assert_consumed().
+                self.recurrent_weight_values_compute = self._untracked_variable(
+                    recurrent_weight_values_compute
+                )
+            else:
+                self.recurrent_weight_values_compute = self.recurrent_weight_values
+            if self._use_fused_cuda and not self._csr_master_weights:
+                recurrent_csr_weights = tf.Variable(
+                    reorder_csr_values(
+                        self.recurrent_weight_values_compute,
+                        self.recurrent_fused_connectivity,
+                    ),
+                    name="sparse_recurrent_weights_csr_compute",
+                    trainable=False,
+                    dtype=self.compute_dtype,
+                )
+                self.recurrent_csr_weight_values_compute = self._untracked_variable(
+                    recurrent_csr_weights
+                )
+            else:
+                self.recurrent_csr_weight_values_compute = None
+            with tf.device("/CPU:0") if self._use_combined_current_sweep or self._csr_host_lifecycle else nullcontext():
+                self.syn_ids = tf.constant(syn_ids, dtype=tf.int64)
+            # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
+            io.log_debug(
+                f" > Added recurrent synapses: indices = {len(indices)}; trainable = {individual_training}"
             )
-            # Keep untracked so older checkpoints remain loadable with assert_consumed().
-            self.recurrent_weight_values_compute = self._untracked_variable(
-                recurrent_weight_values_compute
-            )
-        else:
-            self.recurrent_weight_values_compute = self.recurrent_weight_values
-        if self._use_fused_cuda and not self._csr_master_weights:
-            recurrent_csr_weights = tf.Variable(
-                reorder_csr_values(
-                    self.recurrent_weight_values_compute,
-                    self.recurrent_fused_connectivity,
-                ),
-                name="sparse_recurrent_weights_csr_compute",
-                trainable=False,
-                dtype=self.compute_dtype,
-            )
-            self.recurrent_csr_weight_values_compute = self._untracked_variable(
-                recurrent_csr_weights
-            )
-        else:
-            self.recurrent_csr_weight_values_compute = None
-        with tf.device("/CPU:0") if self._use_combined_current_sweep or self._csr_host_lifecycle else nullcontext():
-            self.syn_ids = tf.constant(syn_ids, dtype=tf.int64)
-        # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
-        io.log_debug(
-            f" > Added recurrent synapses: indices = {len(indices)}; trainable = {individual_training}"
-        )
-        del indices, weights, dense_shape, delays, syn_ids, recurrent_weight_positive
+            del indices, weights, dense_shape, delays, syn_ids, recurrent_weight_positive
 
         ### Inputs
         # TODO: Inputs needs to be a list since order is extremely important
@@ -2248,6 +2268,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_props = {}
             n_input_nodes = input_network["n_inputs"]
             input_dense_shape = (self._n_neurons, n_input_nodes)
+
+
 
             input_props["input_dim"] = n_input_nodes
             input_index_dtype = np.int64
@@ -2685,6 +2707,37 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 io.log_warning(message)
         io.log_info(f"DPointNet final cell acceleration (not kernel-execution proof): {self.acceleration_report}")
 
+    def _initialize_compact_recurrent(self, host):
+        if host.neurons != self._n_neurons or host.delay_steps != self.max_delay:
+            raise ValueError("Compact connectivity differs from the cell's neuron/delay layout.")
+        from ..compact_inference import validate_connectivity
+
+        validate_connectivity(
+            host.row_ptr, host.targets, host.neurons, len(host.basis), host.neurons * host.delay_steps,
+        )
+        self.recurrent_weight_values = host.master
+        self._recurrent_export_factor = host.export_factor
+        self.recurrent_dense_shape = self._n_neurons, self._n_neurons * self.max_delay
+        self.recurrent_indices = None
+        self.syn_ids = None
+        self.pre_ind_table = None
+        self.recurrent_fused_connectivity = None
+        self.recurrent_csr_weight_values_compute = None
+        self.recurrent_master_layout = None
+        self._master_recurrent_connectivity = None
+        self._unshared_recurrent_fused_connectivity = None
+        self._recurrent_projection_basis_reference = None
+        self.compact_row_ptr = self._untracked_variable(
+            tf.Variable(host.row_ptr, trainable=False, dtype=tf.int64))
+        self.compact_targets = self._untracked_variable(
+            tf.Variable(host.targets, trainable=False, dtype=tf.uint32))
+        self.compact_basis = tf.constant(host.basis, dtype=self.compute_dtype)
+        self.recurrent_weight_values_compute = self._untracked_variable(
+            tf.Variable(host.initial_compute, trainable=False, dtype=self.compute_dtype))
+        host.row_ptr = None
+        host.targets = None
+        host.initial_compute = None
+
     def refresh_recurrent_weight_shadow(self):
         """Sync the compute-dtype shadow of the recurrent weights with the trained master.
 
@@ -2694,10 +2747,19 @@ class GLIF3Cell(tf.keras.layers.Layer):
         forward keeps using stale weights and recurrent-weight training has no effect.
         Matches the reference V1_GLIF_model.
         """
-        if getattr(self, "_csr_master_weights", False):
+        compact = getattr(self, "_compact_recurrent", None) is not None
+        if compact:
+            with tf.device("/CPU:0"):
+                values = tf.cast(tf.gather(
+                    self.recurrent_weight_values, self._compact_recurrent.order,
+                ), self.compute_dtype)
+                values = tf.debugging.check_numerics(values, "Nonfinite compact inference weights")
+            self.recurrent_weight_values_compute.assign(values)
+        elif getattr(self, "_csr_master_weights", False):
             return
         if (
-            self.recurrent_weight_values_compute is not self.recurrent_weight_values
+            not compact
+            and self.recurrent_weight_values_compute is not self.recurrent_weight_values
             and self.recurrent_weight_values.trainable
         ):
             self.recurrent_weight_values_compute.assign(
@@ -2706,7 +2768,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         recurrent_csr_shadow = getattr(
             self, "recurrent_csr_weight_values_compute", None
         )
-        if recurrent_csr_shadow is not None and self.recurrent_weight_values.trainable:
+        if not compact and recurrent_csr_shadow is not None and self.recurrent_weight_values.trainable:
             recurrent_csr_shadow.assign(
                 reorder_csr_values(
                     tf.cast(self.recurrent_weight_values, self.compute_dtype),
@@ -2911,6 +2973,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def calculate_i_rec_with_custom_grad(
         self, rec_z_buf, projection_values=None, recurrent_weight_carrier=None, vjp_only=False
     ):
+        if getattr(self, "_compact_recurrent", None) is not None:
+            if projection_values is not None or recurrent_weight_carrier is not None:
+                raise ValueError("Compact inference does not support recurrent adjoints.")
+            from ..custom_ops.compact_inference_ops import currents
+            return currents(
+                rec_z_buf, self.compact_row_ptr, self.compact_targets,
+                self.recurrent_weight_values_compute,
+                self.compact_basis, self._n_neurons,
+            )
         basis, weight = (
             (_rollout_constant(self, "synaptic_basis_weights"),
              (self.recurrent_weight_values if self._csr_master_weights else
