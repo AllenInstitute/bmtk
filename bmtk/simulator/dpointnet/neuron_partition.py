@@ -766,7 +766,18 @@ class PartitionedGroupedEMD:
         ))[self.arrange]
         order = np.lexsort((np.arange(received_initial.size), received_initial, self.arranged_groups))
         self.sorted_initial = received_initial[order]
-        self.scale = (1.0 / (group_size[self.arranged_groups] * float(self.n_groups))).astype(np.float32)
+        # Owned groups are contiguous in the arranged order; each is sorted on the device per update.
+        owned_groups = np.unique(self.arranged_groups)
+        self.starts = np.searchsorted(self.arranged_groups, owned_groups, side="left").astype(np.int64)
+        self.stops = np.searchsorted(self.arranged_groups, owned_groups, side="right").astype(np.int64)
+        self.scales = (1.0 / (group_size[owned_groups] * float(self.n_groups))).astype(np.float32)
+        self.n_owned = int(self.arranged_groups.size)
+        with tf.device("/CPU:0"):
+            self._starts, self._stops = tf.constant(self.starts), tf.constant(self.stops)
+            self._scales, self._initial = tf.constant(self.scales), tf.constant(self.sorted_initial)
+        with tf.init_scope():
+            self.credit = tf.Variable(tf.zeros([self.n_owned], tf.float32), trainable=False,
+                                      name="emd_prior_owned_credit")
         self.report = {"groups": self.n_groups, "owned_groups": int(np.sum(group_owner == partition.rank)),
                        "sent_elements": int(self.send_counts.sum() - self.send_counts[partition.rank]),
                        "mode": "exchange"}
@@ -783,22 +794,20 @@ class PartitionedGroupedEMD:
                             [received, received_counts, np.r_[0, np.cumsum(received_counts)[:-1]], mpi_type])
         return np.split(received, np.cumsum(received_counts)[:-1])
 
-    def host_value_and_derivative(self, values):
-        """Live master values (concatenated) -> (global loss, derivative per live element)."""
+    def host_gather(self, values):
+        """Live master values (concatenated) -> this rank's owned elements, ordered by (group, canonical id)."""
         values = np.asarray(values, dtype=np.float32)
         sent = values[self.send_rows]
         bounds = np.r_[0, np.cumsum(self.send_counts)]
         received = np.concatenate(self._exchange([sent[bounds[p]:bounds[p + 1]] for p in range(self.size)],
                                                  np.float32))
-        arranged = received[self.arrange]
-        order = np.lexsort((np.arange(arranged.size), arranged, self.arranged_groups))
-        deviation = arranged[order] - self.sorted_initial
-        local = np.array([np.sum(np.abs(deviation).astype(np.float64) * self.scale)], dtype=np.float64)
-        total = np.empty_like(local)
-        self.comm.Allreduce(local, total, op=_mpi().SUM)
-        derivative_arranged = np.empty_like(arranged)
-        derivative_arranged[order] = np.sign(deviation) * self.scale
-        derivative_received = np.empty_like(received)
+        return received[self.arrange]
+
+    def host_return(self, derivative_arranged, local_total):
+        """Owned derivatives and partial loss -> (global loss, derivative per live element)."""
+        total = np.empty(1, dtype=np.float64)
+        self.comm.Allreduce(np.array([local_total], dtype=np.float64), total, op=_mpi().SUM)
+        derivative_received = np.empty(self.n_owned, dtype=np.float32)
         derivative_received[self.arrange] = derivative_arranged
         rbounds = np.r_[0, np.cumsum(self.receive_counts)]
         returned = np.concatenate(self._exchange(
@@ -813,12 +822,41 @@ class PartitionedGroupedEMD:
             return tf.cast(self._local(), self.dtype)
         sizes = [int(v.shape[0]) for v in self.variables]
 
+        credit, n_groups = self.credit, len(self.scales)
+
         @tf.custom_gradient
         def emd(*values):
             flat = tf.concat([tf.reshape(tf.cast(v, tf.float32), [-1]) for v in values], axis=0)
-            loss, derivative = tf.numpy_function(
-                self.host_value_and_derivative, [flat], (tf.float32, tf.float32), stateful=True,
+            arranged = tf.reshape(
+                tf.numpy_function(self.host_gather, [flat], tf.float32, stateful=True), [self.n_owned],
             )
+            reset = credit.assign(tf.zeros_like(credit))
+
+            def body(i, total):
+                with tf.device("/CPU:0"):
+                    start, stop, scale = self._starts[i], self._stops[i], self._scales[i]
+                    initial = self._initial[start:stop]
+                current = arranged[start:stop]
+                # top_k keeps the lower index first among ties: an ascending sort with ties by
+                # canonical id, since each group arrives in canonical-id order.
+                order = tf.math.top_k(-current, k=tf.size(current), sorted=True).indices
+                deviation = tf.gather(current, order) - initial
+                tf.raw_ops.ResourceScatterUpdate(
+                    resource=credit.handle, indices=tf.cast(order, tf.int64) + start,
+                    updates=tf.sign(deviation) * scale,
+                )
+                return i + 1, total + tf.reduce_sum(tf.abs(deviation)) * scale
+
+            with tf.control_dependencies([reset]):
+                _, local_total = tf.while_loop(
+                    lambda i, _: i < n_groups, body, (tf.constant(0), tf.constant(0.0, tf.float32)),
+                    parallel_iterations=1,
+                )
+            with tf.control_dependencies([local_total]):
+                loss, derivative = tf.numpy_function(
+                    self.host_return, [credit.read_value(), local_total], (tf.float32, tf.float32),
+                    stateful=True,
+                )
             loss = tf.reshape(loss, [])
             derivative = tf.reshape(derivative, [sum(sizes)])
 
