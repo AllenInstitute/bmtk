@@ -267,6 +267,27 @@ def test_mpi_transport_collectives_and_grouped_emd(ranks):
     assert f"neuron partition probe passed on {ranks} ranks" in result.stdout
 
 
+@pytest.mark.skipif(
+    os.environ.get("BMTK_RUN_MPI_TESTS") != "1",
+    reason="Real MPI subprocess tests require explicit BMTK_RUN_MPI_TESTS=1.",
+)
+def test_mpi_grouped_emd_exchange_on_gpu_matches_single_process():
+    """Exchange-mode grouped EMD with the owned-group sort on the GPU: value and gradient
+    (ties, eager and compiled) equal the single-process reference."""
+    pytest.importorskip("mpi4py")
+    import tensorflow as tf
+
+    if not tf.config.list_physical_devices("GPU"):
+        pytest.skip("Requires a GPU.")
+    launcher = shutil.which("mpiexec")
+    assert launcher, "MPI tests require mpiexec."
+    probe = Path(__file__).with_name("neuron_partition_probe.py")
+    result = subprocess.run([launcher, "-n", "2", sys.executable, str(probe), "--gpu-emd"],
+                            capture_output=True, text=True, timeout=600)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "grouped EMD GPU probe passed on 2 ranks" in result.stdout
+
+
 def _feedforward_network(directory):
     """Excitatory/inhibitory network without inhibitory-to-excitatory edges, 1-4 ms delays.
 
