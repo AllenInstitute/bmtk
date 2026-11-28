@@ -531,7 +531,16 @@ The edges between groups are counted in the same pass that counts in-degrees.
 Every cut edge is exchanged at every step, so this matters: on a 9.3M-neuron
 mouse cortex split by area over 4 ranks it cuts 27% of the edges instead of
 54%. ``"placement": "greedy"`` keeps the first placement; refinement supports
-up to 4096 groups. Each rank selects one GPU on its
+up to 4096 groups. ``"spatial": ["x", "z"]`` instead gives every rank one
+spatially compact region of the same balanced load, by weighted recursive
+coordinate bisection over the named node coordinate columns (each region is cut
+along its widest coordinate). Use it for networks whose connectivity falls off
+with distance and whose node order is not spatial, such as a V1 cylinder stored
+by cell type: on the 66,658-neuron V1 it cuts 17% of the recurrent edges over 2
+ranks and 31% over 4, instead of 48% and 68% with node-order blocks. Splitting
+along horizontal coordinates keeps the cortical layers together.
+``"report_cut": true`` scans the edges once more to log the number of edges
+between ranks. Each rank selects one GPU on its
 node (local rank modulo the node's GPUs); more ranks than GPUs share GPUs.
 The source checkout's ``examples/dpointnet_mpi/config.partition.json`` runs
 with ``mpirun -n 2 python examples/dpointnet_mpi/run_training.py

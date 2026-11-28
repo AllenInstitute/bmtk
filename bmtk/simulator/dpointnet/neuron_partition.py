@@ -107,14 +107,49 @@ def refine_group_placement(group_owner, load, sizes, group_edges, size, max_load
     return owner.astype(np.int32)
 
 
+def spatial_owner(coordinates, load, size):
+    """Owner rank of every neuron by weighted recursive coordinate bisection.
+
+    ``coordinates`` is ``[neurons, dims]``. Each region of ``k`` ranks is cut along its
+    widest coordinate at the load-weighted position that leaves ``k // 2`` ranks'
+    share on the low side (ties by neuron index), then both sides are split again.
+    Every rank receives one spatially compact region; the low side gets the lower
+    ranks. Deterministic for identical inputs.
+    """
+    coordinates = np.asarray(coordinates, dtype=np.float64)
+    load = np.asarray(load, dtype=np.float64)
+    n_nodes = len(load)
+    owner = np.empty(n_nodes, dtype=np.int32)
+    pending = [(np.arange(n_nodes), 0, int(size))]
+    while pending:
+        index, first, ranks = pending.pop()
+        if ranks == 1:
+            owner[index] = first
+            continue
+        points = coordinates[index]
+        axis = int(np.argmax(points.max(axis=0) - points.min(axis=0)))
+        index = index[np.lexsort((index, points[:, axis]))]
+        weights = load[index]
+        low = ranks // 2
+        midpoints = np.cumsum(weights) - weights / 2
+        cut = int(np.searchsorted(midpoints, weights.sum() * low / ranks, side="left"))
+        cut = int(np.clip(cut, low, len(index) - (ranks - low)))
+        pending.append((index[cut:], first + low, ranks - low))
+        pending.append((index[:cut], first, low))
+    return owner
+
+
 def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges", group_edges=None,
-                   max_load_ratio=MAX_LOAD_RATIO, max_neuron_ratio=MAX_NEURON_RATIO, report=None):
+                   max_load_ratio=MAX_LOAD_RATIO, max_neuron_ratio=MAX_NEURON_RATIO, report=None,
+                   coordinates=None):
     """Owner rank of every global recurrent neuron (TF order), as int32.
 
     Without ``groups`` each rank receives one contiguous block of the TF order,
     balanced by ``in_degree`` (``balance="edges"``) or by neuron count
     (``"neurons"``); canonical edges are target-major, so each rank's edges are
-    then a contiguous slice of the global canonical order. ``groups`` (one
+    then a contiguous slice of the global canonical order. ``coordinates``
+    (``[neurons, dims]``) instead gives every rank one spatially compact region
+    of the same balanced load (:func:`spatial_owner`). ``groups`` (one
     integer label per neuron) keeps every group on one rank; groups are placed
     largest first on the least-loaded rank. With ``group_edges`` (edges from
     group ``s`` to group ``t`` over the sorted unique labels) that placement is
@@ -140,6 +175,13 @@ def plan_partition(n_nodes, size, in_degree=None, groups=None, balance="edges", 
     else:
         load = np.ones(n_nodes, dtype=np.float64)
     owner = np.empty(n_nodes, dtype=np.int32)
+    if coordinates is not None:
+        if groups is not None:
+            raise ValueError("Use either spatial coordinates or groups for a partition, not both.")
+        coordinates = np.asarray(coordinates, dtype=np.float64)
+        if coordinates.ndim != 2 or coordinates.shape[0] != n_nodes or not np.all(np.isfinite(coordinates)):
+            raise ValueError("coordinates must be finite, one row per neuron.")
+        return spatial_owner(coordinates, load, size)
     if groups is None:
         # Boundary k (neurons before rank k) is the number of neurons whose load midpoint
         # lies below k/size of the total, then made strictly increasing while reserving
@@ -426,7 +468,7 @@ def allreduce_sum(comm, value):
     return result
 
 
-PARTITION_OPTIONS = ("strategy", "balance", "group_by", "placement", "weights_export")
+PARTITION_OPTIONS = ("strategy", "balance", "group_by", "placement", "weights_export", "spatial", "report_cut")
 
 
 def neuron_partition_requested(distribution, world_size, launched_for_samples):
@@ -492,6 +534,15 @@ class PartitionContext:
         _abort_on_uncaught_exception(comm)
         self.balance = options.get("balance", "edges")
         self.group_by = options.get("group_by")
+        spatial = options.get("spatial")
+        if spatial is not None:
+            spatial = [spatial] if isinstance(spatial, str) else list(spatial)
+            if not spatial or not all(isinstance(name, str) for name in spatial):
+                raise ValueError('spatial must name one or more node coordinate columns, e.g. ["x", "z"].')
+            if self.group_by is not None:
+                raise ValueError("Use either group_by or spatial for a neuron partition, not both.")
+        self.spatial = spatial
+        self.report_cut = bool(options.get("report_cut", False))
         self.placement = options.get("placement", "communication")
         if self.placement not in ("communication", "greedy"):
             raise ValueError('placement must be "communication" or "greedy".')
@@ -545,9 +596,22 @@ class PartitionContext:
             if group_edges is not None:
                 group_edges = np.rint(allreduce_sum(self.comm, group_edges)).astype(np.int64)
                 self.placement_report = {}
+            coordinates = None
+            if self.spatial is not None:
+                values = recurrent.node_attribute_values(self.spatial)
+                coordinates = np.stack([np.asarray(values[name], dtype=np.float64) for name in self.spatial], axis=1)
             owner = plan_partition(recurrent.n_nodes, self.size, in_degree=in_degree, groups=groups,
                                    balance=self.balance, group_edges=group_edges,
-                                   report=self.placement_report)
+                                   report=self.placement_report, coordinates=coordinates)
+            if self.report_cut and group_edges is None:
+                # A second edge scan (split across ranks) counts the edges between ranks.
+                _, rank_edges = recurrent.partition_edge_statistics(
+                    (self.rank, self.size), group_codes=owner, n_groups=self.size,
+                )
+                rank_edges = np.rint(allreduce_sum(self.comm, rank_edges)).astype(np.int64)
+                self.placement_report = {
+                    "cut_edges": int(rank_edges.sum() - np.trace(rank_edges)), "edges": int(rank_edges.sum()),
+                }
             digests = self.comm.allgather(hashlib.sha256(owner.tobytes()).hexdigest())
             if len(set(digests)) != 1:
                 raise RuntimeError("Ranks computed different neuron partitions.")
@@ -576,6 +640,8 @@ class PartitionContext:
         if self.partition is not None:
             report.update(self.partition.describe())
             report["remote_sources"] = int(self.remote_sources.size)
+            if self.spatial is not None:
+                report["spatial"] = list(self.spatial)
             if self.placement_report:
                 report["placement"] = dict(self.placement_report)
             report["local_edges"] = {name: int(ids.size) for name, ids in self.canonical_ids.items()}
@@ -700,7 +766,18 @@ class PartitionedGroupedEMD:
         ))[self.arrange]
         order = np.lexsort((np.arange(received_initial.size), received_initial, self.arranged_groups))
         self.sorted_initial = received_initial[order]
-        self.scale = (1.0 / (group_size[self.arranged_groups] * float(self.n_groups))).astype(np.float32)
+        # Owned groups are contiguous in the arranged order; each is sorted on the device per update.
+        owned_groups = np.unique(self.arranged_groups)
+        self.starts = np.searchsorted(self.arranged_groups, owned_groups, side="left").astype(np.int64)
+        self.stops = np.searchsorted(self.arranged_groups, owned_groups, side="right").astype(np.int64)
+        self.scales = (1.0 / (group_size[owned_groups] * float(self.n_groups))).astype(np.float32)
+        self.n_owned = int(self.arranged_groups.size)
+        with tf.device("/CPU:0"):
+            self._starts, self._stops = tf.constant(self.starts), tf.constant(self.stops)
+            self._scales, self._initial = tf.constant(self.scales), tf.constant(self.sorted_initial)
+        with tf.init_scope():
+            self.credit = tf.Variable(tf.zeros([self.n_owned], tf.float32), trainable=False,
+                                      name="emd_prior_owned_credit")
         self.report = {"groups": self.n_groups, "owned_groups": int(np.sum(group_owner == partition.rank)),
                        "sent_elements": int(self.send_counts.sum() - self.send_counts[partition.rank]),
                        "mode": "exchange"}
@@ -717,22 +794,20 @@ class PartitionedGroupedEMD:
                             [received, received_counts, np.r_[0, np.cumsum(received_counts)[:-1]], mpi_type])
         return np.split(received, np.cumsum(received_counts)[:-1])
 
-    def host_value_and_derivative(self, values):
-        """Live master values (concatenated) -> (global loss, derivative per live element)."""
+    def host_gather(self, values):
+        """Live master values (concatenated) -> this rank's owned elements, ordered by (group, canonical id)."""
         values = np.asarray(values, dtype=np.float32)
         sent = values[self.send_rows]
         bounds = np.r_[0, np.cumsum(self.send_counts)]
         received = np.concatenate(self._exchange([sent[bounds[p]:bounds[p + 1]] for p in range(self.size)],
                                                  np.float32))
-        arranged = received[self.arrange]
-        order = np.lexsort((np.arange(arranged.size), arranged, self.arranged_groups))
-        deviation = arranged[order] - self.sorted_initial
-        local = np.array([np.sum(np.abs(deviation).astype(np.float64) * self.scale)], dtype=np.float64)
-        total = np.empty_like(local)
-        self.comm.Allreduce(local, total, op=_mpi().SUM)
-        derivative_arranged = np.empty_like(arranged)
-        derivative_arranged[order] = np.sign(deviation) * self.scale
-        derivative_received = np.empty_like(received)
+        return received[self.arrange]
+
+    def host_return(self, derivative_arranged, local_total):
+        """Owned derivatives and partial loss -> (global loss, derivative per live element)."""
+        total = np.empty(1, dtype=np.float64)
+        self.comm.Allreduce(np.array([local_total], dtype=np.float64), total, op=_mpi().SUM)
+        derivative_received = np.empty(self.n_owned, dtype=np.float32)
         derivative_received[self.arrange] = derivative_arranged
         rbounds = np.r_[0, np.cumsum(self.receive_counts)]
         returned = np.concatenate(self._exchange(
@@ -747,12 +822,41 @@ class PartitionedGroupedEMD:
             return tf.cast(self._local(), self.dtype)
         sizes = [int(v.shape[0]) for v in self.variables]
 
+        credit, n_groups = self.credit, len(self.scales)
+
         @tf.custom_gradient
         def emd(*values):
             flat = tf.concat([tf.reshape(tf.cast(v, tf.float32), [-1]) for v in values], axis=0)
-            loss, derivative = tf.numpy_function(
-                self.host_value_and_derivative, [flat], (tf.float32, tf.float32), stateful=True,
+            arranged = tf.reshape(
+                tf.numpy_function(self.host_gather, [flat], tf.float32, stateful=True), [self.n_owned],
             )
+            reset = credit.assign(tf.zeros_like(credit))
+
+            def body(i, total):
+                with tf.device("/CPU:0"):
+                    start, stop, scale = self._starts[i], self._stops[i], self._scales[i]
+                    initial = self._initial[start:stop]
+                current = arranged[start:stop]
+                # top_k keeps the lower index first among ties: an ascending sort with ties by
+                # canonical id, since each group arrives in canonical-id order.
+                order = tf.math.top_k(-current, k=tf.size(current), sorted=True).indices
+                deviation = tf.gather(current, order) - initial
+                tf.raw_ops.ResourceScatterUpdate(
+                    resource=credit.handle, indices=tf.cast(order, tf.int64) + start,
+                    updates=tf.sign(deviation) * scale,
+                )
+                return i + 1, total + tf.reduce_sum(tf.abs(deviation)) * scale
+
+            with tf.control_dependencies([reset]):
+                _, local_total = tf.while_loop(
+                    lambda i, _: i < n_groups, body, (tf.constant(0), tf.constant(0.0, tf.float32)),
+                    parallel_iterations=1,
+                )
+            with tf.control_dependencies([local_total]):
+                loss, derivative = tf.numpy_function(
+                    self.host_return, [credit.read_value(), local_total], (tf.float32, tf.float32),
+                    stateful=True,
+                )
             loss = tf.reshape(loss, [])
             derivative = tf.reshape(derivative, [sum(sizes)])
 

@@ -530,29 +530,43 @@ class SONATANetwork(NetworkAdaptor):
     def node_attribute_values(self, columns):
         """Per-neuron values of node attributes, in TF order (the node file order).
 
-        Columns of the node-types table are resolved per node type, so whole-brain
-        populations need no per-node dataframe; other columns are read from a
-        single-group population's node group.
+        Columns defined only in the node-types table are resolved per node type, so
+        whole-brain populations need no per-node dataframe. Columns stored in any node
+        group are read from every group (per-node values override node-type values, as
+        in SONATA) and placed at their population rows.
         """
         pop = self._sonata_node_pop
         types = pop.types_table.to_dataframe()
         type_ids = pop.type_ids
-        values, group = {}, None
+        values, frames = {}, {}
         for column in columns:
-            if column in types.columns:
+            in_groups = any(column in pop.get_group(group_id) for group_id in pop.group_ids)
+            if column in types.columns and not in_groups:
                 values[column] = types[column].reindex(type_ids).to_numpy()
                 continue
-            if len(pop.group_ids) != 1:
-                raise ValueError(
-                    f'Node attribute {column!r} is not a node-types column and population '
-                    f'{pop.name!r} has several node groups.'
-                )
-            if group is None:
-                group = pop.get_group(pop.group_ids[0]).to_dataframe()
-            if column not in group.columns:
-                raise ValueError(f'Node attribute {column!r} not found in population {pop.name!r}.')
-            # to_dataframe() already resolves node_group_index into population row order.
-            values[column] = group[column].to_numpy()
+            parts = []
+            for group_id in pop.group_ids:
+                if group_id not in frames:
+                    # to_dataframe() resolves node_group_index; its rows follow the group's population rows.
+                    frames[group_id] = pop.get_group(group_id).to_dataframe()
+                frame = frames[group_id]
+                if column not in frame.columns:
+                    raise ValueError(
+                        f'Node attribute {column!r} not found in node group {group_id} of population {pop.name!r}.'
+                    )
+                rows = np.asarray(pop.group_indicies(group_id, build_cache=True), dtype=np.int64)
+                parts.append((rows, frame[column].to_numpy()))
+            if len(parts) == 1 and np.array_equal(parts[0][0], np.arange(len(type_ids))):
+                values[column] = parts[0][1]
+                continue
+            try:
+                dtype = np.result_type(*[part.dtype for _, part in parts])
+            except TypeError:
+                dtype = object
+            result = np.empty(len(type_ids), dtype=dtype)
+            for rows, part in parts:
+                result[rows] = part
+            values[column] = result
         return values
 
     def get_bmtk_ids(self, **filter):

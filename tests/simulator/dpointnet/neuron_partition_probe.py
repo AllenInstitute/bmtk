@@ -19,6 +19,21 @@ from bmtk.simulator.dpointnet.neuron_partition import (
 def main():
     comm = MPI.COMM_WORLD
     rank, size = comm.rank, comm.size
+    if "--gpu-emd" in sys.argv:
+        # Grouped EMD only, with GPUs visible: the exchange route sorts owned groups on the device.
+        gpus = tf.config.list_physical_devices("GPU")
+        if not gpus:
+            raise RuntimeError("--gpu-emd requires a visible GPU")
+        for gpu in gpus:  # ranks share GPU:0; avoid preallocating it
+            tf.config.experimental.set_memory_growth(gpu, True)
+        owner = plan_partition(41, size, in_degree=np.random.default_rng(7).integers(0, 30, 41))
+        partition = NeuronPartition(owner, rank)
+        check_grouped_emd(comm, partition, owner, device="GPU")
+        check_grouped_emd(comm, partition, owner, rank_local_groups=True, device="GPU")
+        comm.Barrier()
+        if rank == 0:
+            print(f"grouped EMD GPU probe passed on {size} ranks")
+        return
     tf.config.set_visible_devices([], "GPU")
     n_nodes, batch, steps = 41, 2, 4
     rng = np.random.default_rng(7)  # identical on every rank
@@ -95,7 +110,7 @@ def main():
         print(f"neuron partition probe passed on {size} ranks")
 
 
-def check_grouped_emd(comm, partition, owner, rank_local_groups=False):
+def check_grouped_emd(comm, partition, owner, rank_local_groups=False, device=None):
     """The rank-split grouped EMD equals the single-process grouped EMD (value and gradient).
 
     With ``rank_local_groups`` every group's edges share a target owner, so the device
@@ -150,6 +165,8 @@ def check_grouped_emd(comm, partition, owner, rank_local_groups=False):
     emd = PartitionedGroupedEMD(context, masters, group_keys)
     expected_mode = "local" if rank_local_groups or partition.size == 1 else "exchange"
     assert emd.report["mode"] == expected_mode, emd.report
+    if device is not None and expected_mode == "exchange":
+        assert device in emd.credit.device, emd.credit.device
     for variable, live, selected in variables:
         values = np.empty(selected.size, np.float32)
         values[live] = current[selected]
