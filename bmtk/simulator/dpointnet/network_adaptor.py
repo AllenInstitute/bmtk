@@ -530,16 +530,18 @@ class SONATANetwork(NetworkAdaptor):
     def node_attribute_values(self, columns):
         """Per-neuron values of node attributes, in TF order (the node file order).
 
-        Columns of the node-types table are resolved per node type, so whole-brain
-        populations need no per-node dataframe; other columns are read from every node
-        group of the population and placed at their population rows.
+        Columns defined only in the node-types table are resolved per node type, so
+        whole-brain populations need no per-node dataframe. Columns stored in any node
+        group are read from every group (per-node values override node-type values, as
+        in SONATA) and placed at their population rows.
         """
         pop = self._sonata_node_pop
         types = pop.types_table.to_dataframe()
         type_ids = pop.type_ids
         values, frames = {}, {}
         for column in columns:
-            if column in types.columns:
+            in_groups = any(column in pop.get_group(group_id) for group_id in pop.group_ids)
+            if column in types.columns and not in_groups:
                 values[column] = types[column].reindex(type_ids).to_numpy()
                 continue
             parts = []

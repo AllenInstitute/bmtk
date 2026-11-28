@@ -21,8 +21,11 @@ def main():
     rank, size = comm.rank, comm.size
     if "--gpu-emd" in sys.argv:
         # Grouped EMD only, with GPUs visible: the exchange route sorts owned groups on the device.
-        if not tf.config.list_physical_devices("GPU"):
+        gpus = tf.config.list_physical_devices("GPU")
+        if not gpus:
             raise RuntimeError("--gpu-emd requires a visible GPU")
+        for gpu in gpus:  # ranks share GPU:0; avoid preallocating it
+            tf.config.experimental.set_memory_growth(gpu, True)
         owner = plan_partition(41, size, in_degree=np.random.default_rng(7).integers(0, 30, 41))
         partition = NeuronPartition(owner, rank)
         check_grouped_emd(comm, partition, owner, device="GPU")

@@ -92,13 +92,16 @@ def test_node_attribute_values_span_multiple_node_groups(tmp_path):
         pop["1/x"] = np.array([20.0, 21.0])
         pop["1/z"] = np.array([5.0, 6.0])
         pop["1/tuning"] = np.array([0.5, 0.6])
-    types.write_text("node_type_id pop_name\n100 e4\n101 i4\n")
+        pop["1/depth"] = np.array([7.0, 8.0])
+    # x and depth also have node-type defaults; per-node group values take precedence.
+    types.write_text("node_type_id pop_name x depth\n100 e4 99.0 1.0\n101 i4 99.0 2.0\n")
     population = File(data_files=str(nodes), data_type_files=str(types)).nodes["v1"]
     adaptor = object.__new__(SONATANetwork)
     adaptor._sonata_node_pop = population
-    values = adaptor.node_attribute_values(["x", "z", "pop_name"])
+    values = adaptor.node_attribute_values(["x", "z", "pop_name", "depth"])
     np.testing.assert_array_equal(values["x"], [12.0, 21.0, 10.0, 20.0, 11.0])
     np.testing.assert_array_equal(values["z"], [2.0, 6.0, 0.0, 5.0, 1.0])
+    np.testing.assert_array_equal(values["depth"], [1.0, 8.0, 1.0, 7.0, 1.0])
     assert list(values["pop_name"]) == ["e4", "i4", "e4", "i4", "e4"]
     with pytest.raises(ValueError, match="not found in node group 0"):
         adaptor.node_attribute_values(["tuning"])
